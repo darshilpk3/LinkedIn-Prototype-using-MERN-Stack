@@ -3,12 +3,13 @@ var router = express.Router();
 var pool = require('../connections/mysql')
 var mysql = require('mysql')
 var bcrypt = require('bcryptjs')
-/* GET users listing. */
+
+/* User Sign up */
 router.post('/', async function (req, res, next) {
 
 
   console.log('\n\nIn user signup');
-  console.log("Request Got: ",req.body)
+  console.log("Request Got: ", req.body)
   const email = req.body.email
   const pwd = bcrypt.hashSync(req.body.pwd, 10)
   const firstName = req.body.firstName
@@ -17,51 +18,120 @@ router.post('/', async function (req, res, next) {
 
   pool.getConnection((
     err, connection) => {
-      if (connection) {
-        console.log("Connection obtained")
-        const sql = `insert into userinfo(email,pwd,firstName,lastName,type) values(${mysql.escape(email)},${mysql.escape(pwd)},${mysql.escape(firstName)},${mysql.escape(lastName)},${mysql.escape(type)})`
-        connection.query(sql,
-          (err,result) => {
-            if (result) {
-              console.log("Successfully registered")
-              res.writeHead(200, {
-                'Content-Type': 'application/json'
-              })
-              const data = {
-                "status": 1,
-                "msg": "Successfully Signed Up",
-                "info": {
-                  "id": result.insertId,
-                  "fullname": firstName + " " + lastName,
-                  "type": type,
-                  "email": email
-                }
+    if (connection) {
+      console.log("Connection obtained")
+      const sql = `insert into userinfo(email,pwd,firstName,lastName,type) values(${mysql.escape(email)},${mysql.escape(pwd)},${mysql.escape(firstName)},${mysql.escape(lastName)},${mysql.escape(type)})`
+      connection.query(sql,
+        (err, result) => {
+          if (result) {
+            console.log("Successfully registered")
+            res.writeHead(200, {
+              'Content-Type': 'application/json'
+            })
+            const data = {
+              "status": 1,
+              "msg": "Successfully Signed Up",
+              "info": {
+                "id": result.insertId,
+                "fullname": firstName + " " + lastName,
+                "type": type,
+                "email": email
               }
-              res.end(JSON.stringify(data))
-            } else if (err) {
-              console.log("User already exists ",err.sqlMessage)
-              res.writeHead(200, {
-                'Content-Type': 'application/json'
-              })
-              const data = {
-                "status": 0,
-                "msg": "User already exists",
-                "info": {
-                  "error": err.sqlMessage
-                }
-              }
-              res.end(JSON.stringify(data))
             }
-          })
-      } else {
-        console.log("Connection Refused ",err)
-        res.writeHead(400, {
-          'Content-Type': 'text/plain'
+            console.log("data being sent to frontend:\n",JSON.stringify(data))
+            res.end(JSON.stringify(data))
+          } else if (err) {
+            console.log("User already exists ", err.sqlMessage)
+            res.writeHead(200, {
+              'Content-Type': 'application/json'
+            })
+            const data = {
+              "status": 0,
+              "msg": "User already exists",
+              "info": {
+                "error": err.sqlMessage
+              }
+            }
+            console.log("data being sent to frontend:\n",JSON.stringify(data))
+            res.end(JSON.stringify(data))
+          }
         })
-        res.end("Connection Refused")
-      }
+    } else {
+      console.log("Connection Refused ", err)
+      res.writeHead(400, {
+        'Content-Type': 'text/plain'
+      })
+      res.end("Connection Refused")
+    }
 
-    })
+  })
+});
+
+/* User Login */
+router.post('/login', async function (req, res, next) {
+
+
+  console.log('\n\nIn user login');
+  console.log("Request Got: ", req.body)
+  const email = req.body.email
+  const pwd = req.body.pwd;
+
+  pool.getConnection((
+    err, connection) => {
+    if (connection) {
+      console.log("Connection obtained for Login")
+      const sql = "select * from userinfo WHERE email = " + mysql.escape(email);
+      connection.query(sql,
+        (err, result) => {
+          const password = bcrypt.compareSync(pwd, result[0].pwd);
+          if (result && password) {
+            console.log("Successfully Logged In")
+            res.writeHead(200, {
+              'Content-Type': 'application/json'
+            })
+            const data = {
+              "status": 1,
+              "msg": "Successfully Logged In",
+              "info": {
+                "fullname": result[0].firstName + " " + result[0].lastName,
+                "email": email,
+                "type": result[0].type
+              }
+            }
+            console.log("data being sent to frontend:\n",JSON.stringify(data))
+            res.end(JSON.stringify(data))
+          } else if (err) {
+            console.log("Some error in sql query", err.sqlMessage)
+            res.writeHead(400, {
+              'Content-Type': 'application/json'
+            })
+
+            res.end("some error in sql query")
+          } else {
+            //password doesn't match
+            console.log("Password doesn't match!")
+            res.writeHead(200, {
+              'Content-Type': 'application/json'
+            })
+            const data = {
+              "status": 0,
+              "msg": "Error in login,Incorrect  password",
+              "info": {}
+            }
+            console.log("data being sent to frontend:\n",JSON.stringify(data))
+            res.end(JSON.stringify(data))
+
+          }
+        })
+    } else {
+      console.log("Connection Refused ", err)
+      res.writeHead(400, {
+        'Content-Type': 'text/plain'
+      })
+      res.end("Connection Refused")
+    }
+
+  })
 });
 
 module.exports = router;
