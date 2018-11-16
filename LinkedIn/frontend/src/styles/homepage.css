@@ -1,0 +1,148 @@
+#mainDiv{
+   
+    position: relative;
+    background-size: cover;
+    background-position: 50%;
+    /* height: 80%; */
+    /* background-position: center; */
+
+}
+
+#mainHeading{
+    color: #2a6ebb;
+    font-weight: 400;
+    font-family: Lato,Arial,Helvetica Neue,sans-serif;
+    font-size: 38px;
+    margin-left: 25%
+
+}
+
+
+
+.navbar-nav>li>a:hover{
+
+    background-color:transparent;
+}
+.nav .open>a, .nav .open>a:focus, .nav .open>a:hover {
+    background-color:transparent;
+    border-color: #337ab7;
+}
+
+
+.dropList{
+    padding: 10px !important;
+    color: #0067db !important;
+    font-family: Lato,Arial,Helvetica Neue,sans-serif;
+    font-size: 15px;
+    }
+.dropList:hover{
+    background-color: #0067db !important;
+    color: white !important;
+}
+
+#noFocus:focus{
+
+    background-color:transparent;
+}
+#searchButton{
+    border-radius: 25px;
+    color: #0067db;
+    font-size: 13.5px;
+    padding: 15px;
+    padding-left: 35px;
+    padding-right: 35px;
+
+    /* padding-left: 22%;
+    padding-right: 22%;
+    padding-top: 7%;
+    padding-bottom: 7%; */
+    /* float:left; */
+
+    /* position: relative;
+    margin-right: 5px !important; */
+}
+
+.headingText{
+    margin-left: 13%;
+    color: white;
+    margin-top: 10%;
+    font-size: 37px;
+}
+
+.searchButton{
+    
+    /* margin-left: 10px; */
+    background-color: rgb(0, 103, 219);
+    border-radius: 34px;
+    width: 17%;
+    padding: 16px;
+}
+
+.searchContainer1{
+    padding: 6px;
+    width: 72%;
+    margin-left: 13%;
+    background-color: #0000002e;
+}
+.searchContainer{
+    background-color: #11033f21;
+    padding: 2.5%;
+    margin-bottom: -5.4%;
+    width: 73%;
+    margin-left: 10%;
+}
+
+.smallInfo{
+    text-align: center;
+    color: white
+}
+
+.smallFontInfo{
+    font-size: 1.5em;
+    font-weight: 700;
+}
+.smallestInfo{
+    font-size: .9vw;
+}
+
+#loginHeading{
+    font-size: 40px;
+    /* font-family: -webkit-body; */
+    color: #353e44;
+    font-weight: lighter;
+}
+
+.formProps{
+    background-color: white;
+    max-width: 27%;
+    width: auto;
+    padding: 1%;
+    overflow: auto;
+    margin-top: 2%;
+    margin-left: 37%;
+   
+}
+
+.padding5{
+    padding: 3%;
+    color: #666666;
+}
+
+.inputField{
+    width: 100%;
+    color: gray;
+    padding: 12px 20px;
+    box-sizing: border-box;
+}
+
+#loginButton{
+    width: 100%;
+    padding: 3%;
+    font-size: 17px;
+    background-color: #ff8a00;
+    border: none;
+}
+
+#loginButton:hover{
+    background-color: #ff8a00;
+}
