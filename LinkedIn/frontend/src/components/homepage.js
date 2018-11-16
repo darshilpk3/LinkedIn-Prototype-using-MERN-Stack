@@ -33,7 +33,9 @@ class Login extends Component {
 
         return (
             <div className="padding5 " style={{ "margin-top": "10px" }}>
-                <input className="inputField" type="text" name="email"  {...field.input} placeholder="Email address"></input>
+                <label for="reg-label" className="reg-label">First name</label>
+                <input type="text" className="inputFields" style={{width:"100%", padding:"0 8px"}} name="lastName" id="reg-lastname"  aria-required="true" tabindex="1" placeholder=""></input>
+                {/* <input className="inputField" type="text" name="email"  {...field.input} placeholder="Email address"></input> */}
                 <span className="error">
                     {touched ? error : ""}
                 </span>
@@ -50,7 +52,9 @@ class Login extends Component {
         return (
 
             <div className="padding5 " style={{ "margin-top": "-10px" }}>
-                <input className="inputField" name="password"  {...field.input} type="password" placeholder="Password"></input>
+                <label for="reg-label" className="reg-label">Last name</label>
+
+                <input className="inputFields" name="password"  {...field.input} type="password" placeholder=""></input>
                 <span className="error">
                     {touched ? error : ""}
                 </span>
@@ -126,32 +130,39 @@ class Login extends Component {
             <div style={{ backgroundColor: "#f4f4f4" }}>
                 {redirectVar}
                 <div id="">
-                    <nav className="navbar navbar-expand-sm" style={{ 'border-bottom-color': '#dfdbdb', 'padding': ' 1%', 'backgroundColor': 'white' }}>
+                    <nav className="navbar navbar-expand-sm" style={{ 'border-bottom-color': '', 'padding': ' 0%', 'backgroundColor': '#283e4a', "border-radius": "0px", marginBottom: "0px" }}>
                         <div className="container-fluid" >
-                            <div className="navbar-header">
-                                <img  src={linkedIn}></img>
-
-                                <a className="navbar-brand" id="mainHeading" href="/">Linked<span>in</span></a>
+                            <div className="navbar-header" style={{ marginTop: "10px", marginLeft: "8%" }}>
+                                <img src={linkedIn}></img>
                             </div>
                             <ul className="nav navbar-nav navbar-right">
                                 <li style={{ marginRight: "15px" }}>
-                                    <img alt="HomeAway birdhouse" src="//csvcus.homeaway.com/rsrcs/cdn-logos/2.10.6/bce/moniker/homeaway_us/birdhouse-bceheader.svg"></img>
+                                    <input type="text" name="session_key" className="login-email" autocapitalize="off" tabindex="1" id="login-email" placeholder="Email" autofocus="autofocus" dir="ltr"></input>
+
+                                </li>
+                                <li style={{ marginRight: "15px" }}>
+                                    <input type="password" name="session_password" class="login-password" id="login-password" aria-required="true" tabindex="1" placeholder="Password" dir="ltr"></input>
+                                </li>
+                                <li style={{ marginRight: "15px" }}>
+                                    <input tabindex="1" className="login-submit" type="submit" value="Sign in"></input>
+                                </li>
+                                <li style={{ marginRight: "15px" }}>
+                                    <a className="linkForgot">Forgot Password?</a>
                                 </li>
                             </ul>
                         </div>
                     </nav>
                 </div>
-                <div>
-                    <div style={{ 'text-align': 'center', "margin-top": "5%" }}>
-                        <div><span id="loginHeading">Log in to HomeAway</span></div>
-                        <div><span id="" style={{ 'color': '#666', 'font-size': '18px' }}>Need an account? <Link to={{ pathname: '/SignUp', state: { type: 'T' } }}><span style={{ color: '#2a6ebb' }}>Sign Up</span></Link></span></div>
-                    </div>
-                    <div>
-                        <div className="formProps">
-                            <form onSubmit={handleSubmit(this.onSubmit.bind(this))}>
+                <div className="login-background">
 
-                                <div className="padding5" style={{ "font-size": "25px" }}>Account login</div>
-                                <hr style={{ margin: '0px' }}></hr>
+                    <div style={{ paddingTop: "2%" }}>
+                        <div className="formProps">
+                            <form style={{ width: "100%" }} onSubmit={handleSubmit(this.onSubmit.bind(this))}>
+
+                                {/* <div>  */}
+                                <div className="form-title">Be great at what you do </div>
+                                <div className="form-subtitle">Get started - it's free. </div>
+                                {/* </div> */}
                                 {invalid}
                                 <Field
                                     name="email"
@@ -165,13 +176,11 @@ class Login extends Component {
 
 
                                 <div class="form-group padding5 " style={{ "marginBottom": '0px', "marginTop": "-5%" }}>
-                                    <span id="urlForgotPassword" style={{ "display": "none" }}>/forgotPassword?service=https%3A%2F%2Fwww.homeaway.com%2Fexp%2Fsso%2Fauth%3Flt%3Dtraveler%26context%3Ddef%26service%3D%252F</span>
-                                    <a href=""
-                                        id="forgotPasswordUrl" class="forgot-password">Forgot password?</a>
+                                    <div className="agreement">By clicking Join now, you agree to the LinkedIn User Agreement, Privacy Policy, and Cookie Policy.
+                                        </div>
                                 </div>
                                 <div class="form-group padding5" style={{ "marginBottom": '0px' }}>
-                                    <button type="submit" className="btn btn-primary  " value="Log In" id="loginButton" tabindex="4" >Login</button>
-                                    {/* <input type="submit" onClick={this.login} className="btn btn-primary  " value="Log In" id="loginButton" tabindex="4" /> */}
+                                    <button type="submit" className="btn btn-primary submitButton" value="Log In"  tabindex="4" >Join now</button>
                                     <div class="remember checkbox traveler">
                                         <label for="rememberMe">
                                             <input id="rememberMe" name="rememberMe" tabindex="3" checked="true" type="checkbox" value="true" /><input type="hidden" name="_rememberMe" value="on" />
