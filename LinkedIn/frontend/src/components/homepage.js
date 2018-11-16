@@ -2,13 +2,14 @@ import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
 import { Redirect } from 'react-router';
 import axios from 'axios';
-import {ROOT_URL} from '../constants/constants';
+import { ROOT_URL } from '../constants/constants';
 
-
+import linkedIn from '../assets/images/linkedIn.png'
 // import React, { Component } from "react";
 import { Field, reduxForm } from "redux-form";
 import { connect } from "react-redux";
 // import { login } from "../../actions";
+
 
 
 class Login extends Component {
@@ -65,7 +66,7 @@ class Login extends Component {
     onSubmit(values) {
         console.log(values);
         values.type = "T";
-        
+
 
         this.props.onSubmitHandle(values)
             .then(response => {
@@ -128,7 +129,9 @@ class Login extends Component {
                     <nav className="navbar navbar-expand-sm" style={{ 'border-bottom-color': '#dfdbdb', 'padding': ' 1%', 'backgroundColor': 'white' }}>
                         <div className="container-fluid" >
                             <div className="navbar-header">
-                                <a className="navbar-brand" id="mainHeading" href="/">HomeAway</a>
+                                <img  src={linkedIn}></img>
+
+                                <a className="navbar-brand" id="mainHeading" href="/">Linked<span>in</span></a>
                             </div>
                             <ul className="nav navbar-nav navbar-right">
                                 <li style={{ marginRight: "15px" }}>
@@ -153,15 +156,15 @@ class Login extends Component {
                                 <Field
                                     name="email"
                                     component={this.renderField}
-                                />                              
+                                />
 
                                 <Field
                                     name="password"
                                     component={this.renderFieldPassword}
-                                />                             
+                                />
 
 
-                                <div class="form-group padding5 " style={{ "marginBottom": '0px' ,"marginTop":"-5%"}}>
+                                <div class="form-group padding5 " style={{ "marginBottom": '0px', "marginTop": "-5%" }}>
                                     <span id="urlForgotPassword" style={{ "display": "none" }}>/forgotPassword?service=https%3A%2F%2Fwww.homeaway.com%2Fexp%2Fsso%2Fauth%3Flt%3Dtraveler%26context%3Ddef%26service%3D%252F</span>
                                     <a href=""
                                         id="forgotPasswordUrl" class="forgot-password">Forgot password?</a>
@@ -210,7 +213,7 @@ const mapStateToProps = state => {
 const mapDispatchStateToProps = dispatch => {
     return {
         onSubmitHandle: (data) => {
-            return axios.post( `${ROOT_URL}/login`, data, { withCredentials: true })
+            return axios.post(`${ROOT_URL}/login`, data, { withCredentials: true })
                 .then(response => {
                     if (response.data.status == 1) {
                         let res = {
