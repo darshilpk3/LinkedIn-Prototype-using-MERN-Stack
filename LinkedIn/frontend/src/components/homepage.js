@@ -32,9 +32,9 @@ class Login extends Component {
         const className = `form-group ${touched && error ? "has-danger" : ""}`;
 
         return (
-            <div className="padding5 " style={{ "margin-top": "10px" }}>
+            <div className="padding5 " style={{ "margin-top": "4px" }}>
                 <label for="reg-label" className="reg-label">First name</label>
-                <input type="text" className="inputFields" style={{width:"100%", padding:"0 8px"}} name="lastName" id="reg-lastname"  aria-required="true" tabindex="1" placeholder=""></input>
+                <input type="text" className="inputFields" style={{ width: "100%", padding: "0 8px" }} name="lastName" id="reg-lastname" aria-required="true" tabindex="1" placeholder=""></input>
                 {/* <input className="inputField" type="text" name="email"  {...field.input} placeholder="Email address"></input> */}
                 <span className="error">
                     {touched ? error : ""}
@@ -48,22 +48,42 @@ class Login extends Component {
     renderFieldPassword(field) {
         const { meta: { touched, error } } = field;
         const className = `form-group ${touched && error ? "has-danger" : ""}`;
-
         return (
-
             <div className="padding5 " style={{ "margin-top": "-10px" }}>
-                <label for="reg-label" className="reg-label">Last name</label>
-
+                <label for="reg-label" className="reg-label">Password (6 or more characters)</label>
                 <input className="inputFields" name="password"  {...field.input} type="password" placeholder=""></input>
                 <span className="error">
                     {touched ? error : ""}
                 </span>
-
             </div>
+        );
+    }
 
+    renderFieldLastName(field) {
+        const { meta: { touched, error } } = field;
+        const className = `form-group ${touched && error ? "has-danger" : ""}`;
+        return (
+            <div className="padding5 " style={{ "margin-top": "-10px" }}>
+                <label for="reg-label" className="reg-label">Last name</label>
+                <input className="inputFields" name="lastname"  {...field.input} type="text" placeholder=""></input>
+                <span className="error">
+                    {touched ? error : ""}
+                </span>
+            </div>
+        );
+    }
 
-
-
+    renderFieldEmail(field) {
+        const { meta: { touched, error } } = field;
+        const className = `form-group ${touched && error ? "has-danger" : ""}`;
+        return (
+            <div className="padding5 " style={{ "margin-top": "-10px" }}>
+                <label for="reg-label" className="reg-label">Email</label>
+                <input className="inputFields" name="email"  {...field.input} type="text" placeholder=""></input>
+                <span className="error">
+                    {touched ? error : ""}
+                </span>
+            </div>
         );
     }
 
@@ -170,24 +190,32 @@ class Login extends Component {
                                 />
 
                                 <Field
+                                    name="lastname"
+                                    component={this.renderFieldLastName}
+                                />
+                                <Field
+                                    name="email"
+                                    component={this.renderFieldEmail}
+                                />
+                                <Field
                                     name="password"
                                     component={this.renderFieldPassword}
                                 />
+                                
 
-
-                                <div class="form-group padding5 " style={{ "marginBottom": '0px', "marginTop": "-5%" }}>
+                                <div class="form-group padding5 " style={{ "marginBottom": '-14px', "marginTop": "-5%" }}>
                                     <div className="agreement">By clicking Join now, you agree to the LinkedIn User Agreement, Privacy Policy, and Cookie Policy.
                                         </div>
                                 </div>
                                 <div class="form-group padding5" style={{ "marginBottom": '0px' }}>
-                                    <button type="submit" className="btn btn-primary submitButton" value="Log In"  tabindex="4" >Join now</button>
-                                    <div class="remember checkbox traveler">
+                                    <button type="submit" className="btn btn-primary submitButton" value="Log In" tabindex="4" >Join now</button>
+                                    {/* <div class="remember checkbox traveler">
                                         <label for="rememberMe">
                                             <input id="rememberMe" name="rememberMe" tabindex="3" checked="true" type="checkbox" value="true" /><input type="hidden" name="_rememberMe" value="on" />
                                             Keep me signed in
                                 </label>
-                                    </div>
-                                </div>
+                                    </div>*/}
+                                </div> 
                             </form>
 
                         </div>
