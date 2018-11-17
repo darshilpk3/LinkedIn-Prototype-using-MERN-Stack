@@ -102,10 +102,10 @@ class myNetwork extends Component {
                                 </div>
                             </div> 
                             <div class="myadsborder"> 
-                                <p>About  Help Center   Privacy & Terms
-                                <br></br>Advertising   Business Services  
-                                <br></br>Get the LinkedIn app   More<br></br>
-                                LinkedIn Corporation © 2018</p>
+                                <a>About</a> <a> Help Center </a> <a> Privacy & Terms</a>
+                                <br></br><a>Advertising</a>  <a> Business Services</a>  
+                                <br></br><a>Get the LinkedIn app</a> <a>  More</a><br></br>
+                                <a>LinkedIn Corporation © 2018</a>
                             </div>
                         </div>
                         

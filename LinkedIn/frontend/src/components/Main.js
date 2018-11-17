@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { Route } from 'react-router-dom';
 import homepage from './homepage';
 import myNetwork from './myNetwork';
+import connections from './connections';
 
 
 class Main extends Component {
@@ -11,6 +12,7 @@ class Main extends Component {
                 
                 <Route exact path="/" component={homepage} />
                 <Route exact path="/myNetwork" component={myNetwork} />
+                <Route exact path="/connections" component={connections} />
                 {/* <Route path="/TravelerLogin" component={Login} /> */}
                 
             </div>
