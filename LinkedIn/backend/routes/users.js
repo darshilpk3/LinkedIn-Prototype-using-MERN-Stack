@@ -165,7 +165,8 @@ router.get("/:userId", async function(req,res,next){
       }
       res.end(JSON.stringify(data))
     })
-  } catch (error) {
+  } 
+  catch (error) {
     res.writeHead(400,{
       'Content-Type':'application/json'
     })
@@ -187,6 +188,64 @@ router.put("/:userId", async function(req, res, next){
     console.log("Request obtained is : ");
     console.log(JSON.stringify(req.body));
     var setUserId = req.params.userId;
+    try{
+      UserInfo.update(
+        { __id: setUserId },
+        {
+            fname: req.body.firstname,
+            lname: req.body.lastname,
+            headline : req.body.headline,
+            address : req.body.address,
+            city : req.body.city,
+            state : req.body.state,
+            country : req.body.country,
+            zipcode : req.body.zipcode,
+            contact : req.body.contact,
+        },
+        { upsert: true })
+        .exec()
+          .then(result => {
+            res.writeHead(200,{
+              'Content-Type':'application/json'
+            })
+            console.log("\nQuery executed successfully");
+            const data = {
+              "status":1,
+              "msg":"Successfully updated the user profile",
+              "info": result
+            }
+            res.end(JSON.stringify(data))
+          })
+          .catch(err => {
+            res.writeHead(200,{
+              'Content-Type':'application/json'
+            })
+            console.log("\nSome error occured");
+            const data = {
+              "status":0,
+              "msg":"No Such User",
+              "info": {
+                "error":err
+              } 
+            }
+            res.end(JSON.stringify(data))
+          })
+    }
+    catch (error) {
+      res.writeHead(400,{
+        'Content-Type':'application/json'
+      })
+      console.log("\nInside catch error");
+      const data = {
+        "status":0,
+          "msg":error,
+          "info": {
+            "error":error
+          }
+      }        
+      res.end(JSON.stringify(data))
+    }
+        
 })
 
 module.exports = router;
