@@ -5,7 +5,8 @@ import cookie from 'react-cookies';
 import { Link } from 'react-router-dom';
 import { Redirect } from 'react-router';*/
 
-import linkedIn from '../assets/images/linkedIn.png'
+
+import picDS from '../assets/images/PicDS.png'
 
 class connections extends Component {
     constructor(props) {
@@ -118,7 +119,7 @@ class connections extends Component {
                                     <hr></hr> 
                                     <div className="row">
                                         <div class="col-sm-2 col-md-2 col-lg-2" >
-                                            <img style={{ 'width':'200%', 'height':'200%' }}src="https://media.licdn.com/dms/image/C560EAQE3DIgmR7RzJQ/rightRail-logo-shrink_100_100/0?e=1542506400&v=beta&t=5r4XWxe4QD7cTD5GdunFLwkfTG6FlUEW3DaG6oq8PGQ"/>
+                                            <img style={{ 'width':'200%', 'height':'200%' }}src={picDS}/>
                                         </div>
                                         <div class="col-sm-10 col-md-10 col-lg-10" style={{'float':'left'}}>
                                             <a>Data Science masters</a>
