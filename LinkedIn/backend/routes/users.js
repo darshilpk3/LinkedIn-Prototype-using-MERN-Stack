@@ -3,6 +3,9 @@ var router = express.Router();
 var pool = require('../connections/mysql')
 var mysql = require('mysql')
 var bcrypt = require('bcryptjs')
+
+var {Users} = require('../models/userInfo');
+
 /* User Sign up */
 router.post('/', async function (req, res, next) {
 
@@ -68,7 +71,6 @@ router.post('/', async function (req, res, next) {
 
 /* User Login */
 router.post('/login', async function (req, res, next) {
-
 
   console.log('\n\nIn user login');
   console.log("Request Got: ", req.body)
@@ -136,4 +138,13 @@ router.post('/login', async function (req, res, next) {
 router.get("/:userId", async function(req,res,next){
 
 })
+
+router.put("/:userId", async function(req, res, next){
+
+    console.log("\nInside user profile updation");
+    console.log("Request obtained is : ");
+    console.log(JSON.stringify(req.body));
+    var setUserId = req.params.userId;
+})
+
 module.exports = router;
