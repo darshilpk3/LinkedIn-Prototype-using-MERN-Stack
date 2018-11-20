@@ -3,6 +3,10 @@ var router = express.Router();
 var pool = require('../connections/mysql')
 var mysql = require('mysql')
 var bcrypt = require('bcryptjs')
+var { User } = require('../models/userInfo');
+// var { mongoose } = require('../connections/mongo');
+
+
 /* User Sign up */
 router.post('/', async function (req, res, next) {
 
@@ -24,21 +28,61 @@ router.post('/', async function (req, res, next) {
         (err, result) => {
           if (result) {
             console.log("Successfully registered")
-            res.writeHead(200, {
-              'Content-Type': 'application/json'
+
+            //mongo query here
+
+            var user = new User({
+              fname: firstName,
+              lname: lastName,
+              type: user_type,
+              email: email,
+              password: pwd
             })
-            const data = {
-              "status": 1,
-              "msg": "Successfully Signed Up",
-              "info": {
-                "id": result.insertId,
-                "fullname": firstName + " " + lastName,
-                "type": type,
-                "email": email
+            console.log(`user ${user}`);
+
+            user.save().then(user => {
+              console.log("user created");
+              console.log(`user in then is ${user}`);
+
+              res.writeHead(200, {
+                'Content-Type': 'application/json'
+              })
+              const data = {
+                "status": 1,
+                "msg": "Successfully Signed Up",
+                "info": {
+                  "id": result.insertId,
+                  "fullname": firstName + " " + lastName,
+                  "type": type,
+                  "email": email
+                }
               }
-            }
-            console.log("data being sent to frontend:\n",JSON.stringify(data))
-            res.end(JSON.stringify(data))
+              console.log("data being sent to frontend:\n", JSON.stringify(data))
+              res.end(JSON.stringify(data))
+
+
+            }, (err) => {
+              console.log("__________err___________", err)
+              console.log(`Signup Failed in mongo`);
+              console.log("User already exists ", err.sqlMessage)
+              res.writeHead(200, {
+                'Content-Type': 'application/json'
+              })
+              const data = {
+                "status": 0,
+                "msg": "User already exists",
+                "info": {
+                  "error": err.sqlMessage
+                }
+              }
+              console.log("data being sent to frontend:\n", JSON.stringify(data))
+              res.end(JSON.stringify(data))
+
+
+            })
+
+
+
           } else if (err) {
             console.log("User already exists ", err.sqlMessage)
             res.writeHead(200, {
@@ -51,7 +95,7 @@ router.post('/', async function (req, res, next) {
                 "error": err.sqlMessage
               }
             }
-            console.log("data being sent to frontend:\n",JSON.stringify(data))
+            console.log("data being sent to frontend:\n", JSON.stringify(data))
             res.end(JSON.stringify(data))
           }
         })
@@ -64,6 +108,7 @@ router.post('/', async function (req, res, next) {
     }
 
   })
+
 });
 
 /* User Login */
@@ -97,7 +142,7 @@ router.post('/login', async function (req, res, next) {
                 "type": result[0].type
               }
             }
-            console.log("data being sent to frontend:\n",JSON.stringify(data))
+            console.log("data being sent to frontend:\n", JSON.stringify(data))
             res.end(JSON.stringify(data))
           } else if (err) {
             console.log("Some error in sql query", err.sqlMessage)
@@ -117,7 +162,7 @@ router.post('/login', async function (req, res, next) {
               "msg": "Error in login,Incorrect  password",
               "info": {}
             }
-            console.log("data being sent to frontend:\n",JSON.stringify(data))
+            console.log("data being sent to frontend:\n", JSON.stringify(data))
             res.end(JSON.stringify(data))
 
           }
@@ -133,7 +178,11 @@ router.post('/login', async function (req, res, next) {
   })
 });
 
-router.get("/:userId", async function(req,res,next){
+router.get("/:userId", async function (req, res, next) {
 
 })
+
+
+
+
 module.exports = router;
