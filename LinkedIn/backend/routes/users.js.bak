@@ -2,9 +2,15 @@ var express = require('express');
 var router = express.Router();
 var pool = require('../connections/mysql')
 var mysql = require('mysql')
-var { User } = require('../models/userInfo');
 var bcrypt = require('bcryptjs')
+<<<<<<< HEAD
+var { User } = require('../models/userInfo');
+// var { mongoose } = require('../connections/mongo');
+
+
+=======
 var UserInfo = require('../models/userInfo').users
+>>>>>>> development
 /* User Sign up */
 router.post('/', async function (req, res, next) {
 
@@ -176,6 +182,15 @@ router.post('/login', async function (req, res, next) {
   })
 });
 
+<<<<<<< HEAD
+router.get("/:userId", async function (req, res, next) {
+
+})
+
+
+
+
+=======
 router.get("/:userId", async function(req,res,next){
   try {
     UserInfo.findById(req.params.userId)
@@ -223,7 +238,5 @@ router.get("/:userId", async function(req,res,next){
   
 })
 
-
-
-
+>>>>>>> development
 module.exports = router;
