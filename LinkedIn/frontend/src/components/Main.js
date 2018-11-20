@@ -5,6 +5,7 @@ import myNetwork from './myNetwork';
 import connections from './connections'; 
 import savedJobs from './savedJobs';
 import appliedJobs from './appliedJobs';
+import messaging from './messaging';
 
 
 class Main extends Component {
@@ -16,8 +17,9 @@ class Main extends Component {
                 <Route exact path="/connections" component={connections} /> 
                 <Route exact path="/savedJobs" component={savedJobs} /> 
                 <Route exact path="/appliedJobs" component={appliedJobs} /> 
+                <Route exact path="/messaging" component={messaging} /> 
                 {/* <Route path="/TravelerLogin" component={Login} /> */}
-                
+                    
             </div>
         )
     }
