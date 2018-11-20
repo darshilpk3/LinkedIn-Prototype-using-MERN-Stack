@@ -3,7 +3,6 @@ var router = express.Router();
 var pool = require('../connections/mysql')
 var mysql = require('mysql')
 var bcrypt = require('bcryptjs')
-
 /* User Sign up */
 router.post('/', async function (req, res, next) {
 
@@ -134,4 +133,7 @@ router.post('/login', async function (req, res, next) {
   })
 });
 
+router.get("/:userId", async function(req,res,next){
+
+})
 module.exports = router;

@@ -6,7 +6,7 @@ var users= mongoose.model('users',{
         required: true,
         unique:true
     },
-    password : {
+    type : {
         type : String,
         required: true
     },
@@ -18,7 +18,6 @@ var users= mongoose.model('users',{
         type : String,
         required: true
     }
-    
 })
 
 module.exports = {users};
