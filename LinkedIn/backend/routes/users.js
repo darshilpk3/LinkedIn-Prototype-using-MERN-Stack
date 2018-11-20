@@ -2,7 +2,7 @@ var express = require('express');
 var router = express.Router();
 var pool = require('../connections/mysql')
 var mysql = require('mysql')
-var { User } = require('../models/userInfo');
+//var { User } = require('../models/userInfo');
 var bcrypt = require('bcryptjs')
 var UserInfo = require('../models/userInfo').users
 /* User Sign up */
@@ -29,18 +29,18 @@ router.post('/', async function (req, res, next) {
 
             //mongo query here
 
-            var user = new User({
+            var user = new UserInfo({
               fname: firstName,
               lname: lastName,
-              type: user_type,
+              type: type,
               email: email,
               password: pwd
             })
             console.log(`user ${user}`);
 
             user.save().then(user => {
-              console.log("user created");
-              console.log(`user in then is ${user}`);
+              console.log("user created in mongo");
+              // console.log(`user in then is ${user}`);
 
               res.writeHead(200, {
                 'Content-Type': 'application/json'

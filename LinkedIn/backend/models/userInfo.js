@@ -1,8 +1,8 @@
 var mongoose =require('mongoose');
 
-var experience_schema = require('./experienceInfo');
-var education_scheme = require('./educationInfo');
-var connection_schema = require('./connectionInfo')
+var experience_schema = require('./experienceInfo').experience
+var education_scheme = require('./educationInfo').education
+var connection_schema = require('./connectionInfo').connectionInfo
 
 var users= mongoose.model('Users',{
     email : {
@@ -41,7 +41,7 @@ var users= mongoose.model('Users',{
         type : String
     },
     job_current : {
-        type : 'json'
+        type : JSON
     },
     experience : [experience_schema],
     education : [education_scheme],
