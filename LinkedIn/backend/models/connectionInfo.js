@@ -1,6 +1,6 @@
 var mongoose = require('mongoose');
 
-var connectionInfo = mongoose.Schema('connection', {
+var connectionInfo = mongoose.Schema({
     request_by: {
         type: mongoose.Schema.Types.ObjectId,
         required: true,
@@ -8,9 +8,6 @@ var connectionInfo = mongoose.Schema('connection', {
     request_to: {
         type: mongoose.Schema.Types.ObjectId,
         required: true
-    },
-    status: {
-        type:boolean
     }
 
 })
