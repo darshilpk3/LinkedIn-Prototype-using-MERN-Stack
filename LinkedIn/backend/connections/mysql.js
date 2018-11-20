@@ -11,5 +11,4 @@ var pool = mysql.createPool({
 //    database: 'linkedin'
 })
 
-
 module.exports = pool;

@@ -128,13 +128,12 @@ router.post('/login', async function (req, res, next) {
       })
       res.end("Connection Refused")
     }
-
   })
 });
 
 router.get("/:userId", async function(req,res,next){
   try {
-    UserInfo.findById(req.params.userId)
+  UserInfo.findById(req.params.userId)
   .populate('jobs_applied')
   .populate('jobs_posted')
   .populate('jobs_saved')
@@ -176,13 +175,57 @@ router.get("/:userId", async function(req,res,next){
     }        
     res.end(JSON.stringify(data))
   }
-  
 })
 
 router.delete("/user/:userID", async function(req,res,next){
   console.log('\n\nIn user Delete');
-  console.log("Request Got: ", req.body)
-  const userID = req.body.userID;
-})
+  console.log("Request Got: ", req.body);
 
+  try {
+
+  UserInfo.deleteOne( { "_id" : req.params.userID } )
+  .exec()
+    .then(result => {
+      console.log("\nSuccessfully deleted");
+
+      res.writeHead(200,{
+        'Content-Type':'application/json'
+      })
+      const data = {
+        "status":1,
+        "msg":"Successfully deleted",
+        "info": result
+      }
+      res.end(JSON.stringify(data))
+    })
+    .catch(err => {
+      console.log("\nNo Such User");
+      res.writeHead(200,{
+        'Content-Type':'application/json'
+      })
+      const data = {
+        "status":0,
+        "msg":"No Such User",
+        "info": {
+          "error":err
+        } 
+      }
+      res.end(JSON.stringify(data))
+    })
+  } catch (error) {
+    console.log("\nError in query.");
+    
+    res.writeHead(400,{
+      'Content-Type':'application/json'
+    })
+    const data = {
+      "status":0,
+        "msg":error,
+        "info": {
+          "error":error
+        }
+    }        
+    res.end(JSON.stringify(data))
+  }
+})
 module.exports = router;
