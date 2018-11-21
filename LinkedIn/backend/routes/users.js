@@ -2,6 +2,10 @@ var express = require('express');
 var router = express.Router();
 var pool = require('../connections/mysql')
 var mysql = require('mysql')
+var mongoose = require('mongoose');
+
+
+
 //var { User } = require('../models/userInfo');
 var bcrypt = require('bcryptjs')
 var UserInfo = require('../models/userInfo').users
@@ -176,54 +180,53 @@ router.post('/login', async function (req, res, next) {
   })
 });
 
-router.get("/:userId", async function(req,res,next){
+
+router.get("/:userId", async function (req, res, next) {
   try {
     UserInfo.findById(req.params.userId)
-  .populate('jobs_applied')
-  .populate('jobs_posted')
-  .populate('jobs_saved')
-  .exec()
-    .then(result => {
-      res.writeHead(200,{
-        'Content-Type':'application/json'
+      .populate('jobs_applied')
+      .populate('jobs_posted')
+      .populate('jobs_saved')
+      .exec()
+      .then(result => {
+        res.writeHead(200, {
+          'Content-Type': 'application/json'
+        })
+        const data = {
+          "status": 1,
+          "msg": "Successfully fetched",
+          "info": result
+        }
+        res.end(JSON.stringify(data))
       })
-      const data = {
-        "status":1,
-        "msg":"Successfully fetched",
-        "info": result
-      }
-      res.end(JSON.stringify(data))
-    })
-    .catch(err => {
-      res.writeHead(200,{
-        'Content-Type':'application/json'
+      .catch(err => {
+        res.writeHead(200, {
+          'Content-Type': 'application/json'
+        })
+        const data = {
+          "status": 0,
+          "msg": "No Such User",
+          "info": {
+            "error": err
+          }
+        }
+        res.end(JSON.stringify(data))
       })
-      const data = {
-        "status":0,
-        "msg":"No Such User",
-        "info": {
-          "error":err
-        } 
-      }
-      res.end(JSON.stringify(data))
-    })
   } catch (error) {
-    res.writeHead(400,{
-      'Content-Type':'application/json'
+    res.writeHead(400, {
+      'Content-Type': 'application/json'
     })
     const data = {
-      "status":0,
-        "msg":error,
-        "info": {
-          "error":error
-        }
-    }        
+      "status": 0,
+      "msg": error,
+      "info": {
+        "error": error
+      }
+    }
     res.end(JSON.stringify(data))
   }
-  
+
 })
-
-
 
 
 module.exports = router;
