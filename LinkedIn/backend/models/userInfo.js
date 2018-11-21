@@ -21,6 +21,9 @@ var users= mongoose.model('Users',{
         type : String,
         required: true
     },
+    headline : {
+        type : String
+    },
     address : {
         type : String
     },
