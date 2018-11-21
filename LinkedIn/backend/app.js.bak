@@ -32,7 +32,10 @@ mongoose.connect(mongo.url,{
 
 app.use('/', indexRouter);
 app.use('/user', usersRouter);
+<<<<<<< HEAD
+=======
 app.use('/job',jobsRouter)
+>>>>>>> development
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

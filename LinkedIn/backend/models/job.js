@@ -25,7 +25,7 @@ var job= mongoose.Schema({
         required:true
     },
     jobFunction:{
-        type:String
+          type:String
     },
     companyLogo:{
         type:String
