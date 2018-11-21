@@ -5,6 +5,8 @@ var mysql = require('mysql')
 //var { User } = require('../models/userInfo');
 var bcrypt = require('bcryptjs')
 var UserInfo = require('../models/userInfo').users
+ 
+
 /* User Sign up */
 router.post('/', async function (req, res, next) {
 
@@ -27,7 +29,6 @@ router.post('/', async function (req, res, next) {
             console.log("Successfully registered")
 
             //mongo query here
-
             var user = new UserInfo({
               fname: firstName,
               lname: lastName,
@@ -77,8 +78,6 @@ router.post('/', async function (req, res, next) {
 
 
             })
-
-
 
           } else if (err) {
             console.log("User already exists ", err.sqlMessage)
@@ -219,29 +218,119 @@ router.get("/:userId", async function(req,res,next){
   }
 })
 
-router.delete("/user/:userID", async function(req,res,next){
+router.delete("/:userID", async function(req,res,next){
   console.log('\n\nIn user Delete');
   console.log("Request Got: ", req.body);
+  const email = req.body.email;
+  const userID = req.params.userID;
 
+  pool.getConnection((
+    err, connection) => {
+    if (connection) {
+      console.log("Connection obtained")
+      const sql = "DELETE FROM userinfo WHERE email="+mysql.escape(email);
+      console.log("\nSQL QUERY: " + sql);
+      connection.query(sql,
+        (err, result) => {
+          if (result) {
+            console.log("Successfully deleted from MySQL");
+            //mongo query here
+            try {
+              UserInfo.deleteOne( { "_id" : userID } )
+              .exec()
+                .then(result => {
+                  console.log("\nSuccessfully deleted from MongoDB");
+            
+                  res.writeHead(200,{
+                    'Content-Type':'application/json'
+                  })
+                  const data = {
+                    "status":1,
+                    "msg":"Successfully deleted",
+                    "info": result
+                  }
+                  res.end(JSON.stringify(data))
+                })
+                .catch(err => {
+                  console.log("\nNo Such User");
+                  res.writeHead(200,{
+                    'Content-Type':'application/json'
+                  })
+                  const data = {
+                    "status":0,
+                    "msg":"No Such User",
+                    "info": {
+                      "error":err
+                    } 
+                  }
+                  res.end(JSON.stringify(data))
+                })
+              } catch (error) {
+                console.log("\nError in query.");
+                
+                res.writeHead(400,{
+                  'Content-Type':'application/json'
+                })
+                const data = {
+                  "status":0,
+                    "msg":error,
+                    "info": {
+                      "error":error
+                    }
+                }        
+                res.end(JSON.stringify(data))
+              }
+
+          } else if (err) {
+            console.log("User already exists ", err.sqlMessage)
+            res.writeHead(200, {
+              'Content-Type': 'application/json'
+            })
+            const data = {
+              "status": 0,
+              "msg": "User already exists",
+              "info": {
+                "error": err.sqlMessage
+              }
+            }
+            console.log("data being sent to frontend:\n", JSON.stringify(data))
+            res.end(JSON.stringify(data))
+          }
+        })
+    } else {
+      console.log("Connection Refused ", err)
+      res.writeHead(400, {
+        'Content-Type': 'text/plain'
+      })
+      res.end("Connection Refused")
+    }
+
+  })
+
+});
+
+router.post("/:userID/apply", async function(req,res,next){
+  console.log("Inside post apply of job.")
+  const jobId = req.body.job_id
   try {
-
-  UserInfo.deleteOne( { "_id" : req.params.userID } )
+  UserInfo.findByIdAndUpdate(req.params.userID,{
+    $push:{
+      jobs_applied:jobId
+    }    
+  })
   .exec()
     .then(result => {
-      console.log("\nSuccessfully deleted");
-
       res.writeHead(200,{
         'Content-Type':'application/json'
       })
       const data = {
         "status":1,
-        "msg":"Successfully deleted",
+        "msg":"Successfully applied to the job",
         "info": result
       }
       res.end(JSON.stringify(data))
     })
     .catch(err => {
-      console.log("\nNo Such User");
       res.writeHead(200,{
         'Content-Type':'application/json'
       })
@@ -255,8 +344,6 @@ router.delete("/user/:userID", async function(req,res,next){
       res.end(JSON.stringify(data))
     })
   } catch (error) {
-    console.log("\nError in query.");
-    
     res.writeHead(400,{
       'Content-Type':'application/json'
     })
@@ -270,4 +357,154 @@ router.delete("/user/:userID", async function(req,res,next){
     res.end(JSON.stringify(data))
   }
 })
+
+router.post("/:userID/save", async function(req,res,next){
+  console.log("Inside post of job save.")
+  const jobId = req.body.job_id
+  const userID = req.params.userID
+  try {
+  UserInfo.findByIdAndUpdate(userID,{
+    $push:{
+      jobs_saved:jobId
+    }    
+  })
+  .exec()
+    .then(result => {
+      res.writeHead(200,{
+        'Content-Type':'application/json'
+      })
+      const data = {
+        "status":1,
+        "msg":"Successfully saved the job",
+        "info": result
+      }
+      res.end(JSON.stringify(data))
+    })
+    .catch(err => {
+      res.writeHead(200,{
+        'Content-Type':'application/json'
+      })
+      const data = {
+        "status":0,
+        "msg":"No Such User",
+        "info": {
+          "error":err
+        } 
+      }
+      res.end(JSON.stringify(data))
+    })
+  } catch (error) {
+    res.writeHead(400,{
+      'Content-Type':'application/json'
+    })
+    const data = {
+      "status":0,
+        "msg":error,
+        "info": {
+          "error":error
+        }
+    }        
+    res.end(JSON.stringify(data))
+  }
+})
+
+///////////////////////////YET TO CHECK/////////////////////////////
+router.get("/:userID/joblist", async function(req,res,next){
+  console.log("Inside get joblist.") 
+  const userID = req.params.userID
+
+  try {
+  UserInfo.findById(userID)
+  .populate('jobs_posted')
+  .exec()
+    .then(result => {
+      console.log("The received result is : ", result);
+      res.writeHead(200,{
+        'Content-Type':'application/json'
+      })
+      const data = {
+        "status":1,
+        "msg":"Successfully saved the job",
+        "info": result
+      }
+      res.end(JSON.stringify(data))
+    })
+    .catch(err => {
+      res.writeHead(200,{
+        'Content-Type':'application/json'
+      })
+      const data = {
+        "status":0,
+        "msg":"No Such User",
+        "info": {
+          "error":err
+        } 
+      }
+      res.end(JSON.stringify(data))
+    })
+  } catch (error) {
+    res.writeHead(400,{
+      'Content-Type':'application/json'
+    })
+    const data = {
+      "status":0,
+        "msg":error,
+        "info": {
+          "error":error
+        }
+    }        
+    res.end(JSON.stringify(data))
+  }
+})
+
+router.get("/:jobID", async function(req,res,next){
+  console.log("Inside get joblist.") 
+  const jobID = req.params.jobID
+
+  try {
+  UserInfo.findById(jobID,
+    {jobs_posted: 1}
+  )
+   
+  .exec()
+    .then(result => {
+      console.log("The received result is : ", result);
+      res.writeHead(200,{
+        'Content-Type':'application/json'
+      })
+      const data = {
+        "status":1,
+        "msg":"Successfully saved the job",
+        "info": result
+      }
+      res.end(JSON.stringify(data))
+    })
+    .catch(err => {
+      res.writeHead(200,{
+        'Content-Type':'application/json'
+      })
+      const data = {
+        "status":0,
+        "msg":"No Such User",
+        "info": {
+          "error":err
+        } 
+      }
+      res.end(JSON.stringify(data))
+    })
+  } catch (error) {
+    res.writeHead(400,{
+      'Content-Type':'application/json'
+    })
+    const data = {
+      "status":0,
+        "msg":error,
+        "info": {
+          "error":error
+        }
+    }        
+    res.end(JSON.stringify(data))
+  }
+})
+
 module.exports = router;
