@@ -5,7 +5,7 @@ var mysql = require('mysql')
 //var { User } = require('../models/userInfo');
 var bcrypt = require('bcryptjs')
 var UserInfo = require('../models/userInfo').users
-
+var Job = require('../models/job')
 /* User Sign up */
 router.post('/', async function (req, res, next) {
 
@@ -69,7 +69,7 @@ router.post('/', async function (req, res, next) {
               })
               const data = {
                 "status": 0,
-                "msg": "User already exists",
+                "msg": err.sqlMessage,
                 "info": {
                   "error": err.sqlMessage
                 }
@@ -177,51 +177,52 @@ router.post('/login', async function (req, res, next) {
 });
 
 router.get("/:userId", async function(req,res,next){
-  try {
     UserInfo.findById(req.params.userId)
   .populate('jobs_applied')
   .populate('jobs_posted')
   .populate('jobs_saved')
   .exec()
-    .then(result => {
-      res.writeHead(200,{
-        'Content-Type':'application/json'
-      })
-      const data = {
-        "status":1,
-        "msg":"Successfully fetched",
-        "info": result
+    .then((result,err) => {
+      if(err){
+        res.writeHead(200,{
+          'Content-Type':'application/json'
+        })
+        const data = {
+          "status":0,
+          "msg":"No Such User",
+          "info": {
+            "error":err
+          }
+        }
+        res.end(JSON.stringify(data))  
+      }else{
+        console.log("Result obtained:",result)
+        res.writeHead(200,{
+          'Content-Type':'application/json'
+        })
+        const data = {
+          "status":1,
+          "msg":"Successfully fetched",
+          "info": {
+            "result":result
+          }
+        }
+        res.end(JSON.stringify(data))
       }
-      res.end(JSON.stringify(data))
     })
     .catch(err => {
-      res.writeHead(200,{
+      res.writeHead(400,{
         'Content-Type':'application/json'
       })
       const data = {
         "status":0,
-        "msg":"No Such User",
+        "msg":"Backend Error",
         "info": {
           "error":err
         } 
       }
       res.end(JSON.stringify(data))
     })
-  } 
-  catch (error) {
-    res.writeHead(400,{
-      'Content-Type':'application/json'
-    })
-    const data = {
-      "status":0,
-        "msg":error,
-        "info": {
-          "error":error
-        }
-    }        
-    res.end(JSON.stringify(data))
-  }
-  
 })
 
 router.put("/:userId", async function(req, res, next){
