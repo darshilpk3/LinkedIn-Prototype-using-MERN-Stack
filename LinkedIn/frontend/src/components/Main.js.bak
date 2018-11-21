@@ -13,7 +13,7 @@ class Main extends Component {
     render() {
         return (
             <div>
-				<Route exact path="/navbar" component={navbar} />
+<Route exact path="/navbar" component={navbar} />
                 <Route exact path="/" component={homepage} />
                 <Route exact path="/myNetwork" component={myNetwork} />
                 <Route exact path="/connections" component={connections} /> 
