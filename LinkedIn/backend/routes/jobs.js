@@ -82,5 +82,38 @@ router.post("/", async function (req, res, next) {
             res.end(JSON.stringify(data))
         })
 })
+ 
+router.get("/:jobID", async function(req,res,next){
+    console.log("Inside get joblist.") 
+    const jobID = req.params.jobID
+  
+    Job.find({"_id":jobID})
+    .exec()
+      .then(result => {
+        console.log("The received result is : ", result);
+        res.writeHead(200,{
+          'Content-Type':'application/json'
+        })
+        const data = {
+          "status":1,
+          "msg":"Successfully got job details",
+          "info": result
+        }
+        res.end(JSON.stringify(data))
+      })
+      .catch(err => {
+        res.writeHead(200,{
+          'Content-Type':'application/json'
+        })
+        const data = {
+          "status":0,
+          "msg":"No Such User",
+          "info": {
+            "error":err
+          } 
+        }
+        res.end(JSON.stringify(data))
+      })
+  })
 
 module.exports = router;

@@ -170,7 +170,7 @@ router.post('/login', async function (req, res, next) {
     }
   })
 });
-
+////////////////////////ADDED BY DEVU////////////////////////////////
 router.delete("/:userID", async function(req,res,next){
   console.log('\n\nIn user Delete');
   console.log("Request Got: ", req.body);
@@ -361,7 +361,6 @@ router.post("/:userID/save", async function(req,res,next){
   }
 })
 
-///////////////////////////YET TO CHECK/////////////////////////////
 router.get("/:userID/joblist", async function(req,res,next){
   console.log("Inside get joblist.") 
   const userID = req.params.userID
@@ -377,7 +376,7 @@ router.get("/:userID/joblist", async function(req,res,next){
       })
       const data = {
         "status":1,
-        "msg":"Successfully saved the job",
+        "msg":"Successfully obtained Job List",
         "info": result
       }
       res.end(JSON.stringify(data))
@@ -410,55 +409,7 @@ router.get("/:userID/joblist", async function(req,res,next){
   }
 })
 
-router.get("/:jobID", async function(req,res,next){
-  console.log("Inside get joblist.") 
-  const jobID = req.params.jobID
-
-  try {
-  UserInfo.findById(jobID,
-    {jobs_posted: 1}
-  )
-   
-  .exec()
-    .then(result => {
-      console.log("The received result is : ", result);
-      res.writeHead(200,{
-        'Content-Type':'application/json'
-      })
-      const data = {
-        "status":1,
-        "msg":"Successfully saved the job",
-        "info": result
-      }
-      res.end(JSON.stringify(data))
-    })
-    .catch(err => {
-      res.writeHead(200,{
-        'Content-Type':'application/json'
-      })
-      const data = {
-        "status":0,
-        "msg":"No Such User",
-        "info": {
-          "error":err
-        } 
-      }
-      res.end(JSON.stringify(data))
-    })
-  } catch (error) {
-    res.writeHead(400,{
-      'Content-Type':'application/json'
-    })
-    const data = {
-      "status":0,
-        "msg":error,
-        "info": {
-          "error":error
-        }
-    }        
-    res.end(JSON.stringify(data))
-  }
-})
+//////////////////////////////End - Devu code/////////////////////////////////
 
 router.get("/:userId", async function(req,res,next){
     UserInfo.findById(req.params.userId)
