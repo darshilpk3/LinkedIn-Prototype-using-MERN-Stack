@@ -57,6 +57,11 @@ router.post('/', async function (req, res, next) {
                   "email": email
                 }
               }
+<<<<<<< HEAD
+            }
+            console.log("data being sent to frontend:\n", JSON.stringify(data))
+            res.end(JSON.stringify(data))
+=======
               console.log("data being sent to frontend:\n", JSON.stringify(data))
               res.end(JSON.stringify(data))
 
@@ -83,6 +88,7 @@ router.post('/', async function (req, res, next) {
 
 
 
+>>>>>>> development
           } else if (err) {
             console.log("User already exists ", err.sqlMessage)
             res.writeHead(200, {
