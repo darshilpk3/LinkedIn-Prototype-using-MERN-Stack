@@ -13,11 +13,11 @@ var education= mongoose.Schema({
     degree : {
         type : String
     },
-    feild_of_study : {
-        type : Date
+    field_of_study : {
+        type : String
     },
     description : {
-        type : Date
+        type : String
     }
 })
 

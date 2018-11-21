@@ -25,7 +25,7 @@ var job= mongoose.Schema({
         required:true
     },
     jobFunction:{
-        type:String
+          type:String
     },
     companyLogo:{
         type:String
@@ -49,8 +49,6 @@ var job= mongoose.Schema({
             ref:'Users'
         }
     ]
-
-    
 })
 
 module.exports = mongoose.model('Job',job);
