@@ -83,4 +83,64 @@ router.post("/", async function (req, res, next) {
         })
 })
 
+router.post("/search", async function(req, res, next){
+
+    console.log("\nInside the search request for jobs");
+    console.log("Request obtained is : ");
+    console.log(JSON.stringify(req.body));
+
+    var searched_job_title = req.body.job_title
+    var searched_job_location = req.body.location
+
+    var splitted = searched_job_title.split(" ");
+    console.log(splitted);
+
+    Job.find({
+    //   jobTitle : {$regex : "/.*" + searched_job_title + ".*/i"},
+      jobTitle : {$regex : "^(.*" + "React" + ".*" + "Developer" + ".*)$"},      
+      location : searched_job_location
+    })
+    .then((result,err) => {
+        if(err){
+          res.writeHead(200,{
+            'Content-Type':'application/json'
+          })
+          const data = {
+            "status":0,
+            "msg":"No Such Data found",
+            "info": {
+              "error":err
+            }
+          }
+          res.end(JSON.stringify(data))  
+        }else{
+          console.log("Result obtained after the search query: \n",result)
+          res.writeHead(200,{
+            'Content-Type':'application/json'
+          })
+          const data = {
+            "status":1,
+            "msg":"Successfully fetched the search results",
+            "info": {
+              "result":result
+            }
+          }
+          res.end(JSON.stringify(data))
+        }
+    })
+    .catch(err => {
+        res.writeHead(400,{
+          'Content-Type':'application/json'
+        })
+        const data = {
+          "status":0,
+          "msg":"Backend Error",
+          "info": {
+            "error":err
+          } 
+        }
+        res.end(JSON.stringify(data))
+    })
+})
+
 module.exports = router;

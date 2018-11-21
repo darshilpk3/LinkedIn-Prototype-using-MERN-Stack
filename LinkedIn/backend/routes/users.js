@@ -328,19 +328,4 @@ router.put("/:userId", async function(req, res, next){
         
 })
 
-router.post("/search", async function(req, res, next){
-
-    console.log("\nInside the search request for jobs");
-    console.log("Request obtained is : ");
-    console.log(JSON.stringify(req.body));
-
-    var searched_job_title = req.body.job_title
-    var searched_job_location = req.body.location
-
-    UserInfo.find({
-      jobTitle : {$regex : ".*" + searched_job_title + ".*"},
-      location : searched_job_location
-    })
-})
-
 module.exports = router;
