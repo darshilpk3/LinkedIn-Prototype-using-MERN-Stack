@@ -113,7 +113,6 @@ router.post('/', async function (req, res, next) {
 /* User Login */
 router.post('/login', async function (req, res, next) {
 
-
   console.log('\n\nIn user login');
   console.log("Request Got: ", req.body)
   const email = req.body.email
@@ -226,33 +225,107 @@ router.get("/:userId", async function(req,res,next){
     })
 })
 
-router.put("/:userId", async function(req,res,next){
-  const userId = req.params.userId
-  const email = req.body.email
-  const fname = req.body.fname
-  const lname = req.body.lname
-  const experience = req.body.experience
-  const education = req.body.education
+router.put("/:userId", async function(req, res, next){
 
-  console.log(experience," experience is")
-  console.log(education," education is")
-  UserInfo.findByIdAndUpdate(userId,{
-      email:email,
-      fname:fname,
-      lname:lname,
-      $push:{
-        education:education,
-        experience:experience
-      }
-    }).exec()
-      .then(result => {
-        console.log(result)
-        res.send(200,JSON.stringify(result))
+    console.log("\nInside user profile updation");
+    console.log("Request obtained is : ");
+    console.log(JSON.stringify(req.body));
+
+    var setUserId = req.params.userId;
+
+    var firstname = req.body.fname
+    var lastname = req.body.lname
+    var headline = req.body.headline
+    var address = req.body.address
+    var city = req.body.city
+    var state = req.body.state
+    var country = req.body.country
+    var zipcode = req.body.zipcode
+    var contact = req.body.contact
+    var profile_summary = req.body.profile_summary
+    var resume_file = req.body.resume
+
+    var currentJobDetails = {
+      title : req.body.current_title,
+      company : req.body.current_company,
+      location : req.body.current_location,
+      start_workDate : req.body.start_workDate,
+      end_workDate : req.body.end_workDate,
+      description : req.body.current_description
+    }
+
+    var education_data = req.body.education_data
+    var experience_data = req.body.experience_data
+    var skills_data = req.body.skills_data
+
+    try{
+      UserInfo.findByIdAndUpdate(setUserId,
+        {
+          $set:{
+            fname: firstname,
+            lname: lastname,
+            headline : headline,
+            address : address,
+            city : city,
+            state : state,
+            country : country,
+            zipcode : zipcode,
+            contact : contact,
+            profile_summary : profile_summary,
+            resume : resume_file,
+            job_current : currentJobDetails,
+          },
+          $push : {
+            education : education_data,
+            experience : experience_data,
+            skills : skills_data
+          }
+        },
+        { upsert: true })
+        .exec()
+          .then(result => {
+            res.writeHead(200,{
+              'Content-Type':'application/json'
+            })
+            console.log("\nQuery executed successfully");
+            const data = {
+              "status":1,
+              "msg":"Successfully updated the user profile",
+              "info": result
+            }
+            res.end(JSON.stringify(data))
+          })
+          .catch(err => {
+            res.writeHead(200,{
+              'Content-Type':'application/json'
+            })
+            console.log("\nSome error occured in query execution");
+          
+            const data = {
+              "status":0,
+              "msg":"No Such User",
+              "info": {
+                "error":err
+              } 
+            }
+            res.end(JSON.stringify(data))
+          })
+    }
+    catch (error) {
+      res.writeHead(400,{
+        'Content-Type':'application/json'
       })
-      .catch(err => {
-        console.log(err)
-        res.send(400,JSON.stringify(err))
-      })
+      console.log("\nInside catch error");
+      const data = {
+        "status":0,
+          "msg":error,
+          "info": {
+            "error":error
+          }
+      }        
+      res.end(JSON.stringify(data))
+    }
+        
 })
 
 module.exports = router;
