@@ -229,20 +229,56 @@ router.put("/:userId", async function(req, res, next){
     console.log("\nInside user profile updation");
     console.log("Request obtained is : ");
     console.log(JSON.stringify(req.body));
+
     var setUserId = req.params.userId;
+
+    var firstname = req.body.fname
+    var lastname = req.body.lname
+    var headline = req.body.headline
+    var address = req.body.address
+    var city = req.body.city
+    var state = req.body.state
+    var country = req.body.country
+    var zipcode = req.body.zipcode
+    var contact = req.body.contact
+    var profile_summary = req.body.profile_summary
+    var resume_file = req.body.resume
+
+    var currentJobDetails = {
+      title : req.body.current_title,
+      company : req.body.current_company,
+      location : req.body.current_location,
+      start_workDate : req.body.start_workDate,
+      end_workDate : req.body.end_workDate,
+      description : req.body.current_description
+    }
+
+    var education_data = req.body.education_data
+    var experience_data = req.body.experience_data
+    var skills_data = req.body.skills_data
+
     try{
-      UserInfo.update(
-        { __id: setUserId },
+      UserInfo.findByIdAndUpdate(setUserId,
         {
-            fname: req.body.firstname,
-            lname: req.body.lastname,
-            headline : req.body.headline,
-            address : req.body.address,
-            city : req.body.city,
-            state : req.body.state,
-            country : req.body.country,
-            zipcode : req.body.zipcode,
-            contact : req.body.contact,
+          $set:{
+            fname: firstname,
+            lname: lastname,
+            headline : headline,
+            address : address,
+            city : city,
+            state : state,
+            country : country,
+            zipcode : zipcode,
+            contact : contact,
+            profile_summary : profile_summary,
+            resume : resume_file,
+            job_current : currentJobDetails,
+          },
+          $push : {
+            education : education_data,
+            experience : experience_data,
+            skills : skills_data
+          }
         },
         { upsert: true })
         .exec()
@@ -262,7 +298,8 @@ router.put("/:userId", async function(req, res, next){
             res.writeHead(200,{
               'Content-Type':'application/json'
             })
-            console.log("\nSome error occured");
+            console.log("\nSome error occured in query execution");
+          
             const data = {
               "status":0,
               "msg":"No Such User",
