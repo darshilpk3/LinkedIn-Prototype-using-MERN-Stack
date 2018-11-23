@@ -49,8 +49,6 @@ var job= mongoose.Schema({
             ref:'Users'
         }
     ]
-
-    
 })
 
 module.exports = mongoose.model('Job',job);
