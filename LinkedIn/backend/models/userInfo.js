@@ -73,7 +73,11 @@ var users= mongoose.model('Users',{
             type: mongoose.Schema.Types.ObjectId,
             ref: 'Job'
         }
-    ]  
+    ],
+    applications : [{
+        type:mongoose.Schema.Types.ObjectId,
+        ref: 'Application'
+    }]  
 })
 
 // mongoose.model('Users',users);

@@ -6,7 +6,7 @@ var mysql = require('mysql')
 var bcrypt = require('bcryptjs')
 var UserInfo = require('../models/userInfo').users
 var Job = require('../models/job')
-
+var Application = require('../models/application')
 
 router.post("/", async function (req, res, next) {
     const posted_by = req.body.posted_by
@@ -83,4 +83,27 @@ router.post("/", async function (req, res, next) {
         })
 })
 
+
+// Get all the applications of all the jobs listed by the User
+router.get("/applications/:userId",async function(req,res,next){
+    const userId = req.params.userId
+    Job.find({
+        postedBy : userId
+    }).populate({
+        path:'applications',
+        model:'Application',
+        populate : {
+            path:'applicant',
+            model:'Users'
+        }
+    }).exec()
+        .then(result => {
+            console.log("Populated Result is: ",result)
+            res.send(200,"Populated Result is: "+result)
+        })
+        .catch(error => {
+            console.log("Error is ",error)
+            res.send(200,"Error is: "+error)
+        })   
+})
 module.exports = router;

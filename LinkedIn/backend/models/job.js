@@ -36,6 +36,15 @@ var job= mongoose.Schema({
             ref:'Users'
         }
     ],
+    skills:{
+        type:Array
+    },
+    applications:[
+        {
+            type:mongoose.Schema.Types.ObjectId,
+            ref:'Application'
+        }
+    ],
     noOfViews:{
         type:Number
     },
