@@ -17,7 +17,7 @@ var education= mongoose.Schema({
     field_of_study : {
 =======
     feild_of_study : {
->>>>>>> development
+>>>>>>> sanjna
         type : String
     },
     description : {

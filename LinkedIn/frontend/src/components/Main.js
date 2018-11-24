@@ -9,6 +9,9 @@ import navbar from './navbar';
 import homepage from './homepage';
 import Profilelocation from './profilelocation';
 import Newsfeed from './newsfeed';
+import UserDelete from './userdelete';
+import JobPosting from './jobposting';
+import JobSearch from './jobsearch';
 
 class Main extends Component {
     render() {
@@ -20,14 +23,14 @@ class Main extends Component {
                 <Route exact path="/savedJobs" component={savedJobs} /> 
                 <Route exact path="/appliedJobs" component={appliedJobs} /> 
                 <Route exact path="/messaging" component={messaging} />                 
-				
-                
 				<Route exact path="/navbar" component={navbar} />
                 <Route exact path="/" component={homepage} />
                 <Route exact path="/profilelocation" component={Profilelocation} />
                 <Route exact path="/newsfeed" component={Newsfeed} />
+                <Route exact path="/user/delete" component={UserDelete} />
+                <Route exact path="/job/post" component={JobPosting} />
+                <Route exact path="/jobs/" component={JobSearch} />
                 {/* <Route path="/TravelerLogin" component={Login} /> */}
-
 
             </div>
         )
