@@ -2,6 +2,10 @@ var express = require('express');
 var router = express.Router();
 var pool = require('../connections/mysql')
 var mysql = require('mysql')
+var mongoose = require('mongoose');
+
+
+
 //var { User } = require('../models/userInfo');
 var bcrypt = require('bcryptjs')
 var UserInfo = require('../models/userInfo').users

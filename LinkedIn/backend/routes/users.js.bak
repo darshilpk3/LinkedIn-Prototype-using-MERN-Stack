@@ -2,14 +2,14 @@ var express = require('express');
 var router = express.Router();
 var pool = require('../connections/mysql')
 var mysql = require('mysql')
+var mongoose = require('mongoose');
+
+
+
 //var { User } = require('../models/userInfo');
 var bcrypt = require('bcryptjs')
 var UserInfo = require('../models/userInfo').users
-<<<<<<< HEAD
 var Job = require('../models/job')
-=======
-
->>>>>>> development
 /* User Sign up */
 router.post('/', async function (req, res, next) {
 
@@ -180,6 +180,55 @@ router.post('/login', async function (req, res, next) {
   })
 });
 
+<<<<<<< HEAD
+
+router.get("/:userId", async function (req, res, next) {
+  try {
+    UserInfo.findById(req.params.userId)
+      .populate('jobs_applied')
+      .populate('jobs_posted')
+      .populate('jobs_saved')
+      .exec()
+      .then(result => {
+        res.writeHead(200, {
+          'Content-Type': 'application/json'
+        })
+        const data = {
+          "status": 1,
+          "msg": "Successfully fetched",
+          "info": result
+        }
+        res.end(JSON.stringify(data))
+      })
+      .catch(err => {
+        res.writeHead(200, {
+          'Content-Type': 'application/json'
+        })
+        const data = {
+          "status": 0,
+          "msg": "No Such User",
+          "info": {
+            "error": err
+          }
+        }
+        res.end(JSON.stringify(data))
+      })
+  } catch (error) {
+    res.writeHead(400, {
+      'Content-Type': 'application/json'
+    })
+    const data = {
+      "status": 0,
+      "msg": error,
+      "info": {
+        "error": error
+      }
+    }
+    res.end(JSON.stringify(data))
+  }
+
+})
+=======
 router.get("/:userId", async function(req,res,next){
     UserInfo.findById(req.params.userId)
   .populate('jobs_applied')
@@ -227,52 +276,6 @@ router.get("/:userId", async function(req,res,next){
       }
       res.end(JSON.stringify(data))
     })
-<<<<<<< HEAD
-})
-
-router.put("/:userId", async function(req,res,next){
-  const userId = req.params.userId
-  const email = req.body.email
-  const fname = req.body.fname
-  const lname = req.body.lname
-  const experience = req.body.experience
-  const education = req.body.education
-
-  console.log(experience," experience is")
-  console.log(education," education is")
-  UserInfo.findByIdAndUpdate(userId,{
-      email:email,
-      fname:fname,
-      lname:lname,
-      $push:{
-        education:education,
-        experience:experience
-      }
-    }).exec()
-      .then(result => {
-        console.log(result)
-        res.send(200,JSON.stringify(result))
-      })
-      .catch(err => {
-        console.log(err)
-        res.send(400,JSON.stringify(err))
-      })
-=======
-  } 
-  catch (error) {
-    res.writeHead(400,{
-      'Content-Type':'application/json'
-    })
-    const data = {
-      "status":0,
-        "msg":error,
-        "info": {
-          "error":error
-        }
-    }        
-    res.end(JSON.stringify(data))
-  }
-  
 })
 
 router.put("/:userId", async function(req, res, next){
@@ -307,6 +310,7 @@ router.put("/:userId", async function(req, res, next){
     var education_data = req.body.education_data
     var experience_data = req.body.experience_data
     var skills_data = req.body.skills_data
+>>>>>>> development
 
     try{
       UserInfo.findByIdAndUpdate(setUserId,
@@ -376,7 +380,6 @@ router.put("/:userId", async function(req, res, next){
       res.end(JSON.stringify(data))
     }
         
->>>>>>> development
 })
 
 module.exports = router;
