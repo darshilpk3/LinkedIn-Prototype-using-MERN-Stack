@@ -4,7 +4,7 @@ import { Redirect } from 'react-router';
 import axios from 'axios';
 import { ROOT_URL } from '../constants/constants';
 
-import linkedIn from '../assets/images/linkedIn_only_in.png'
+import defaultPic from '../assets/images/default-profile-pic.png'
 // import React, { Component } from "react";
 import { Field, reduxForm } from "redux-form";
 import { connect } from "react-redux";
@@ -158,63 +158,106 @@ class Login extends Component {
 
                             </div>
                             <div className="navbar-header" style={{ marginLeft: "10px" }}>
-                                <input type="text" name="session_key" className="login-email" autocapitalize="off" tabindex="1" id="login-email" placeholder="Search" autofocus="autofocus" dir="ltr"></input>
+                                <input type="text" name="session_key" style={{ paddingLeft: "20px" }} className="login-email" autocapitalize="off" tabindex="1" id="login-email" placeholder="Search" autofocus="autofocus" dir="ltr"></input>
+                                <i className="ion-ios-search" style={{ marginLeft: "-217px " }}></i>
                             </div>
 
-                            <ul className="nav navbar-nav navbar-right" style={{textAlign:"center"}}>
-                                <li style={{ marginRight: "15px" }}>
-                                    <div> 
-                                    
+                            <ul className="nav navbar-nav navbar-right" style={{ textAlign: "center", marginRight: "8%" }}>
+                                <li style={{ margin: "0px 15px 0px 15px" }}>
+                                    <div>
+
                                         {/* <i className="ion-ios-home-outline" style={{ 'margin-right': '7px', color: "#c7d1d8", fontSize:"24px" }}></i> */}
-                                        <i className="ion-home" style={{ 'margin-right': '7px', color: "#c7d1d8", fontSize:"24px" }}></i>
-                                    </div> 
+                                        <i className="ion-home" style={{ 'margin-right': '7px', color: "#c7d1d8", fontSize: "24px" }}></i>
+                                    </div>
                                     <div>
                                         <span className="icons_nav" style={{ color: "#c7d1d8" }}>Home</span>
                                     </div>
                                 </li>
-                                <li style={{ marginRight: "15px" }}>
-                                    <i className="ion-ios-people" style={{ 'margin-right': '7px', color: "#c7d1d8" , fontSize:"24px"}}></i>
+                                <li style={{ margin: "0px 15px 0px 15px" }}>
+                                    <i className="ion-person-stalker" style={{ 'margin-right': '7px', color: "#c7d1d8", fontSize: "24px" }}></i>
                                     <div>
                                         <span className="icons_nav" style={{ color: "#c7d1d8" }}>My Network</span>
                                     </div>
                                 </li>
-                                <li style={{ marginRight: "15px" }}>
-                                    {/* <i class="fa fa-briefcase" style={{ 'margin-right': '7px', color: "#c7d1d8" , fontSize:"24px"}} aria-hidden="true"></i> */}
-                                    
-                                    <i className="ion-ios-briefcase-outline" style={{ 'margin-right': '7px', color: "#c7d1d8", fontSize:"24px" }}></i>
-
+                                <li style={{ margin: "0px 15px 0px 15px" }}>
+                                    <i className="ion-ios-briefcase" style={{ 'margin-right': '7px', color: "#c7d1d8", fontSize: "24px" }}></i>
                                     <div>
                                         <span className="icons_nav" style={{ color: "#c7d1d8" }}>Jobs</span>
                                     </div>
                                 </li>
-                                <li style={{ marginRight: "15px" }}>
-                                    <i className="ion-ios-chatboxes-outline " style={{ 'margin-right': '7px', color: "#c7d1d8", fontSize:"24px" }}></i>
-                                    {/* <i className="ion-android-chat" style={{ 'margin-right': '7px', color: "#c7d1d8" }}></i> */}
+                                <li style={{ margin: "0px 15px 0px 15px" }}>
+                                    <i className="ion-android-chat" style={{ 'margin-right': '7px', color: "#c7d1d8", fontSize: "24px" }}></i>
                                     <div>
                                         <span className="icons_nav" style={{ color: "#c7d1d8" }}>Messaging</span>
                                     </div>
                                 </li>
-                                <li style={{ marginRight: "15px" }}>
-                                    <i className="ion-ios-bell-outline" style={{ 'margin-right': '7px', color: "#c7d1d8" , fontSize:"24px"}}></i>
-                                    {/* <i className="ion-ios-bell-outline" style={{ 'margin-right': '7px', color: "#c7d1d8" }}></i> */}
+                                <li style={{ margin: "0px 15px 0px 15px" }}>
+                                    <i className="ion-ios-bell" style={{ 'margin-right': '7px', color: "#c7d1d8", fontSize: "24px" }}></i>
                                     <div>
                                         <span className="icons_nav" style={{ color: "#c7d1d8" }}>Notifications</span>
                                     </div>
                                 </li>
-                                <li style={{ marginRight: "15px" }}>
+                                <li style={{ margin: "0px 15px 0px 15px" }} className="dropdown" >
+                                    <img className="profileImg" src={defaultPic} />
+                                    <div>
+                                        <a className="icons_nav dropdown-toggle" data-toggle="dropdown" style={{ color: "#c7d1d8" }}>Me<span class="caret"></span></a>
+                                        <ul className="dropdown-menu" style={{    minWidth: "277px"}}>
+                                            <li id="">
+                                                <a>
+                                                    <div>
+                                                        <img className="profileImg_dropBox" src={defaultPic} />
+                                                        <span>
+                                                            <span style={{ marginLeft: "14px" }} className="dropdown_head">SJSU STUDENT
+                                                            </span>
+                                                        </span>
+                                                    </div>
+                                                    <div className="info" style={{textAlign:"center", marginTop:"10px"}}>
+                                                        <span >
+                                                            view profile
+                                                        </span>
+                                                    </div>
+                                                </a>
+                                            </li>
+                                            <li style={{padding:"10px",backgroundColor:"#f3f6f8",fontWeight:"600"}}>
+                                                ACCOUNT
+                                            </li>
+                                            <li style={{padding:"15px",color: "#828282",fontWeight:"600"}}>
+                                                Settings and Privacy
+                                            </li>
+                                            <li style={{padding:"15px",color: "#828282",fontWeight:"600"}}>
+                                                Help Center
+                                            </li>
+                                            <li style={{padding:"15px",color: "#828282",fontWeight:"600"}}>
+                                                Language
+                                            </li>
 
-                                    <i className="ion-android-apps" style={{ 'margin-right': '7px', color: "#c7d1d8" , fontSize:"24px"}}></i>
+                                            <li style={{padding:"10px",backgroundColor:"#f3f6f8",fontWeight:"600"}}>
+                                                MANAGE
+                                            </li>
+                                            <li style={{padding:"15px",color: "#828282",fontWeight:"600"}}>
+                                                Posts and Activity
+                                            </li>
+                                            <li style={{padding:"15px",color: "#828282",fontWeight:"600"}}>
+                                                Job postings
+                                            </li>
+                                            <li style={{padding:"15px",color: "#828282",fontWeight:"600"}}>
+                                                Sign out
+                                            </li>
+                                        </ul>
+                                    </div>
 
-                                    {/* <i class="fa fa-th" aria-hidden="true" style={{ 'margin-right': '7px', color: "#c7d1d8" , fontSize:"24px"}}></i> */}
+                                </li>
+
+
+                                <li style={{ margin: "0px 15px 0px 15px", borderLeft: " 1px solid #5c6f7c", paddingLeft: "30px" }}>
+                                    <i className="ion-android-apps" style={{ 'margin-right': '7px', color: "#c7d1d8", fontSize: "24px" }}></i>
                                     <div>
                                         <span className="icons_nav" style={{ color: "#c7d1d8" }}>Work</span>
                                     </div>
                                 </li>
-                                <li style={{ marginRight: "15px" }}>
+                                <li style={{ margin: "0px 15px 0px 15px" }}>
 
-                                    <i className="ion-android-apps" style={{ 'margin-right': '7px', color: "#c7d1d8" , fontSize:"24px"}}></i>
-
-                                    {/* <i class="fa fa-th" aria-hidden="true" style={{ 'margin-right': '7px', color: "#c7d1d8" , fontSize:"24px"}}></i> */}
+                                    <i className="ion-android-apps" style={{ 'margin-right': '7px', color: "#c7d1d8", fontSize: "24px" }}></i>
                                     <div>
                                         <span className="icons_nav" style={{ color: "#c7d1d8" }}>Post a job</span>
                                     </div>
@@ -223,8 +266,8 @@ class Login extends Component {
                         </div>
                     </nav>
                 </div>
-               
-               </div>
+
+            </div>
         )
     }
 }

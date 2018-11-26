@@ -361,3 +361,47 @@
     color: #c7d1d8;
     transition: color .3s;
 }
+
+.profileImg{
+    width: 27px;
+    height: 27px;
+    margin-top: 6px;
+    margin-bottom: 1px;
+
+}
+
+.profileImg_dropBox{
+    width: 56px;
+    height: 56px;
+    margin-top: 6px;
+    margin-bottom: 1px;
+    box-shadow: 0 2px 5px rgba(0,0,0,.15);
+    border: 2px solid transparent;
+    border-radius: 49.9%;
+}
+
+
+
+.dropdown_head{font-weight: 600;
+    font-size: 13px;
+    line-height: 1.5;
+}
+
+
+.info{
+    text-align: center;
+    padding: 8px;
+    margin-top: 10px;
+    /* background: #e5f5fc; */
+    color: #036298;
+    font-weight: 500;
+}
+
+.info:hover{
+    text-align: center;
+    padding: 8px;
+    margin-top: 10px;
+    background: #e5f5fc;
+    color: #036298;
+    font-weight: 500;
+}
