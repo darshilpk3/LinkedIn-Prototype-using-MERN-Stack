@@ -20,8 +20,6 @@ class Main extends Component {
                 <Route exact path="/savedJobs" component={savedJobs} /> 
                 <Route exact path="/appliedJobs" component={appliedJobs} /> 
                 <Route exact path="/messaging" component={messaging} /> 
-
-
             </div>
         )
     }

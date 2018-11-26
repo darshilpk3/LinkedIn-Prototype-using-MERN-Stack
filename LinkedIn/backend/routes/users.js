@@ -229,56 +229,52 @@ router.get("/:userId", async function (req, res, next) {
 
 router.put("/:userId", async function (req, res, next) {
 
-  req.params.userId
 
+  console.log("\n\n in requesting connection");
+  console.log("request:", req.body);
+  console.log(req.params.userId)
+  const data = {
+    request_by: req.params.userId,
+    request_to: req.body.userId
+  }
   try {
     UserInfo.update({
       _id: req.body.userId
     }, {
         $push: {
 
-          received_connections:[{
-            request_by: req.params.userId,
-            request_to: req.body.userId
-          }],
+          received_connections: [data],
         }
       }, async function (err, resp) {
 
 
-        console.log(err);
-        console.log(resp)
+        if (err) {
+          console.log("error:")
+          console.log(err)
+          res.writeHead(400, {
+            'Content-Type': 'application/json'
+          })
+          const data = {
+            "status": 0,
+            "msg": error,
+            "info": {
+              "error": error
+            }
+          }
+          res.end(JSON.stringify(data))
+        } else if (resp) {
+          console.log("Successfully requested")
+          res.writeHead(200, {
+            'Content-Type': 'application/json'
+          })
+          const data = {
+            "status": 1,
+            "msg": "Successfully requested",
+            "info": {}
+          }
+          res.end(JSON.stringify(data))
+        }
       })
-
-
-
-
-
-
-
-    // .then(result => {
-    //   res.writeHead(200, {
-    //     'Content-Type': 'application/json'
-    //   })
-    //   const data = {
-    //     "status": 1,
-    //     "msg": "Successfully fetched",
-    //     "info": result
-    //   }
-    //   res.end(JSON.stringify(data))
-    // })
-    // .catch(err => {
-    //   res.writeHead(200, {
-    //     'Content-Type': 'application/json'
-    //   })
-    //   const data = {
-    //     "status": 0,
-    //     "msg": "No Such User",
-    //     "info": {
-    //       "error": err
-    //     }
-    //   }
-    //   res.end(JSON.stringify(data))
-    // })
   } catch (error) {
     res.writeHead(400, {
       'Content-Type': 'application/json'

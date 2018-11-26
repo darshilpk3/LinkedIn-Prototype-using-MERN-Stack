@@ -337,3 +337,27 @@
     font-size: 17px;
   */
 }
+
+.linkedIn{
+    margin-right: 7px;
+    font-weight: 700;
+    line-height: 1;
+    width: 36px;
+    font-size: 31px;
+    height: 34px;
+    margin: 8px 4px 10px 0;
+    padding-left: 4px;
+    color: white;
+    border-radius: 1px;
+    background-color: #0077b5;
+}
+
+
+.icons_nav{
+    font-size: 1.2rem;
+    line-height: 1.33333;
+    font-weight: 400;
+    display: block;
+    color: #c7d1d8;
+    transition: color .3s;
+}
