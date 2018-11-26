@@ -85,30 +85,7 @@ router.post("/", async function (req, res, next) {
         })
 })
 
-<<<<<<< HEAD
 
-// Get all the applications of all the jobs listed by the User
-router.get("/applications/:userId",async function(req,res,next){
-    const userId = req.params.userId
-    Job.find({
-        postedBy : userId
-    }).populate({
-        path:'applications',
-        model:'Application',
-        populate : {
-            path:'applicant',
-            model:'Users'
-        }
-    }).exec()
-        .then(result => {
-            console.log("Populated Result is: ",result)
-            res.send(200,"Populated Result is: "+result)
-        })
-        .catch(error => {
-            console.log("Error is ",error)
-            res.send(200,"Error is: "+error)
-        })   
-=======
 router.get("/:jobID", async function (req, res, next) {
     console.log("Inside get joblist.")
     const jobID = req.params.jobID
@@ -279,6 +256,6 @@ router.put("/:jobId", async function(req, res, next){
         }
         res.end(JSON.stringify(data))
     })
->>>>>>> development
+
 })
 module.exports = router;
