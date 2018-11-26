@@ -25,15 +25,18 @@ var job= mongoose.Schema({
         required:true
     },
     jobFunction:{
-        type:String
+          type:String
     },
+    required_skills:[{
+        type:String
+    }],
     companyLogo:{
         type:String
     },
-    applicants:[
+    applications:[
         {
             type:mongoose.Schema.Types.ObjectId,
-            ref:'Users'
+            ref:'Application'
         }
     ],
     noOfViews:{
@@ -49,8 +52,6 @@ var job= mongoose.Schema({
             ref:'Users'
         }
     ]
-
-    
 })
 
 module.exports = mongoose.model('Job',job);

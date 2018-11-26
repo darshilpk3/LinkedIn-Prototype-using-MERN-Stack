@@ -2,7 +2,6 @@ var mongoose =require('mongoose');
 
 var experience_schema = require('./experienceInfo').experience
 var education_scheme = require('./educationInfo').education
-var connection_schema = require('./connectionInfo').connectionInfo
 
 var users= mongoose.model('Users',{
     email : {
@@ -21,6 +20,9 @@ var users= mongoose.model('Users',{
     type : {
         type : String,
         required: true
+    },
+    headline : {
+        type : String
     },
     address : {
         type : String
@@ -54,12 +56,10 @@ var users= mongoose.model('Users',{
     resume : {
         type : String
     },
-    connections : [connection_schema],
-    received_connections : [connection_schema],
     jobs_applied : [
         {
             type: mongoose.Schema.Types.ObjectId,
-            ref: 'Job'
+            ref: 'Application'
         }
     ],
     jobs_posted : [
