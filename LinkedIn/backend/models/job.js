@@ -27,13 +27,16 @@ var job= mongoose.Schema({
     jobFunction:{
           type:String
     },
+    required_skills:[{
+        type:String
+    }],
     companyLogo:{
         type:String
     },
-    applicants:[
+    applications:[
         {
             type:mongoose.Schema.Types.ObjectId,
-            ref:'Users'
+            ref:'Application'
         }
     ],
     noOfViews:{

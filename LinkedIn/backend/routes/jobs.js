@@ -17,6 +17,7 @@ router.post("/", async function (req, res, next) {
     const postedDate = req.body.postedDate
     const location = req.body.location
     const jobFunction = req.body.jobFunction
+    const required_skills = req.body.required_skills
 
     const newJob = new Job({
         posted_by: posted_by,
@@ -26,7 +27,8 @@ router.post("/", async function (req, res, next) {
         employmentType: employmentType,
         postedDate: postedDate,
         location: location,
-        jobFunction: jobFunction
+        jobFunction: jobFunction,
+        required_skills : required_skills
     })
     newJob.save()
         .then((jobResult, err) => {
@@ -135,7 +137,8 @@ router.post("/search", async function(req, res, next){
     regex_str = regex_str + ")$";
 
     Job.find({
-      jobTitle : {$regex : regex_str},     
+    //   jobTitle : {$regex : regex_str}, 
+      $or : [ {jobTitle : {$regex : regex_str}}, {required_skills : {$regex : regex_str}} ],    
       location : searched_job_location
     })
     .then((result,err) => {
@@ -152,7 +155,8 @@ router.post("/search", async function(req, res, next){
           }
           res.end(JSON.stringify(data))  
         }else{
-          console.log("Result obtained after the search query: \n",result)
+        //   console.log("Result obtained after the search query: \n",result)
+          console.log("Search query executed successfully");
           res.writeHead(200,{
             'Content-Type':'application/json'
           })

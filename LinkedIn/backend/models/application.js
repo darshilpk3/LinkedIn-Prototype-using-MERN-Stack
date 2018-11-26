@@ -6,7 +6,8 @@ var application= mongoose.Schema({
         ref:'Users'
     }],
     job:[{
-        type:mongoose.Schema.Types.ObjectId
+        type:mongoose.Schema.Types.ObjectId,
+        ref : 'Job'
     }],
     howDidYouHear:{
         type:String
@@ -14,12 +15,12 @@ var application= mongoose.Schema({
     isDisabled : {
         type:Boolean
     },
-    Ethnicity:{
+    resume : {
+        type:String
+    },
+    ethnicity:{
         type:String
     }
 })
 
-module.exports = mongoose.Schema('Application',application)
-
-
-module.exports = {connections};
+module.exports = mongoose.model('Application',application)
