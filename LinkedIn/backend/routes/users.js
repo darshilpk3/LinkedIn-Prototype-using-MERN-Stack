@@ -319,7 +319,7 @@ router.post("/:userID/save", async function (req, res, next) {
   console.log("Inside post of job save.")
   const jobId = req.body.job_id
   const userID = req.params.userID
-  try {
+  
     UserInfo.findByIdAndUpdate(userID, {
       $push: {
         jobs_saved: jobId
@@ -327,15 +327,38 @@ router.post("/:userID/save", async function (req, res, next) {
     })
       .exec()
       .then(result => {
-        res.writeHead(200, {
-          'Content-Type': 'application/json'
+
+        Job.findByIdAndUpdate(jobId, {
+          $push: {
+            jobSaved: userID
+          }
         })
-        const data = {
-          "status": 1,
-          "msg": "Successfully saved the job",
-          "info": result
-        }
-        res.end(JSON.stringify(data))
+          .exec()
+          .then(result => {
+            res.writeHead(200, {
+              'Content-Type': 'application/json'
+            })
+            const data = {
+              "status": 1,
+              "msg": "Successfully saved userid to job",
+              "info": result
+            }
+            res.end(JSON.stringify(data))
+
+          })
+          .catch(err => {
+            res.writeHead(200, {
+              'Content-Type': 'application/json'
+            })
+            const data = {
+              "status": 0,
+              "msg": "No Such User",
+              "info": {
+                "error": err
+              }
+            }
+            res.end(JSON.stringify(data))
+          })
       })
       .catch(err => {
         res.writeHead(200, {
@@ -350,20 +373,7 @@ router.post("/:userID/save", async function (req, res, next) {
         }
         res.end(JSON.stringify(data))
       })
-  } catch (error) {
-    res.writeHead(400, {
-      'Content-Type': 'application/json'
-    })
-    const data = {
-      "status": 0,
-      "msg": error,
-      "info": {
-        "error": error
-      }
-    }
-    res.end(JSON.stringify(data))
-  }
-})
+  })
 
 router.get("/:userID/joblist", async function (req, res, next) {
   console.log("Inside get joblist.")
