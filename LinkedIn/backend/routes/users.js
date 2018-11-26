@@ -10,6 +10,35 @@ var mongoose = require('mongoose');
 var bcrypt = require('bcryptjs')
 var UserInfo = require('../models/userInfo').users
 var Job = require('../models/job')
+
+const redis = require('redis');
+const client = redis.createClient();
+
+var redisClient = require('redis').createClient;
+var redis1 = redisClient(6379, 'localhost');
+
+
+
+// create redis middleware
+let redisMiddleware = (req, res, next) => {
+  let key = "__expIress__" + req.originalUrl || req.url;
+  console.log("redis call")
+  client.get(key, function (err, reply) {
+    if (reply) {
+      console.log("____reply____", reply)
+      res.send(reply);
+    } else {
+      res.sendResponse = res.send;
+      res.send = (body) => {
+        client.set(key, JSON.stringify(body));
+        res.sendResponse(body);
+      }
+      next();
+    }
+  });
+};
+
+
 /* User Sign up */
 router.post('/', async function (req, res, next) {
 
@@ -110,13 +139,82 @@ router.post('/', async function (req, res, next) {
 
 });
 
-/* User Login */
-router.post('/login', async function (req, res, next) {
+// /* User Login */
+// router.post('/login', async function (req, res, next) {
+
+//   console.log('\n\nIn user login');
+//   console.log("Request Got: ", req.body)
+//   const email = req.body.email
+//   const pwd = req.body.pwd;
+
+//   pool.getConnection((
+//     err, connection) => {
+//     if (connection) {
+//       console.log("Connection obtained for Login")
+//       const sql = "select * from userinfo WHERE email = " + mysql.escape(email);
+//       connection.query(sql,
+//         (err, result) => {
+//           const password = bcrypt.compareSync(pwd, result[0].pwd);
+//           if (result && password) {
+//             console.log("Successfully Logged In")
+//             res.writeHead(200, {
+//               'Content-Type': 'application/json'
+//             })
+//             const data = {
+//               "status": 1,
+//               "msg": "Successfully Logged In",
+//               "info": {
+//                 "fullname": result[0].firstName + " " + result[0].lastName,
+//                 "email": email,
+//                 "type": result[0].type
+//               }
+//             }
+//             console.log("data being sent to frontend:\n", JSON.stringify(data))
+//             res.end(JSON.stringify(data))
+//           } else if (err) {
+//             console.log("Some error in sql query", err.sqlMessage)
+//             res.writeHead(400, {
+//               'Content-Type': 'application/json'
+//             })
+
+//             res.end("some error in sql query")
+//           } else {
+//             //password doesn't match
+//             console.log("Password doesn't match!")
+//             res.writeHead(200, {
+//               'Content-Type': 'application/json'
+//             })
+//             const data = {
+//               "status": 0,
+//               "msg": "Error in login,Incorrect  password",
+//               "info": {}
+//             }
+//             console.log("data being sent to frontend:\n", JSON.stringify(data))
+//             res.end(JSON.stringify(data))
+
+//           }
+//         })
+//     } else {
+//       console.log("Connection Refused ", err)
+//       res.writeHead(400, {
+//         'Content-Type': 'text/plain'
+//       })
+//       res.end("Connection Refused")
+//     }
+//   })
+// });
+
+//____________redis cache of sql____________
+
+
+// /* User Login */
+router.post('/login', redisMiddleware, async function (req, res, next) {
 
   console.log('\n\nIn user login');
   console.log("Request Got: ", req.body)
   const email = req.body.email
   const pwd = req.body.pwd;
+  console.log("_______pwd_______", pwd)
 
   pool.getConnection((
     err, connection) => {
@@ -125,6 +223,7 @@ router.post('/login', async function (req, res, next) {
       const sql = "select * from userinfo WHERE email = " + mysql.escape(email);
       connection.query(sql,
         (err, result) => {
+          console.log("______result______", result);
           const password = bcrypt.compareSync(pwd, result[0].pwd);
           if (result && password) {
             console.log("Successfully Logged In")
@@ -174,6 +273,187 @@ router.post('/login', async function (req, res, next) {
     }
   })
 });
+
+
+
+/**
+ * get all jobs listed by that user
+ */
+getAllJobsPostedByUser_Caching = function (UserInfo, redis1, userID, callback) {
+  redis1.get(userID, function (err, reply) {
+    if (err) callback(null);
+    else if (reply) {
+      console.log("___________________________from cache_______________________________")
+      callback(JSON.parse(reply));
+    } //user exists in cache
+
+    else {
+      //user doesn't exist in cache - we need to query the main database
+      // const userID = req.params.userID
+
+      try {
+        UserInfo.findById(userID)
+          .populate('jobs_posted')
+          .exec()
+          .then(result => {
+            console.log("The received result is : ", result);
+            // res.writeHead(200, {
+            //   'Content-Type': 'application/json'
+            // })
+            const data = {
+              "status": 1,
+              "msg": "Successfully obtained Job List",
+              "info": result
+            }
+            // res.end(JSON.stringify(data))
+
+            redis1.set(userID, JSON.stringify(data), function () {
+              console.log("_____________setting in cache_________________ ")
+              callback(data);
+            });
+          })
+          .catch(err => {
+            // res.writeHead(200, {
+            //   'Content-Type': 'application/json'
+            // })
+            const data = {
+              "status": 0,
+              "msg": "No Such User",
+              "info": {
+                "error": err
+              }
+            }
+            // res.end(JSON.stringify(data))
+            callback(data);
+          })
+      } catch (error) {
+        // res.writeHead(400, {
+        //   'Content-Type': 'application/json'
+        // })
+        // const data = {
+        //   "status": 0,
+        //   "msg": error,
+        //   "info": {
+        //     "error": error
+        //   }
+        // }
+        // res.end(JSON.stringify(data))
+        callback(null);
+      }
+
+
+
+
+
+      // db.collection('text').findOne({
+      //     userID: userID
+      // }, function (err, doc) {
+      //     if (err || !doc) callback(null);
+      //     else {
+      //       //Book found in database, save to cache and
+      //        // return to client
+      //         redis.set(userID, JSON.stringify(doc), function () {
+      //             callback(doc);
+      //         });
+      //     }
+      // });
+
+    }
+  });
+};
+
+router.get("/:userID/joblist", async function (req, res, next) {
+  console.log("Inside get joblist. og ")
+  const userID = req.params.userID
+
+  if (!userID) {
+    // res.status(400).send("Please send a proper userID");
+    res.writeHead(200, {
+      'Content-Type': 'application/json'
+    })
+    const data = {
+      "status": 0,
+      "msg": "No Such User",
+      "info": {
+        "error": err
+      }
+    }
+    res.end(JSON.stringify(data))
+  }
+  else {
+    getAllJobsPostedByUser_Caching(UserInfo, redis1, req.params.userID, function (book) {
+      if (!userID) {
+        res.status(500).send("Server error");
+      }
+      else {
+        // res.status(200).send(book);
+        res.writeHead(200, {
+          'Content-Type': 'application/json'
+        })
+        console.log("__________book________________-", book)
+        // const data = {
+        //   "status": 1,
+        //   "msg": "Successfully obtained Job List",
+        //   "info": book
+        // }
+        res.end(JSON.stringify(book))
+
+      }
+    });
+  }
+
+
+
+
+
+  // try {
+  //   UserInfo.findById(userID)
+  //     .populate('jobs_posted')
+  //     .exec()
+  //     .then(result => {
+  //       console.log("The received result is : ", result);
+  //       res.writeHead(200, {
+  //         'Content-Type': 'application/json'
+  //       })
+  //       const data = {
+  //         "status": 1,
+  //         "msg": "Successfully obtained Job List",
+  //         "info": result
+  //       }
+  //       res.end(JSON.stringify(data))
+  //     })
+  //     .catch(err => {
+  //       res.writeHead(200, {
+  //         'Content-Type': 'application/json'
+  //       })
+  //       const data = {
+  //         "status": 0,
+  //         "msg": "No Such User",
+  //         "info": {
+  //           "error": err
+  //         }
+  //       }
+  //       res.end(JSON.stringify(data))
+  //     })
+  // } catch (error) {
+  //   res.writeHead(400, {
+  //     'Content-Type': 'application/json'
+  //   })
+  //   const data = {
+  //     "status": 0,
+  //     "msg": error,
+  //     "info": {
+  //       "error": error
+  //     }
+  //   }
+  //   res.end(JSON.stringify(data))
+  // }
+});
+
+
+
+//__________redis cache of sql ending___________
+
 ////////////////////////ADDED BY DEVU////////////////////////////////
 router.delete("/:userID", async function (req, res, next) {
   console.log('\n\nIn user Delete');
@@ -365,53 +645,53 @@ router.post("/:userID/save", async function (req, res, next) {
   }
 })
 
-router.get("/:userID/joblist", async function (req, res, next) {
-  console.log("Inside get joblist.")
-  const userID = req.params.userID
+// router.get("/:userID/joblist", async function (req, res, next) {
+//   console.log("Inside get joblist.")
+//   const userID = req.params.userID
 
-  try {
-    UserInfo.findById(userID)
-      .populate('jobs_posted')
-      .exec()
-      .then(result => {
-        console.log("The received result is : ", result);
-        res.writeHead(200, {
-          'Content-Type': 'application/json'
-        })
-        const data = {
-          "status": 1,
-          "msg": "Successfully obtained Job List",
-          "info": result
-        }
-        res.end(JSON.stringify(data))
-      })
-      .catch(err => {
-        res.writeHead(200, {
-          'Content-Type': 'application/json'
-        })
-        const data = {
-          "status": 0,
-          "msg": "No Such User",
-          "info": {
-            "error": err
-          }
-        }
-        res.end(JSON.stringify(data))
-      })
-  } catch (error) {
-    res.writeHead(400, {
-      'Content-Type': 'application/json'
-    })
-    const data = {
-      "status": 0,
-      "msg": error,
-      "info": {
-        "error": error
-      }
-    }
-    res.end(JSON.stringify(data))
-  }
-})
+//   try {
+//     UserInfo.findById(userID)
+//       .populate('jobs_posted')
+//       .exec()
+//       .then(result => {
+//         console.log("The received result is : ", result);
+//         res.writeHead(200, {
+//           'Content-Type': 'application/json'
+//         })
+//         const data = {
+//           "status": 1,
+//           "msg": "Successfully obtained Job List",
+//           "info": result
+//         }
+//         res.end(JSON.stringify(data))
+//       })
+//       .catch(err => {
+//         res.writeHead(200, {
+//           'Content-Type': 'application/json'
+//         })
+//         const data = {
+//           "status": 0,
+//           "msg": "No Such User",
+//           "info": {
+//             "error": err
+//           }
+//         }
+//         res.end(JSON.stringify(data))
+//       })
+//   } catch (error) {
+//     res.writeHead(400, {
+//       'Content-Type': 'application/json'
+//     })
+//     const data = {
+//       "status": 0,
+//       "msg": error,
+//       "info": {
+//         "error": error
+//       }
+//     }
+//     res.end(JSON.stringify(data))
+//   }
+// })
 
 //////////////////////////////End - Devu code/////////////////////////////////
 
@@ -485,7 +765,7 @@ router.put("/:userId", async function (req, res, next) {
   var resume_file = req.body.resume
 
   var currentJobDetails = {
-    title: req.body.current_title,
+    userID: req.body.current_userID,
     company: req.body.current_company,
     location: req.body.current_location,
     start_workDate: req.body.start_workDate,
