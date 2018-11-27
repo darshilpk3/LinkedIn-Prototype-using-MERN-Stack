@@ -4,7 +4,7 @@ var pool = require('../connections/mysql')
 var mysql = require('mysql')
 //var { User } = require('../models/userInfo');
 var bcrypt = require('bcryptjs')
-var UserInfo = require('../models/userInfo').users
+var UserInfo = require('../models/userInfo') //.users
 var Job = require('../models/job')
 
 
@@ -19,7 +19,7 @@ router.post("/", async function (req, res, next) {
     const jobFunction = req.body.jobFunction
 
     const newJob = new Job({
-        posted_by: posted_by,
+        postedBy: posted_by,
         jobTitle: jobTitle,
         description: description,
         industry: industry,
@@ -43,7 +43,10 @@ router.post("/", async function (req, res, next) {
                 }
                 res.end(JSON.stringify(data))
             } else {
-                console.log("Job posted: ", jobResult)
+                console.log("Job posted: ", jobResult._id)
+                console.log("Job posted by: ", posted_by)
+
+                
                 //console.log("UserId to be searched ",posted_by)
                 UserInfo.findByIdAndUpdate(posted_by, {
                     $push: {
@@ -65,7 +68,6 @@ router.post("/", async function (req, res, next) {
                         res.end(JSON.stringify(data))
                     })
             }
-
         })
         .catch(err => {
             console.log("Job posted has error: ", err)

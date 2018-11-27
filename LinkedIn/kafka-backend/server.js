@@ -2,6 +2,7 @@ var connection =  new require('./kafka/Connection');
 
 
 var login = require('./services/login.js');
+var getJobList = require('./services/getJobList');
 
 
 function handleTopicRequest(topic_name,fname){
@@ -34,4 +35,5 @@ function handleTopicRequest(topic_name,fname){
 }
 
 
-handleTopicRequest("login",login)
+//handleTopicRequest("login",login)
+handleTopicRequest("getJobList",getJobList)
