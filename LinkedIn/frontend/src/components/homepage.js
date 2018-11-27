@@ -18,33 +18,65 @@ class Login extends Component {
         super(props);
         let myData = JSON.parse(localStorage.getItem('myData'));
         this.state = {
-            email: "",
-            pswd: "",
+            email_login: "",
+            password_login: "",
             authFlag: false,
             errorFlag: false,
             invalidFlag: false,
             myData: myData
         }
+        this.fieldChangeHandler = this.fieldChangeHandler.bind(this);
+        this.login_submit = this.login_submit.bind(this)
     }
 
-    renderField(field) {
+
+
+    fieldChangeHandler(e) {
+        let changedVar = {}
+        changedVar[e.target.name] = e.target.value
+        this.setState(changedVar)
+    }
+
+    renderFieldFirstNames(field) {
         const { meta: { touched, error } } = field;
         const className = `form-group ${touched && error ? "has-danger" : ""}`;
 
         return (
             <div className="padding5 " style={{ "margin-top": "4px" }}>
                 <label for="reg-label" className="reg-label">First name</label>
-                <input type="text" className="inputFields" style={{ width: "100%", padding: "0 8px" }} name="lastName" id="reg-lastname" aria-required="true" tabindex="1" placeholder=""></input>
-                {/* <input className="inputField" type="text" name="email"  {...field.input} placeholder="Email address"></input> */}
+                <input type="text" name="firstname" {...field.input} className="inputFields" placeholder=""></input>
                 <span className="error">
                     {touched ? error : ""}
                 </span>
             </div>
         );
     }
-
-
-
+    renderFieldLastName(field) {
+        const { meta: { touched, error } } = field;
+        const className = `form-group ${touched && error ? "has-danger" : ""}`;
+        return (
+            <div className="padding5 " style={{ "margin-top": "-10px" }}>
+                <label for="reg-label" className="reg-label">Last name</label>
+                <input className="inputFields" name="lastname"  {...field.input} type="text" placeholder=""></input>
+                <span className="error">
+                    {touched ? error : ""}
+                </span>
+            </div>
+        );
+    }
+    renderFieldEmail(field) {
+        const { meta: { touched, error } } = field;
+        const className = `form-group ${touched && error ? "has-danger" : ""}`;
+        return (
+            <div className="padding5 " style={{ "margin-top": "-10px" }}>
+                <label for="reg-label" className="reg-label">Email</label>
+                <input className="inputFields" name="email"  {...field.input} type="text" placeholder=""></input>
+                <span className="error">
+                    {touched ? error : ""}
+                </span>
+            </div>
+        );
+    }
     renderFieldPassword(field) {
         const { meta: { touched, error } } = field;
         const className = `form-group ${touched && error ? "has-danger" : ""}`;
@@ -59,33 +91,6 @@ class Login extends Component {
         );
     }
 
-    renderFieldLastName(field) {
-        const { meta: { touched, error } } = field;
-        const className = `form-group ${touched && error ? "has-danger" : ""}`;
-        return (
-            <div className="padding5 " style={{ "margin-top": "-10px" }}>
-                <label for="reg-label" className="reg-label">Last name</label>
-                <input className="inputFields" name="lastname"  {...field.input} type="text" placeholder=""></input>
-                <span className="error">
-                    {touched ? error : ""}
-                </span>
-            </div>
-        );
-    }
-
-    renderFieldEmail(field) {
-        const { meta: { touched, error } } = field;
-        const className = `form-group ${touched && error ? "has-danger" : ""}`;
-        return (
-            <div className="padding5 " style={{ "margin-top": "-10px" }}>
-                <label for="reg-label" className="reg-label">Email</label>
-                <input className="inputFields" name="email"  {...field.input} type="text" placeholder=""></input>
-                <span className="error">
-                    {touched ? error : ""}
-                </span>
-            </div>
-        );
-    }
 
     onSubmit(values) {
         console.log(values);
@@ -124,6 +129,20 @@ class Login extends Component {
 
     }
 
+    login_submit() {
+        if (this.state.email_login && this.state.password_login && /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(this.state.email_login) && this.state.password_login.length >= 6) {
+            const data={
+                email:this.state.email,
+                pwd:this.state.password_login
+            }
+            this.props.onSubmitLogin(data)
+                .then(response => {
+                   
+                });
+        } else {
+            
+        }
+    }
 
     render() {
         require('../styles/homepage.css')
@@ -131,12 +150,14 @@ class Login extends Component {
         let invalid, redirectVar;
 
         if (this.state.invalidFlag) {
-            invalid = <div style={{ marginTop: '10px' }} className="invalid">
+            invalid = <div className="invalid">
                 <span>
                     The email or password you entered is incorrect.
-            </span>
+                </span>
             </div>
         }
+
+
 
         if (this.state.myData) {
             redirectVar = <Redirect to="/TravelerHome" />
@@ -151,26 +172,33 @@ class Login extends Component {
                 {redirectVar}
                 <div id="">
                     <nav className="navbar navbar-expand-sm" style={{ 'border-bottom-color': '', 'padding': ' 0%', 'backgroundColor': '#283e4a', "border-radius": "0px", marginBottom: "0px" }}>
+                        {invalid}
+
                         <div className="container-fluid" >
                             <div className="navbar-header" style={{ marginTop: "10px", marginLeft: "8%" }}>
                                 <img src={linkedIn}></img>
                             </div>
                             <ul className="nav navbar-nav navbar-right">
+
+
+
                                 <li style={{ marginRight: "15px" }}>
-                                    <input type="text" name="session_key" className="login-email" autocapitalize="off" tabindex="1" id="login-email" placeholder="Email" autofocus="autofocus" dir="ltr"></input>
+                                    <input type="text" onChange={this.fieldChangeHandler} name="email_login" className="login-email" autocapitalize="off" tabindex="1" id="login-email" placeholder="Email" autofocus="autofocus" dir="ltr"></input>
 
                                 </li>
                                 <li style={{ marginRight: "15px" }}>
-                                    <input type="password" name="session_password" class="login-password" id="login-password" aria-required="true" tabindex="1" placeholder="Password" dir="ltr"></input>
+                                    <input type="password" onChange={this.fieldChangeHandler} name="password_login" class="login-password" id="login-password" aria-required="true" tabindex="1" placeholder="Password" dir="ltr"></input>
                                 </li>
                                 <li style={{ marginRight: "15px" }}>
-                                    <input tabindex="1" className="login-submit" type="submit" value="Sign in"></input>
+                                    <button tabindex="1" onClick={this.login_submit} className="login-submit" type="submit" value="Sign in">Sign in</button>
                                 </li>
                                 <li style={{ marginRight: "15px" }}>
                                     <a className="linkForgot">Forgot Password?</a>
                                 </li>
+
                             </ul>
                         </div>
+
                     </nav>
                 </div>
                 <div className="login-background">
@@ -179,14 +207,13 @@ class Login extends Component {
                         <div className="formProps">
                             <form style={{ width: "100%" }} onSubmit={handleSubmit(this.onSubmit.bind(this))}>
 
-                                {/* <div>  */}
                                 <div className="form-title">Be great at what you do </div>
                                 <div className="form-subtitle">Get started - it's free. </div>
-                                {/* </div> */}
-                                {invalid}
+
+
                                 <Field
-                                    name="email"
-                                    component={this.renderField}
+                                    name="firstname"
+                                    component={this.renderFieldFirstNames}
                                 />
 
                                 <Field
@@ -201,21 +228,15 @@ class Login extends Component {
                                     name="password"
                                     component={this.renderFieldPassword}
                                 />
-                                
+
 
                                 <div class="form-group padding5 " style={{ "marginBottom": '-14px', "marginTop": "-5%" }}>
                                     <div className="agreement">By clicking Join now, you agree to the LinkedIn User Agreement, Privacy Policy, and Cookie Policy.
-                                        </div>
+                                    </div>
                                 </div>
                                 <div class="form-group padding5" style={{ "marginBottom": '0px' }}>
                                     <button type="submit" className="btn btn-primary submitButton" value="Log In" tabindex="4" >Join now</button>
-                                    {/* <div class="remember checkbox traveler">
-                                        <label for="rememberMe">
-                                            <input id="rememberMe" name="rememberMe" tabindex="3" checked="true" type="checkbox" value="true" /><input type="hidden" name="_rememberMe" value="on" />
-                                            Keep me signed in
-                                </label>
-                                    </div>*/}
-                                </div> 
+                                </div>
                             </form>
 
                         </div>
@@ -234,9 +255,16 @@ function validate(values) {
     if (!values.email || !/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(values.email)) {
         errors.email = "Enter valid email address";
     }
-    if (!values.password) {
-        errors.password = "Enter password ";
+    if (!values.password || values.password.length < 6) {
+        errors.password = "Enter password (6 or more characters)";
     }
+    if (!values.firstname) {
+        errors.firstname = "Enter firstname ";
+    }
+    if (!values.lastname) {
+        errors.lastname = "Enter lastname ";
+    }
+
 
     return errors;
 }
@@ -274,6 +302,33 @@ const mapDispatchStateToProps = dispatch => {
                     return error;
                 });
         }
+,
+        onSubmitLogin: (data) => {
+            return axios.post(`${ROOT_URL}/user/login`, data, { withCredentials: true })
+                .then(response => {
+                    if (response.data.status == 1) {
+                        console.log("Here");
+                        let res = {
+                            status: 1,
+                            data: {
+                                uid: response.data.info.uid,
+                                email: response.data.info.email,
+                                firstname: response.data.info.firstname,
+                                lastname: response.data.info.lastname,
+                                profileImage: response.data.info.profileImage,
+                                type: response.data.info.type
+                            }
+                        }
+                        dispatch({ type: 'SAVEMYDATA', payload: res });
+                        return response;
+                    } else {
+                        return response;
+                    }
+                }, (error) => {
+
+                    return error;
+                });
+        }
 
     }
 }
@@ -282,11 +337,6 @@ const mapDispatchStateToProps = dispatch => {
 
 export default reduxForm({
     validate,
-    form: "TravelerLoginForm"
+    form: "signUpForm"
 })(connect(mapStateToProps, mapDispatchStateToProps)(Login));
 
-// export default reduxForm({
-//     validate,
-//     form: "TravelerLoginForm"
-// })(connect(null, { login })(Login));
-// export default Login;

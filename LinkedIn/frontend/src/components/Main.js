@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { Route } from 'react-router-dom';
 import myNetwork from './myNetwork';
-import connections from './connections'; 
+import connections from './connections';
 import savedJobs from './savedJobs';
 import appliedJobs from './appliedJobs';
 import messaging from './messaging';
@@ -18,20 +18,18 @@ class Main extends Component {
         return (
             <div>
 
-				<Route exact path="/myNetwork" component={myNetwork} />
-                <Route exact path="/connections" component={connections} /> 
-                <Route exact path="/savedJobs" component={savedJobs} /> 
-                <Route exact path="/appliedJobs" component={appliedJobs} /> 
-                <Route exact path="/messaging" component={messaging} />                 
-				<Route exact path="/navbar" component={navbar} />
+                <Route exact path="/myNetwork" component={myNetwork} />
+                <Route exact path="/connections" component={connections} />
+                <Route exact path="/savedJobs" component={savedJobs} />
+                <Route exact path="/appliedJobs" component={appliedJobs} />
+                <Route exact path="/messaging" component={messaging} />
+                <Route exact path="/navbar" component={navbar} />
                 <Route exact path="/" component={homepage} />
                 <Route exact path="/profilelocation" component={Profilelocation} />
                 <Route exact path="/newsfeed" component={Newsfeed} />
                 <Route exact path="/user/delete" component={UserDelete} />
                 <Route exact path="/job/post" component={JobPosting} />
                 <Route exact path="/jobs/" component={JobSearch} />
-                {/* <Route path="/TravelerLogin" component={Login} /> */}
-
             </div>
         )
     }

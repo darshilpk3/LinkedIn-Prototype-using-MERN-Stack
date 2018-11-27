@@ -336,4 +336,18 @@
     /* padding: 3%;
     font-size: 17px;
   */
+
 }
+
+  .error{
+      color:#d91414;
+  }
+
+
+  .invalid{
+    margin-top: 0px;
+    color: red;
+    margin-top: 10px;
+    font-size: 15px;
+    margin-left: 49%;
+  }
