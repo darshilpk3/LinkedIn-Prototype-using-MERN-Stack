@@ -139,7 +139,8 @@ router.post('/', async function (req, res, next) {
 
 });
 
-// /* User Login */
+/* User Login */
+
 // router.post('/login', async function (req, res, next) {
 
 //   console.log('\n\nIn user login');
@@ -281,7 +282,7 @@ router.post('/login', redisMiddleware, async function (req, res, next) {
  */
 
 
- //start redis without kafka
+//start redis without kafka
 
 getAllJobsPostedByUser_Caching = function (UserInfo, redis1, userID, callback) {
   redis1.get(userID, function (err, reply) {
@@ -298,7 +299,8 @@ getAllJobsPostedByUser_Caching = function (UserInfo, redis1, userID, callback) {
 
       try {
         Job.find({
-          postedBy: userID})
+          postedBy: userID
+        })
           .exec()
           .then(result => {
             console.log("The received result is : ", result);
@@ -496,7 +498,7 @@ router.get("/:userID/joblist", async function (req, res, next) {
 
 //__________redis cache of sql ending___________
 
-////////////////////////ADDED BY DEVU////////////////////////////////
+
 router.delete("/:userID", async function (req, res, next) {
   console.log('\n\nIn user Delete');
   console.log("Request Got: ", req.body);
@@ -641,111 +643,63 @@ router.post("/:userID/save", async function (req, res, next) {
   console.log("Inside post of job save.")
   const jobId = req.body.job_id
   const userID = req.params.userID
-  
-    UserInfo.findByIdAndUpdate(userID, {
-      $push: {
-        jobs_saved: jobId
-      }
-    })
-      .exec()
-      .then(result => {
 
-        Job.findByIdAndUpdate(jobId, {
-          $push: {
-            jobSaved: userID
-          }
-        })
-          .exec()
-          .then(result => {
-            res.writeHead(200, {
-              'Content-Type': 'application/json'
-            })
-            const data = {
-              "status": 1,
-              "msg": "Successfully saved userid to job",
-              "info": result
-            }
-            res.end(JSON.stringify(data))
-
-          })
-          .catch(err => {
-            res.writeHead(200, {
-              'Content-Type': 'application/json'
-            })
-            const data = {
-              "status": 0,
-              "msg": "No Such User",
-              "info": {
-                "error": err
-              }
-            }
-            res.end(JSON.stringify(data))
-          })
-      })
-      .catch(err => {
-        res.writeHead(200, {
-          'Content-Type': 'application/json'
-        })
-        const data = {
-          "status": 0,
-          "msg": "No Such User",
-          "info": {
-            "error": err
-          }
-        }
-        res.end(JSON.stringify(data))
-      })
+  UserInfo.findByIdAndUpdate(userID, {
+    $push: {
+      jobs_saved: jobId
+    }
   })
+    .exec()
+    .then(result => {
 
-// router.get("/:userID/joblist", async function (req, res, next) {
-//   console.log("Inside get joblist.")
-//   const userID = req.params.userID
+      Job.findByIdAndUpdate(jobId, {
+        $push: {
+          jobSaved: userID
+        }
+      })
+        .exec()
+        .then(result => {
+          res.writeHead(200, {
+            'Content-Type': 'application/json'
+          })
+          const data = {
+            "status": 1,
+            "msg": "Successfully saved userid to job",
+            "info": result
+          }
+          res.end(JSON.stringify(data))
 
-//   try {
-//     UserInfo.findById(userID)
-//       .populate('jobs_posted')
-//       .exec()
-//       .then(result => {
-//         console.log("The received result is : ", result);
-//         res.writeHead(200, {
-//           'Content-Type': 'application/json'
-//         })
-//         const data = {
-//           "status": 1,
-//           "msg": "Successfully obtained Job List",
-//           "info": result
-//         }
-//         res.end(JSON.stringify(data))
-//       })
-//       .catch(err => {
-//         res.writeHead(200, {
-//           'Content-Type': 'application/json'
-//         })
-//         const data = {
-//           "status": 0,
-//           "msg": "No Such User",
-//           "info": {
-//             "error": err
-//           }
-//         }
-//         res.end(JSON.stringify(data))
-//       })
-//   } catch (error) {
-//     res.writeHead(400, {
-//       'Content-Type': 'application/json'
-//     })
-//     const data = {
-//       "status": 0,
-//       "msg": error,
-//       "info": {
-//         "error": error
-//       }
-//     }
-//     res.end(JSON.stringify(data))
-//   }
-// })
+        })
+        .catch(err => {
+          res.writeHead(200, {
+            'Content-Type': 'application/json'
+          })
+          const data = {
+            "status": 0,
+            "msg": "No Such User",
+            "info": {
+              "error": err
+            }
+          }
+          res.end(JSON.stringify(data))
+        })
+    })
+    .catch(err => {
+      res.writeHead(200, {
+        'Content-Type': 'application/json'
+      })
+      const data = {
+        "status": 0,
+        "msg": "No Such User",
+        "info": {
+          "error": err
+        }
+      }
+      res.end(JSON.stringify(data))
+    })
+})
 
-//////////////////////////////End - Devu code/////////////////////////////////
+
 
 router.get("/:userId", async function (req, res, next) {
   UserInfo.findById(req.params.userId)

@@ -1,19 +1,17 @@
 var express = require('express');
 var router = express.Router();
-var pool = require('../connections/mysql')
-var mysql = require('mysql')
-//var { User } = require('../models/userInfo');
-var bcrypt = require('bcryptjs')
 var UserInfo = require('../models/userInfo').users
 var Job = require('../models/job')
 
 var redisClient = require('redis').createClient;
-var redis1 = redisClient(6379, 'localhost');
+var redis = redisClient(6379, 'localhost');
 
 
 
-
-
+/*
+posting a job
+also updating the redis after successful post of a job in the same location and job title 
+*/
 router.post("/", async function (req, res, next) {
     const posted_by = req.body.posted_by
     const jobTitle = req.body.jobTitle
@@ -24,6 +22,8 @@ router.post("/", async function (req, res, next) {
     const location = req.body.location
     const jobFunction = req.body.jobFunction
     const required_skills = req.body.required_skills
+
+    const key = location + jobTitle;
 
     const newJob = new Job({
         posted_by: posted_by,
@@ -70,11 +70,26 @@ router.post("/", async function (req, res, next) {
                                 "jobResult": jobResult
                             }
                         }
+
+                        console.log("_______________key to be removed___________________________", key)
+                        // redis.DEL(key);
+                        redis.del(key, function (err, response) {
+                            console.log("___________response_____________", response)
+                            console.log("_____________err_____________", err)
+                            if (response == 1) {
+                                console.log("Deleted Successfully!")
+                            } else {
+                                console.log("Cannot delete")
+                            }
+                        })
+
+
                         res.end(JSON.stringify(data))
                     })
             }
 
         })
+
         .catch(err => {
             console.log("Job posted has error: ", err)
             res.writeHead(400, {
@@ -89,8 +104,13 @@ router.post("/", async function (req, res, next) {
             }
             res.end(JSON.stringify(data))
         })
-})
 
+});
+
+
+/*
+get job details
+*/
 router.get("/:jobID", async function (req, res, next) {
     console.log("Inside get joblist.")
     const jobID = req.params.jobID
@@ -122,86 +142,17 @@ router.get("/:jobID", async function (req, res, next) {
             }
             res.end(JSON.stringify(data))
         })
-})
+});
 
-//____________________________________redis caching area_________________________________
 
 /*
-* caching search route
+job search with redis cache function
 */
-// router.post("/search", async function (req, res, next) {
-
-//     console.log("\nInside the search request for jobs");
-//     console.log("\nRequest obtained is : ");
-//     console.log(JSON.stringify(req.body));
-
-//     var searched_job_title = req.body.job_title
-//     var searched_job_location = req.body.location
-
-//     //making the regex for the mongo query
-//     var splitted = searched_job_title.split(" ");
-//     var regex_str = "^(.*";
-//     for (let i = 0; i < splitted.length; i++) {
-//         regex_str = regex_str + splitted[i] + ".*";
-//     }
-//     regex_str = regex_str + ")$";
-
-//     Job.find({
-//         //   jobTitle : {$regex : regex_str}, 
-//         $or: [{ jobTitle: { $regex: regex_str } }, { required_skills: { $regex: regex_str } }],
-//         location: searched_job_location
-//     })
-//         .then((result, err) => {
-//             if (err) {
-//                 res.writeHead(200, {
-//                     'Content-Type': 'application/json'
-//                 })
-//                 const data = {
-//                     "status": 0,
-//                     "msg": "No Such Data found",
-//                     "info": {
-//                         "error": err
-//                     }
-//                 }
-//                 res.end(JSON.stringify(data))
-//             } else {
-//                 //   console.log("Result obtained after the search query: \n",result)
-//                 console.log("Search query executed successfully");
-//                 res.writeHead(200, {
-//                     'Content-Type': 'application/json'
-//                 })
-//                 const data = {
-//                     "status": 1,
-//                     "msg": "Successfully fetched the search results",
-//                     "info": {
-//                         "result": result
-//                     }
-//                 }
-//                 res.end(JSON.stringify(data))
-//             }
-//         })
-//         .catch(err => {
-//             res.writeHead(400, {
-//                 'Content-Type': 'application/json'
-//             })
-//             const data = {
-//                 "status": 0,
-//                 "msg": "Backend Error",
-//                 "info": {
-//                     "error": err
-//                 }
-//             }
-//             res.end(JSON.stringify(data))
-//         })
-// })
-
-
-getJobsSearch_Caching = function (Job, redis1, userID, callback) {
+getJobsSearch_Caching = function (Job, redis, userID, callback) {
     console.log("_________userID________", userID);
 
     var searched_job_title = userID.job_title
     var searched_job_location = userID.location
-    // console.log("_____________job title________", searched_job_title)
 
     //making the regex for the mongo query
     var splitted = searched_job_title.split(" ");
@@ -212,9 +163,9 @@ getJobsSearch_Caching = function (Job, redis1, userID, callback) {
     regex_str = regex_str + ")$";
 
     const key = searched_job_location + searched_job_title
-    console.log("_______________key_________________--",key)
-    // redis1.hmget('offers',userID,function (err, reply) {
-    redis1.get(key, function (err, reply) {
+    console.log("_______________key_________________", key)
+    // redis.hmget('offers',userID,function (err, reply) {
+    redis.get(key, function (err, reply) {
 
         if (err) callback(null);
         else if (reply) {
@@ -233,9 +184,6 @@ getJobsSearch_Caching = function (Job, redis1, userID, callback) {
             })
                 .then((result, err) => {
                     if (err) {
-                        // res.writeHead(200, {
-                        //     'Content-Type': 'application/json'
-                        // })
                         const data = {
                             "status": 0,
                             "msg": "No Such Data found",
@@ -244,14 +192,11 @@ getJobsSearch_Caching = function (Job, redis1, userID, callback) {
                             }
                         }
                         callback(data);
-                        // res.end(JSON.stringify(data))
+
                     } else {
-                        //   console.log("Result obtained after the search query: \n",result)
+
                         console.log("Search query executed successfully");
-                        // res.writeHead(200, {
-                        //     'Content-Type': 'application/json'
-                        // })
-                        // console.log("**************result*************", result);
+
                         const data = {
                             "status": 1,
                             "msg": "Successfully fetched the search results",
@@ -259,105 +204,32 @@ getJobsSearch_Caching = function (Job, redis1, userID, callback) {
                                 "result": result
                             }
                         }
-                        // res.end(JSON.stringify(data))
-
-                        // console.log("`````````````````````````````````userID", userID)
-                        // console.log("`````````````````````````````````data", data)
                         const key = searched_job_location + searched_job_title
-                        console.log("~~~~~~~~~~~~key~~~~~~~~~~~~~~~`````", key)
+                        // console.log("~~~~~~~~~~~~key~~~~~~~~~~~~~~~`````", key)
 
-                        //redis1.hmset('offers',userID,JSON.stringify(data), function () {
-                        redis1.set(key, JSON.stringify(data), function () {
+                        //redis.hmset('offers',userID,JSON.stringify(data), function () {
+                        redis.set(key, JSON.stringify(data), function () {
 
                             console.log("_____________setting in cache_________________ ")
                             callback(data);
                         });
 
-
-
                     }
                 })
                 .catch(err => {
-                    // res.writeHead(400, {
-                    //     'Content-Type': 'application/json'
-                    // })
-                    // const data = {
-                    //     "status": 0,
-                    //     "msg": "Backend Error",
-                    //     "info": {
-                    //         "error": err
-                    //     }
-                    // }
-                    // res.end(JSON.stringify(data))
 
                     callback(null);
 
                 })
 
-
-
-
-            // try {
-            //     UserInfo.findById(userID)
-            //         .populate('jobs_posted')
-            //         .exec()
-            //         .then(result => {
-            //             console.log("The received result is : ", result);
-            //             // res.writeHead(200, {
-            //             //   'Content-Type': 'application/json'
-            //             // })
-            //             const data = {
-            //                 "status": 1,
-            //                 "msg": "Successfully obtained Job List",
-            //                 "info": result
-            //             }
-            //             // res.end(JSON.stringify(data))
-
-            //             redis1.set(userID, JSON.stringify(data), function () {
-            //                 console.log("_____________setting in cache_________________ ")
-            //                 callback(data);
-            //             });
-            //         })
-            //         .catch(err => {
-            //             // res.writeHead(200, {
-            //             //   'Content-Type': 'application/json'
-            //             // })
-            //             const data = {
-            //                 "status": 0,
-            //                 "msg": "No Such User",
-            //                 "info": {
-            //                     "error": err
-            //                 }
-            //             }
-            //             // res.end(JSON.stringify(data))
-            //             callback(data);
-            //         })
-            // } catch (error) {
-            //     // res.writeHead(400, {
-            //     //   'Content-Type': 'application/json'
-            //     // })
-            //     // const data = {
-            //     //   "status": 0,
-            //     //   "msg": error,
-            //     //   "info": {
-            //     //     "error": error
-            //     //   }
-            //     // }
-            //     // res.end(JSON.stringify(data))
-            //     callback(null);
-            // }
-
-
-
-
-
-            
         }
     });
 };
 
 
-
+/*
+job search with redis cache
+*/
 router.post("/search", async function (req, res, next) {
 
     console.log("\nInside the search request for jobs");
@@ -390,95 +262,28 @@ router.post("/search", async function (req, res, next) {
         res.end(JSON.stringify(data))
     }
     else {
-        getJobsSearch_Caching(Job, redis1, req.body, function (book) {
+        getJobsSearch_Caching(Job, redis, req.body, function (book) {
             if (!req.body) {
                 res.status(500).send("Server error");
             }
             else {
-                // res.status(200).send(book);
+
                 res.writeHead(200, {
                     'Content-Type': 'application/json'
                 })
-                // console.log("__________book________________-", book)
-                // const data = {
-                //   "status": 1,
-                //   "msg": "Successfully obtained Job List",
-                //   "info": book
-                // }
+
                 res.end(JSON.stringify(book))
 
             }
         });
     }
 
-
-
-
-    // Job.find({
-    //     //   jobTitle : {$regex : regex_str}, 
-    //     $or: [{ jobTitle: { $regex: regex_str } }, { required_skills: { $regex: regex_str } }],
-    //     location: searched_job_location
-    // })
-    //     .then((result, err) => {
-    //         if (err) {
-    //             res.writeHead(200, {
-    //                 'Content-Type': 'application/json'
-    //             })
-    //             const data = {
-    //                 "status": 0,
-    //                 "msg": "No Such Data found",
-    //                 "info": {
-    //                     "error": err
-    //                 }
-    //             }
-    //             res.end(JSON.stringify(data))
-    //         } else {
-    //             //   console.log("Result obtained after the search query: \n",result)
-    //             console.log("Search query executed successfully");
-    //             res.writeHead(200, {
-    //                 'Content-Type': 'application/json'
-    //             })
-    //             const data = {
-    //                 "status": 1,
-    //                 "msg": "Successfully fetched the search results",
-    //                 "info": {
-    //                     "result": result
-    //                 }
-    //             }
-    //             res.end(JSON.stringify(data))
-    //         }
-    //     })
-    //     .catch(err => {
-    //         res.writeHead(400, {
-    //             'Content-Type': 'application/json'
-    //         })
-    //         const data = {
-    //             "status": 0,
-    //             "msg": "Backend Error",
-    //             "info": {
-    //                 "error": err
-    //             }
-    //         }
-    //         res.end(JSON.stringify(data))
-    //     })
-
-
-
 });
 
 
-
-
-
-
-
-
-
-//____________________________________redis caching area ending___________________________
-
-
-
-
+/*
+update job details
+*/
 router.put("/:jobId", async function (req, res, next) {
     console.log("\nInside the edit request for jobs");
     console.log("\nRequest obtained is : ");
@@ -549,6 +354,6 @@ router.put("/:jobId", async function (req, res, next) {
             }
             res.end(JSON.stringify(data))
         })
-})
+});
 
 module.exports = router;
