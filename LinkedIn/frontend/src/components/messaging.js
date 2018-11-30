@@ -19,7 +19,7 @@ class Messaging extends Component {
             userMessage : "Hi there. How are you?",
 
             createMsgFlag : false,
-            
+
             msgListProfileImage: "https://image.freepik.com/free-vector/abstract-dark-blue-polygonal-background_1035-9700.jpg",
             userProfileImage: "https://image.freepik.com/free-vector/abstract-dark-blue-polygonal-background_1035-9700.jpg"
             
@@ -49,12 +49,12 @@ class Messaging extends Component {
         let createMsg = null;
 
         DisplayMsgList = (
-            <div class="row userInvitations">
+            <div class="row userInvitations hoverEffect">
                 <div className="col-sm-3 col-md-3 col-lg-3">
                     <img src={this.state.msgListProfileImage} className="img-circle profileImage" />
                 </div>
                  
-                <div className="col-sm-9 col-md-9 col-lg-9" onClick={this.handleClickedViewMsg}>
+                <div className="col-sm-9 col-md-9 col-lg-9 " onClick={this.handleClickedViewMsg}>
                     <h4>{this.state.msgListUserName}</h4>
                 </div>
                 
@@ -94,7 +94,18 @@ class Messaging extends Component {
         if(this.state.createMsgFlag){
             createMsg = (
                 <div>
-                    hello
+                    <div class="card-title upperheight" style={{'textAlign':'center'}}>  
+                        <h4>New Message</h4>
+                    </div>
+                    <div class="card-body secondheight">
+                        <input type="text" className="searchTextBox" placeholder="Type a name.."></input> 
+                    </div>
+                    <div class="card-body thirdheight">      
+                    </div>
+                    <div class="card-body belowheight">  
+                        <textarea className="textBox" placeholder="Enter your message here.." cols="50" rows="4"></textarea>
+                        <button className="mysendButton"> Send</button>
+                    </div>
                 </div>
             )
         }

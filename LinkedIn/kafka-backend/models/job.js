@@ -1,4 +1,5 @@
 var mongoose =require('mongoose');
+//var { mongoose } = require('../connections/mongo');
 
 var job= mongoose.Schema({
     postedBy:{
@@ -51,12 +52,12 @@ var job= mongoose.Schema({
     ]
 })
 
- job.pre('save', function(next) {
+ /*job.pre('save', function(next) {
     // Remove all the assignment docs that reference the removed person.
 
     // this.model('Users').remove({ person: this._id }, next);
  
     console.log('-------------------------Removing doc!');
-}); 
+}); */
  
 module.exports = mongoose.model('Job',job);

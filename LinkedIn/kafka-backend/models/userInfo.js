@@ -1,5 +1,7 @@
 var mongoose =require('mongoose');
 
+//var { mongoose } = require('../connections/mongo');
+
 var experience_schema = require('./experienceInfo').experience
 var education_scheme = require('./educationInfo').education
 

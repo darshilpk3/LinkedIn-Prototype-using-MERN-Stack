@@ -1,24 +1,24 @@
 var mongoose =require('mongoose');
 
-var education= mongoose.Schema({
-    college_name : {
+var experience= mongoose.Schema({
+    title : {
         type : String
     },
-    start_date : {
+    company : {
         type : String
     },
-    end_date : {
-        type : String
-    },
-    degree : {
-        type : String
-    },
-    feild_of_study : {
+    industry : {
         type : String
     },
     description : {
         type : String
+    },
+    work_startDate : {
+        type : String
+    },
+    work_endDate : {
+        type : String
     }
 })
 
-module.exports = {education};
+module.exports = {experience};
