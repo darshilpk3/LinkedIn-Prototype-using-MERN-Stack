@@ -4,10 +4,9 @@ import React, { Component } from 'react';
 import cookie from 'react-cookies';
 import { Link } from 'react-router-dom';
 import { Redirect } from 'react-router';*/
+import "../styles/jobresults.css";
 
-import ad from '../assets/images/Ad_TDK.png'
-
-class Messaging extends Component {
+class JobResults extends Component {
     constructor(props) {
         super(props);
         this.state={
