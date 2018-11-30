@@ -3,7 +3,7 @@ var router = express.Router();
 var pool = require('../connections/mysql')
 var mysql = require('mysql')
 var mongoose = require('mongoose');
-
+var kafka = require('../kafka/client')
 
 
 //var { User } = require('../models/userInfo');
@@ -178,6 +178,8 @@ router.post('/login', async function (req, res, next) {
 router.delete("/:userID", async function (req, res, next) {
   console.log('\n\nIn user Delete');
   console.log("Request Got: ", req.body);
+
+
   const email = req.body.email;
   const userID = req.params.userID;
 
@@ -268,210 +270,152 @@ router.delete("/:userID", async function (req, res, next) {
 
 router.post("/:userID/apply", async function (req, res, next) {
   console.log("Inside post apply of job.")
-  const jobId = req.body.job_id
-  try {
-    UserInfo.findByIdAndUpdate(req.params.userID, {
-      $push: {
-        jobs_applied: jobId
-      }
-    })
-      .exec()
-      .then(result => {
-        res.writeHead(200, {
-          'Content-Type': 'application/json'
-        })
-        const data = {
-          "status": 1,
-          "msg": "Successfully applied to the job",
-          "info": result
-        }
-        res.end(JSON.stringify(data))
-      })
-      .catch(err => {
-        res.writeHead(200, {
-          'Content-Type': 'application/json'
-        })
-        const data = {
-          "status": 0,
-          "msg": "No Such User",
-          "info": {
-            "error": err
-          }
-        }
-        res.end(JSON.stringify(data))
-      })
-  } catch (error) {
-    res.writeHead(400, {
-      'Content-Type': 'application/json'
-    })
-    const data = {
-      "status": 0,
-      "msg": error,
-      "info": {
-        "error": error
-      }
-    }
-    res.end(JSON.stringify(data))
+
+  const data = {
+    userId: req.params.userID,
+    jobId: req.body.jobId,
+    howDidyouHear: req.body.howDidyouHear,
+    isDisabled: req.body.isDisabled,
+    resume: req.body.resume,
+    ethnicity: req.body.ethnicity
   }
+
+  kafka.make_request("userJobApply", data, function (err, result) {
+    if (err) {
+      const data = {
+        "status": 0,
+        "msg": "Error while applying to job",
+        "info": err
+      }
+      res.writeHead(200, {
+        'Content-Type': 'application/json'
+      })
+      res.end(JSON.stringify(data))
+    } else {
+      const data = {
+        "status": 1,
+        "msg": "Successfully applied to a job",
+        "info": result
+      }
+      res.writeHead(200, {
+        'Content-Type': 'application/json'
+      })
+      res.end(JSON.stringify(data))
+    }
+  })
 })
 
 router.post("/:userID/save", async function (req, res, next) {
   console.log("Inside post of job save.")
-  const jobId = req.body.job_id
-  const userID = req.params.userID
-  
-    UserInfo.findByIdAndUpdate(userID, {
-      $push: {
-        jobs_saved: jobId
+
+  const data = {
+    jobId: req.body.jobId,
+    userId: req.params.userID
+  }
+
+
+  kafka.make_request('userJobSave', data, function (err, result) {
+    console.log(err && err)
+    console.log(result && result)
+    if (err) {
+      const data = {
+        "status": 0,
+        "msg": "Error while saving a job",
+        "info": err
       }
-    })
-      .exec()
-      .then(result => {
-
-        Job.findByIdAndUpdate(jobId, {
-          $push: {
-            jobSaved: userID
-          }
-        })
-          .exec()
-          .then(result => {
-            res.writeHead(200, {
-              'Content-Type': 'application/json'
-            })
-            const data = {
-              "status": 1,
-              "msg": "Successfully saved userid to job",
-              "info": result
-            }
-            res.end(JSON.stringify(data))
-
-          })
-          .catch(err => {
-            res.writeHead(200, {
-              'Content-Type': 'application/json'
-            })
-            const data = {
-              "status": 0,
-              "msg": "No Such User",
-              "info": {
-                "error": err
-              }
-            }
-            res.end(JSON.stringify(data))
-          })
+      res.writeHead(200, {
+        'Content-Type': 'application/json'
       })
-      .catch(err => {
-        res.writeHead(200, {
-          'Content-Type': 'application/json'
-        })
-        const data = {
-          "status": 0,
-          "msg": "No Such User",
-          "info": {
-            "error": err
-          }
-        }
-        res.end(JSON.stringify(data))
+      res.end(JSON.stringify(data))
+    } else if (result == "Already saved a job") {
+      const data = {
+        "status": 0,
+        "msg": "Already saved a job",
+        "info": result
+      }
+      res.writeHead(200, {
+        'Content-Type': 'application/json'
       })
+      res.end(JSON.stringify(data))
+    } else {
+      const data = {
+        "status": 1,
+        "msg": "Successfully saved a job",
+        "info": result
+      }
+      res.writeHead(200, {
+        'Content-Type': 'application/json'
+      })
+      res.end(JSON.stringify(data))
+    }
   })
+})
 
 router.get("/:userID/joblist", async function (req, res, next) {
   console.log("Inside get joblist.")
-  const userID = req.params.userID
 
-  try {
-    UserInfo.findById(userID)
-      .populate('jobs_posted')
-      .exec()
-      .then(result => {
-        console.log("The received result is : ", result);
-        res.writeHead(200, {
-          'Content-Type': 'application/json'
-        })
-        const data = {
-          "status": 1,
-          "msg": "Successfully obtained Job List",
-          "info": result
-        }
-        res.end(JSON.stringify(data))
-      })
-      .catch(err => {
-        res.writeHead(200, {
-          'Content-Type': 'application/json'
-        })
-        const data = {
-          "status": 0,
-          "msg": "No Such User",
-          "info": {
-            "error": err
-          }
-        }
-        res.end(JSON.stringify(data))
-      })
-  } catch (error) {
-    res.writeHead(400, {
-      'Content-Type': 'application/json'
-    })
-    const data = {
-      "status": 0,
-      "msg": error,
-      "info": {
-        "error": error
-      }
-    }
-    res.end(JSON.stringify(data))
+  const data = {
+    userId: req.params.userID
   }
+
+
+  kafka.make_request('userJobList', data, function (err, result) {
+    if (err) {
+      const data = {
+        "status": 0,
+        "msg": "Unable to fetch jobs",
+        "info": err
+      }
+      res.writeHead(200, {
+        'Content-Type': 'application/json'
+      })
+      res.end(JSON.stringify(data))
+    } else {
+      const data = {
+        "status": 1,
+        "msg": "Successfully fetched jobs",
+        "info": result
+      }
+      res.writeHead(200, {
+        'Content-Type': 'application/json'
+      })
+      res.end(JSON.stringify(data))
+    }
+  })
 })
 
 //////////////////////////////End - Devu code/////////////////////////////////
 
 router.get("/:userId", async function (req, res, next) {
-  UserInfo.findById(req.params.userId)
-    .populate('jobs_applied')
-    .populate('jobs_posted')
-    .populate('jobs_saved')
-    .exec()
-    .then((result, err) => {
-      if (err) {
-        res.writeHead(200, {
-          'Content-Type': 'application/json'
-        })
-        const data = {
-          "status": 0,
-          "msg": "No Such User",
-          "info": {
-            "error": err
-          }
-        }
-        res.end(JSON.stringify(data))
-      } else {
-        console.log("Result obtained:", result)
-        res.writeHead(200, {
-          'Content-Type': 'application/json'
-        })
-        const data = {
-          "status": 1,
-          "msg": "Successfully fetched",
-          "info": {
-            "result": result
-          }
-        }
-        res.end(JSON.stringify(data))
-      }
-    })
-    .catch(err => {
-      res.writeHead(400, {
-        'Content-Type': 'application/json'
-      })
+
+  const data = {
+    userId: req.params.userId
+  }
+
+  kafka.make_request('getUserDetails', data, function (err, result) {
+
+    if (err) {
       const data = {
         "status": 0,
-        "msg": "Backend Error",
-        "info": {
-          "error": err
-        }
+        "msg": "Error in fetching result",
+        "info": err
       }
+      res.writeHead(200, {
+        'Content-Type': 'application/json'
+      })
       res.end(JSON.stringify(data))
-    })
+    } else {
+      const data = {
+        "status": 1,
+        "msg": "Successfully fetched details",
+        "info": result
+      }
+      res.writeHead(200, {
+        'Content-Type': 'application/json'
+      })
+      res.end(JSON.stringify(data))
+    }
+  })
 })
 
 router.put("/:userId", async function (req, res, next) {
@@ -480,101 +424,65 @@ router.put("/:userId", async function (req, res, next) {
   console.log("Request obtained is : ");
   console.log(JSON.stringify(req.body));
 
-  var setUserId = req.params.userId;
-
-  var firstname = req.body.fname
-  var lastname = req.body.lname
-  var headline = req.body.headline
-  var address = req.body.address
-  var city = req.body.city
-  var state = req.body.state
-  var country = req.body.country
-  var zipcode = req.body.zipcode
-  var contact = req.body.contact
-  var profile_summary = req.body.profile_summary
-  var resume_file = req.body.resume
-
-  var currentJobDetails = {
-    title: req.body.current_title,
-    company: req.body.current_company,
-    location: req.body.current_location,
-    start_workDate: req.body.start_workDate,
-    end_workDate: req.body.end_workDate,
-    description: req.body.current_description
+  const data = {
+    userId: req.params.userId,
+    firstname: req.body.firstname,
+    lastname: req.body.lastname,
+    headline: req.body.headline,
+    address: req.body.address,
+    city: req.body.city,
+    state: req.body.state,
+    country: req.body.country,
+    zipcode: req.body.zipcode,
+    contact: req.body.contact,
+    profile_summary: req.body.profile_summary,
+    resume: req.body.resume,
+    currentJobDetails: {
+      title: req.body.title,
+      company: req.body.company,
+      location: req.body.location,
+      start_workDate: req.body.start_workDate,
+      end_workDate: req.body.end_workDate,
+      description: req.body.description
+    },
+    education_data: req.body.education_data,
+    experience_data: req.body.experience_data,
+    skills_data: req.body.skills_data,
   }
 
-  var education_data = req.body.education_data
-  var experience_data = req.body.experience_data
-  var skills_data = req.body.skills_data
-
-  try {
-    UserInfo.findByIdAndUpdate(setUserId,
-      {
-        $set: {
-          fname: firstname,
-          lname: lastname,
-          headline: headline,
-          address: address,
-          city: city,
-          state: state,
-          country: country,
-          zipcode: zipcode,
-          contact: contact,
-          profile_summary: profile_summary,
-          resume: resume_file,
-          job_current: currentJobDetails,
-        },
-        $push: {
-          education: education_data,
-          experience: experience_data,
-          skills: skills_data
-        }
-      },
-      { upsert: true })
-      .exec()
-      .then(result => {
-        res.writeHead(200, {
-          'Content-Type': 'application/json'
-        })
-        console.log("\nQuery executed successfully");
-        const data = {
-          "status": 1,
-          "msg": "Successfully updated the user profile",
-          "info": result
-        }
-        res.end(JSON.stringify(data))
-      })
-      .catch(err => {
-        res.writeHead(200, {
-          'Content-Type': 'application/json'
-        })
-        console.log("\nSome error occured in query execution");
-
-        const data = {
-          "status": 0,
-          "msg": "No Such User",
-          "info": {
-            "error": err
-          }
-        }
-        res.end(JSON.stringify(data))
-      })
-  }
-  catch (error) {
-    res.writeHead(400, {
-      'Content-Type': 'application/json'
-    })
-    console.log("\nInside catch error");
-    const data = {
-      "status": 0,
-      "msg": error,
-      "info": {
-        "error": error
+  kafka.make_request('editUserDetails', data, function (err, result) {
+    if (err) {
+      const data = {
+        "status": 0,
+        "msg": "Failed updating the details",
+        "info": err
       }
+      res.writeHead(200, {
+        'Content-Type': 'application/json'
+      })
+      res.end(JSON.stringify(data))
+    }else if(result.message){
+      const data = {
+        "status": 0,
+        "msg": "Failed updating the details",
+        "info": result.message
+      }
+      res.writeHead(200, {
+        'Content-Type': 'application/json'
+      })
+      res.end(JSON.stringify(data))
+    }else {
+      const data = {
+        "status": 1,
+        "msg": "Successfully updated the details",
+        "info": result
+      }
+      res.writeHead(200, {
+        'Content-Type': 'application/json'
+      })
+      res.end(JSON.stringify(data))
     }
-    res.end(JSON.stringify(data))
-  }
-
+  })
 })
 
 module.exports = router;
