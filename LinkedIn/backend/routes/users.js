@@ -3,7 +3,7 @@ var router = express.Router();
 var pool = require('../connections/mysql')
 var mysql = require('mysql')
 var mongoose = require('mongoose');
-
+var kafka = require('../kafka/client');
 
 
 //var { User } = require('../models/userInfo');
@@ -279,11 +279,16 @@ router.post('/login', redisMiddleware, async function (req, res, next) {
 /**
  * get all jobs listed by that user
  */
+
+
+ //start redis without kafka
+
 getAllJobsPostedByUser_Caching = function (UserInfo, redis1, userID, callback) {
   redis1.get(userID, function (err, reply) {
     if (err) callback(null);
     else if (reply) {
       console.log("___________________________from cache_______________________________")
+      console.log(reply)
       callback(JSON.parse(reply));
     } //user exists in cache
 
@@ -292,39 +297,39 @@ getAllJobsPostedByUser_Caching = function (UserInfo, redis1, userID, callback) {
       // const userID = req.params.userID
 
       try {
-        UserInfo.findById(userID)
-          .populate('jobs_posted')
+        Job.find({
+          postedBy: userID})
           .exec()
           .then(result => {
             console.log("The received result is : ", result);
             // res.writeHead(200, {
             //   'Content-Type': 'application/json'
             // })
-            const data = {
-              "status": 1,
-              "msg": "Successfully obtained Job List",
-              "info": result
-            }
+            // const data = {
+            //   "status": 1,
+            //   "msg": "Successfully obtained Job List",
+            //   "info": result
+            // }
             // res.end(JSON.stringify(data))
 
-            redis1.set(userID, JSON.stringify(data), function () {
+            redis1.set(userID, JSON.stringify(result), function () {
               console.log("_____________setting in cache_________________ ")
-              callback(data);
+              callback(result);
             });
           })
           .catch(err => {
             // res.writeHead(200, {
             //   'Content-Type': 'application/json'
             // })
-            const data = {
-              "status": 0,
-              "msg": "No Such User",
-              "info": {
-                "error": err
-              }
-            }
+            // const data = {
+            //   "status": 0,
+            //   "msg": "No Such User",
+            //   "info": {
+            //     "error": err
+            //   }
+            // }
             // res.end(JSON.stringify(data))
-            callback(data);
+            callback(err);
           })
       } catch (error) {
         // res.writeHead(400, {
@@ -350,7 +355,7 @@ getAllJobsPostedByUser_Caching = function (UserInfo, redis1, userID, callback) {
       // }, function (err, doc) {
       //     if (err || !doc) callback(null);
       //     else {
-      //       //Book found in database, save to cache and
+      //       //user_data found in database, save to cache and
       //        // return to client
       //         redis.set(userID, JSON.stringify(doc), function () {
       //             callback(doc);
@@ -381,22 +386,22 @@ router.get("/:userID/joblist", async function (req, res, next) {
     res.end(JSON.stringify(data))
   }
   else {
-    getAllJobsPostedByUser_Caching(UserInfo, redis1, req.params.userID, function (book) {
+    getAllJobsPostedByUser_Caching(UserInfo, redis1, req.params.userID, function (user_data) {
       if (!userID) {
         res.status(500).send("Server error");
       }
       else {
-        // res.status(200).send(book);
+        // res.status(200).send(user_data);
         res.writeHead(200, {
           'Content-Type': 'application/json'
         })
-        console.log("__________book________________-", book)
+        console.log("__________user_data________________-", user_data)
         // const data = {
         //   "status": 1,
         //   "msg": "Successfully obtained Job List",
-        //   "info": book
+        //   "info": user_data
         // }
-        res.end(JSON.stringify(book))
+        res.end(JSON.stringify(user_data))
 
       }
     });
@@ -449,6 +454,43 @@ router.get("/:userID/joblist", async function (req, res, next) {
   //   res.end(JSON.stringify(data))
   // }
 });
+
+
+
+//ending redis without kafka
+
+// router.get("/:userID/joblist", async function (req, res) {
+//   console.log("Inside get joblist.")
+//   req.body.userID = req.params.userID;
+
+//   kafka.make_request('getJobList', req.body, function (err, results) {
+//     console.log('backend-In results of get joblist');
+//     console.log("_________result in getownerMessage post ___" + results);
+
+//     if (err) {
+//         console.log("Inside err of post get joblist");
+//         res.writeHead(400, {
+//             'Content-Type': 'text/plain'
+//         })
+//         res.end("Invalid Credentials.");
+//     } else {
+//         console.log("Inside success of post get joblist");
+//         console.log("typeof: " + typeof (results));
+//         if (typeof (results) == "string") {
+//             res.writeHead(400, {
+//                 'Content-Type': 'text/plain'
+//             })
+//             res.end("Invalid Credentials.");
+//         } else {
+
+//             res.writeHead(200, {
+//                 'Content-Type': 'text/plain'
+//             })
+//             res.end(JSON.stringify(results));
+//         }
+//       }
+//   });
+// })
 
 
 
