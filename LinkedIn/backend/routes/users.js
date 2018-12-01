@@ -485,4 +485,51 @@ router.put("/:userId", async function (req, res, next) {
   })
 })
 
+
+
+///////////////////////////////////////////////////////////
+// Had to be added
+
+router.get("/:userId/savedJobs",async function(req,res,next){
+
+  console.log("Getting saved jobs for the user: ",req.params.userId)
+
+  const data = {
+    userId:req.params.userId
+  }
+
+  kafka.make_request('userSavedJobs',data,function(err,result){
+    if(err){
+      const data = {
+        "status": 0,
+        "msg": "Failed fetching the details of jobs saved",
+        "info": err
+      }
+      res.writeHead(200, {
+        'Content-Type': 'application/json'
+      })
+      res.end(JSON.stringify(data))
+    }else if(result.message){
+      const data = {
+        "status": 0,
+        "msg": "Failed fetching the details of jobs saved",
+        "info": result.message
+      }
+      res.writeHead(200, {
+        'Content-Type': 'application/json'
+      })
+      res.end(JSON.stringify(data))
+    }else{
+      const data = {
+        "status": 1,
+        "msg": "Successfully fetched the details of all the saved jobs",
+        "info": result
+      }
+      res.writeHead(200, {
+        'Content-Type': 'application/json'
+      })
+      res.end(JSON.stringify(data))
+    }
+  })
+})
 module.exports = router;

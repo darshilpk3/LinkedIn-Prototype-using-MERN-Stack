@@ -11,7 +11,7 @@ var JobPost = require('./services/JobServices/jobPost')
 var GetJobDetails = require('./services/JobServices/getJobDetails')
 var JobSearch = require('./services/JobServices/jobSearch')
 var EditJobDetails = require('./services/JobServices/editJobDetails')
-
+var userSavedJobs = require('./services/UserServices/userSavedJobs')
 mongoose.connect(mongoConnection.url, {
     poolSize: mongoConnection.pool
 })
@@ -58,3 +58,4 @@ handleTopicRequest('jobPost',JobPost)
 handleTopicRequest('getJobDetails',GetJobDetails)
 handleTopicRequest('jobSearch',JobSearch)
 handleTopicRequest('editJobDetails',EditJobDetails)
+handleTopicRequest('userSavedJobs',userSavedJobs)
