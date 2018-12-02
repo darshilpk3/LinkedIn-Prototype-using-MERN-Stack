@@ -70,46 +70,47 @@ router.post('/', async function (req, res, next) {
             })
             console.log(`user ${user}`);
 
-            user.save().then(user => {
-              console.log("user created in mongo");
-              // console.log(`user in then is ${user}`);
+            user.save()
+              .then(user => {
+                console.log("user created in mongo");
+                // console.log(`user in then is ${user}`);
 
-              res.writeHead(200, {
-                'Content-Type': 'application/json'
-              })
-              const data = {
-                "status": 1,
-                "msg": "Successfully Signed Up",
-                "info": {
-                  "id": result.insertId,
-                  "fullname": firstName + " " + lastName,
-                  "type": type,
-                  "email": email
+                res.writeHead(200, {
+                  'Content-Type': 'application/json'
+                })
+                const data = {
+                  "status": 1,
+                  "msg": "Successfully Signed Up",
+                  "info": {
+                    "id": result.insertId,
+                    "fullname": firstName + " " + lastName,
+                    "type": type,
+                    "email": email
+                  }
                 }
-              }
-              console.log("data being sent to frontend:\n", JSON.stringify(data))
-              res.end(JSON.stringify(data))
+                console.log("data being sent to frontend:\n", JSON.stringify(data))
+                res.end(JSON.stringify(data))
 
 
-            }, (err) => {
-              console.log("__________err___________", err)
-              console.log(`Signup Failed in mongo`);
-              console.log("User already exists ", err.sqlMessage)
-              res.writeHead(200, {
-                'Content-Type': 'application/json'
-              })
-              const data = {
-                "status": 0,
-                "msg": err.sqlMessage,
-                "info": {
-                  "error": err.sqlMessage
+              }, (err) => {
+                console.log("__________err___________", err)
+                console.log(`Signup Failed in mongo`);
+                console.log("User already exists ", err.sqlMessage)
+                res.writeHead(200, {
+                  'Content-Type': 'application/json'
+                })
+                const data = {
+                  "status": 0,
+                  "msg": err.errmsg,
+                  "info": {
+                    "error": err.errmsg
+                  }
                 }
-              }
-              console.log("data being sent to frontend:\n", JSON.stringify(data))
-              res.end(JSON.stringify(data))
+                console.log("data being sent to frontend:\n", JSON.stringify(data))
+                res.end(JSON.stringify(data))
 
 
-            })
+              })
 
           } else if (err) {
             console.log("User already exists ", err.sqlMessage)
@@ -877,7 +878,7 @@ router.post("/search", async function (req, res, next) {
 
   console.log("inside post request of search by username");
   console.log("req.body", req.body)
-  const username = req.body.username;
+  const username = "^" + req.body.username;
 
   // $or: [{ jobTitle: { $regex: regex_str,$options:'i' } }, { required_skills: { $regex: regex_str,$options:'i' } }],
 

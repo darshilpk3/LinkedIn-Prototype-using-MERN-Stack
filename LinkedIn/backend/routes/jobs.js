@@ -179,8 +179,8 @@ getJobsSearch_Caching = function (Job, redis, userID, callback) {
 
             Job.find({
                 //   jobTitle : {$regex : regex_str}, 
-                $or: [{ jobTitle: { $regex: regex_str,$options:'i' } }, { required_skills: { $regex: regex_str,$options:'i' } }],
-                location: {$regex:searched_job_location,$options:'i'}
+                $or: [{ jobTitle: { $regex: regex_str, $options: 'i' } }, { required_skills: { $regex: regex_str, $options: 'i' } }],
+                location: { $regex: searched_job_location, $options: 'i' }
             })
                 .then((result, err) => {
                     if (err) {
