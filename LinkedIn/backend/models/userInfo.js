@@ -59,7 +59,7 @@ var users= mongoose.model('Users',{
     jobs_applied : [
         {
             type: mongoose.Schema.Types.ObjectId,
-            ref: 'Application'
+            ref: 'Job'
         }
     ],
     jobs_posted : [
@@ -73,7 +73,30 @@ var users= mongoose.model('Users',{
             type: mongoose.Schema.Types.ObjectId,
             ref: 'Job'
         }
-    ]  
+    ],
+    applications : [{
+        type:mongoose.Schema.Types.ObjectId,
+        ref: 'Application'
+    }],
+    connections:[{
+        type:mongoose.Schema.Types.ObjectId,
+        ref:'Users'
+    }],
+    pending_sent:[{
+        type:mongoose.Schema.Types.ObjectId,
+        ref:'Users'
+    }],
+    pending_receive:[{
+        type:mongoose.Schema.Types.ObjectId,
+        ref:'Users'
+    }],
+    conversations : [{
+        type:mongoose.Schema.Types.ObjectId,
+        ref:'Message'
+    }],
+    noOfViews:{
+        type:Number
+    }  
 })
 
 // mongoose.model('Users',users);

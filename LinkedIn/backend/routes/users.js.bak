@@ -3,8 +3,13 @@ var router = express.Router();
 var pool = require('../connections/mysql')
 var mysql = require('mysql')
 var mongoose = require('mongoose');
+<<<<<<< HEAD
 
 var kafka = require('../kafka/client');
+=======
+var kafka = require('../kafka/client')
+
+>>>>>>> development
 
 //var { User } = require('../models/userInfo');
 var bcrypt = require('bcryptjs')

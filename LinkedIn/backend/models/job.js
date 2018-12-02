@@ -51,7 +51,14 @@ var job= mongoose.Schema({
             type:mongoose.Schema.Types.ObjectId,
             ref:'Users'
         }
+    ],
+    jobApplied:[
+        {
+            type:mongoose.Schema.Types.ObjectId,
+            ref:'Users'
+        }
     ]
 })
 
+job.index({'postedBy':1,'jobTitle':1,'description':1,'industry':1,'employmentType':1,'location':1},{unique:true})
 module.exports = mongoose.model('Job',job);
