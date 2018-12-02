@@ -4,11 +4,13 @@ var pool = require('../connections/mysql')
 var mysql = require('mysql')
 var mongoose = require('mongoose');
 
+var { mongoose } = require('../connections/mongo');
+
 var kafka = require('../kafka/client');
 
 //var { User } = require('../models/userInfo');
 var bcrypt = require('bcryptjs')
-var UserInfo = require('../models/userInfo').users
+var UserInfo = require('../models/userInfo')//.users
 var Job = require('../models/job')
 /* User Sign up */
 router.post('/', async function (req, res, next) {
@@ -195,7 +197,7 @@ router.delete("/:userID", async function (req, res, next) {
             console.log("Successfully deleted from MySQL");
             //mongo query here
             try {
-              UserInfo.deleteOne({ "_id": userID })
+              UserInfo.remove({ "_id": userID })
                 .exec()
                 .then(result => {
                   console.log("\nSuccessfully deleted from MongoDB");
@@ -351,39 +353,90 @@ router.post("/:userID/save", async function (req, res, next) {
   })
 })
 
-router.get("/:userID/joblist", async function (req, res, next) {
-  console.log("Inside get joblist.")
+  router.get("/:userID/joblist", async function (req, res) {
+    console.log("Inside get joblist.")
+    req.body.userID = req.params.userID;
 
-  const data = {
-    userId: req.params.userID
-  }
+    kafka.make_request('getJobList', req.body, function (err, results) {
+      console.log('backend-In results of get joblist');
+      console.log("_________result in getownerMessage post ___" + results);
 
+      if (err) {
+          console.log("Inside err of post get joblist");
+          res.writeHead(400, {
+              'Content-Type': 'text/plain'
+          })
+          res.end("Invalid Credentials.");
+      } else {
+          console.log("Inside success of post get joblist");
+          console.log("typeof: " + typeof (results));
+          if (typeof (results) == "string") {
+              res.writeHead(400, {
+                  'Content-Type': 'text/plain'
+              })
+              res.end("Invalid Credentials.");
+          } else {
+              console.log("Success!!");
 
-  kafka.make_request('userJobList', data, function (err, result) {
-    if (err) {
-      const data = {
-        "status": 0,
-        "msg": "Unable to fetch jobs",
-        "info": err
-      }
-      res.writeHead(200, {
-        'Content-Type': 'application/json'
-      })
-      res.end(JSON.stringify(data))
-    } else {
-      const data = {
-        "status": 1,
-        "msg": "Successfully fetched jobs",
-        "info": result
-      }
-      res.writeHead(200, {
-        'Content-Type': 'application/json'
-      })
-      res.end(JSON.stringify(data))
-    }
+              res.writeHead(200, {
+                  'Content-Type': 'text/plain'
+              })
+              res.end(JSON.stringify(results));
+          }
+        }
+    });
   })
-})
+  
 
+
+//  router.get("/:userID/joblist", async function (req, res, next) {
+//   console.log("Inside get joblist.")
+//   const userID = req.params.userID
+
+//   try {
+//     UserInfo.findById(userID)
+//       .populate('jobs_posted')
+//       .exec()
+//       .then(result => {
+//         console.log("The received result is : ", result);
+//         res.writeHead(200, {
+//           'Content-Type': 'application/json'
+//         })
+//         const data = {
+//           "status": 1,
+//           "msg": "Successfully obtained Job List",
+//           "info": result
+//         }
+//         res.end(JSON.stringify(data))
+//       })
+//       .catch(err => {
+//         res.writeHead(200, {
+//           'Content-Type': 'application/json'
+//         })
+//         const data = {
+//           "status": 0,
+//           "msg": "No Such User",
+//           "info": {
+//             "error": err
+//           }
+//         }
+//         res.end(JSON.stringify(data))
+//       })
+//   } catch (error) {
+//     res.writeHead(400, {
+//       'Content-Type': 'application/json'
+//     })
+//     const data = {
+//       "status": 0,
+//       "msg": error,
+//       "info": {
+//         "error": error
+//       }
+//     }
+//     res.end(JSON.stringify(data))
+//   }
+// })
+ 
 //////////////////////////////End - Devu code/////////////////////////////////
 
 router.get("/:userId", async function (req, res, next) {

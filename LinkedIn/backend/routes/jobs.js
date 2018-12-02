@@ -4,7 +4,7 @@ var pool = require('../connections/mysql')
 var mysql = require('mysql')
 //var { User } = require('../models/userInfo');
 var bcrypt = require('bcryptjs')
-var UserInfo = require('../models/userInfo').users
+var UserInfo = require('../models/userInfo') //.users
 var Job = require('../models/job')
 var Application = require('../models/application')
 var kafka = require('../kafka/client')
@@ -20,7 +20,10 @@ router.post("/", async function (req, res, next) {
         postedDate: req.body.postedDate,
         location: req.body.location,
         jobFunction: req.body.jobFunction,
-        required_skills: req.body.required_skills
+        required_skills: req.body.required_skills,
+        companyLogo : req.body.companyLogo,
+        companyName : req.body.companyName,
+        applyMethod : req.body.applyMethod,
     }
 
     kafka.make_request('jobPost',data,function(err,result){

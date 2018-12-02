@@ -33,6 +33,9 @@ var job= mongoose.Schema({
     companyLogo:{
         type:String
     },
+    companyName:{
+        type:String
+    },
     applications:[
         {
             type:mongoose.Schema.Types.ObjectId,
@@ -41,6 +44,9 @@ var job= mongoose.Schema({
     ],
     noOfViews:{
         type:Number
+    },
+    applyMethod:{
+        type:String
     },
     postedDate:{
         type:String,
