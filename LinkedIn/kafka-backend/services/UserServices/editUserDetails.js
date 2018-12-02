@@ -1,6 +1,6 @@
-var UserInfo = require('../../models/userInfo').users
-var Application = require('../../models/application')
-var Job = require('../../models/job')
+var UserInfo = require('../../../backend/models/userInfo').users
+var Application = require('../../../backend/models/application')
+var Job = require('../../../backend/models/job')
 
 function handle_request(msg, callback) {
 

@@ -1,5 +1,6 @@
 var connection = new require('./kafka/Connection');
 var mongoose = require('mongoose')
+
 var mongoConnection = require('../backend/connections/mongo')
 var UserJobApply = require('./services/UserServices/userJobApply')
 var UserJobSave = require('./services/UserServices/userJobSave')
@@ -13,13 +14,16 @@ var JobPost = require('./services/JobServices/jobPost')
 var GetJobDetails = require('./services/JobServices/getJobDetails')
 var JobSearch = require('./services/JobServices/jobSearch')
 var EditJobDetails = require('./services/JobServices/editJobDetails')
+
+
 mongoose.connect(mongoConnection.url, {
     poolSize: mongoConnection.pool
 })
     .then(() => console.log("Connected"))
     .catch((err) => console.log(err))
 
-function handleTopicRequest(topic_name, fname) {
+
+    function handleTopicRequest(topic_name, fname) {
     var consumer = connection.getConsumer(topic_name);
     var producer = connection.getProducer();
     console.log('server is running ');
