@@ -7,7 +7,7 @@ import { Redirect } from 'react-router';*/
 
 import ad from '../assets/images/Ad_TDK.png'
 
-class myNetwork extends Component {
+class Messaging extends Component {
     constructor(props) {
         super(props);
         this.state={
@@ -171,4 +171,4 @@ class myNetwork extends Component {
 
 
 
-export default myNetwork;
+export default Messaging;

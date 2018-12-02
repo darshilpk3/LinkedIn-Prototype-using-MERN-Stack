@@ -3,7 +3,9 @@ var mongoose =require('mongoose');
 var experience_schema = require('./experienceInfo').experience
 var education_scheme = require('./educationInfo').education
 
-var users= mongoose.model('Users',{
+ //var users= mongoose.model('Users',{
+
+var users= mongoose.Schema({
     email : {
         type : String,
         required: true,
@@ -59,7 +61,7 @@ var users= mongoose.model('Users',{
     jobs_applied : [
         {
             type: mongoose.Schema.Types.ObjectId,
-            ref: 'Application'
+            ref: 'Job'
         }
     ],
     jobs_posted : [
@@ -73,9 +75,44 @@ var users= mongoose.model('Users',{
             type: mongoose.Schema.Types.ObjectId,
             ref: 'Job'
         }
-    ]  
+    ],
+    applications : [{
+        type:mongoose.Schema.Types.ObjectId,
+        ref: 'Application'
+    }],
+    connections:[{
+        type:mongoose.Schema.Types.ObjectId,
+        ref:'Users'
+    }],
+    pending_sent:[{
+        type:mongoose.Schema.Types.ObjectId,
+        ref:'Users'
+    }],
+    pending_receive:[{
+        type:mongoose.Schema.Types.ObjectId,
+        ref:'Users'
+    }],
+    conversations : [{
+        type:mongoose.Schema.Types.ObjectId,
+        ref:'Message'
+    }],
+    noOfViews:{
+        type:Number
+    }  
 })
+ 
+users.pre('remove', { document: true }, function() {
+    console.log('-----------------------------------Removing doc!');
+  });
+/*
+users.pre('remove', function(next) {
+    // Remove all the assignment docs that reference the removed person.
+    console.log('------------------------------------------------Removing doc!');
+    //this.model('Job').remove({ postedBy: this._id }, next);
+    next();
+    
+}); */
 
-// mongoose.model('Users',users);
+//module.exports = {users};
 
-module.exports = {users};
+module.exports = mongoose.model('Users',users);

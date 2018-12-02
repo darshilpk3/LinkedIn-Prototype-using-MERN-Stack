@@ -10,20 +10,16 @@ var EditUserDetails = require('./services/UserServices/editUserDetails')
 var UserSavedJobs = require('./services/UserServices/userSavedJobs')
 var UserAppliedJobs = require('./services/UserServices/userAppliedJobs')
 
+<<<<<<< HEAD
+// var login = require('./services/login.js');
+var GetJobList = require('./services/getJobList');
+=======
 var JobPost = require('./services/JobServices/jobPost')
 var GetJobDetails = require('./services/JobServices/getJobDetails')
 var JobSearch = require('./services/JobServices/jobSearch')
 var EditJobDetails = require('./services/JobServices/editJobDetails')
 
-
-
-
-
-
-
-
-// var login = require('./services/login.js');
-var GetJobList = require('./services/getJobList');
+>>>>>>> development
 
 mongoose.connect(mongoConnection.url, {
     poolSize: mongoConnection.pool
@@ -63,6 +59,11 @@ mongoose.connect(mongoConnection.url, {
 }
 
 
+<<<<<<< HEAD
+// handleTopicRequest("login",login)
+handleTopicRequest("getJobList",GetJobList)
+
+=======
 handleTopicRequest('userJobApply', UserJobApply)
 handleTopicRequest('userJobSave', UserJobSave)
 handleTopicRequest('userJobList', UserJobList)
@@ -74,3 +75,4 @@ handleTopicRequest('jobSearch',JobSearch)
 handleTopicRequest('editJobDetails',EditJobDetails)
 handleTopicRequest('userSavedJobs',UserSavedJobs)
 handleTopicRequest('userAppliedJobs',UserAppliedJobs)
+>>>>>>> development
