@@ -9,14 +9,18 @@ var Job = require('../models/job')
 
 
 router.post("/", async function (req, res, next) {
-    const posted_by = req.body.posted_by
+    const posted_by = req.body.jobPostedBy
     const jobTitle = req.body.jobTitle
-    const description = req.body.description
-    const industry = req.body.industry
-    const employmentType = req.body.employmentType
-    const postedDate = req.body.postedDate
-    const location = req.body.location
+    const description = req.body.jobDescription
+    const industry = req.body.jobIndustry
+    const employmentType = req.body.jobEmploymentType
+    const postedDate = req.body.jobPostedDate
+    const location = req.body.jobLocation
     const jobFunction = req.body.jobFunction
+    const jobSkills = req.body.jobSkills
+    const companyLogo = req.body.companyLogo
+    const companyName = req.body.companyName
+    const applyMethod = req.body.applyMethod
 
     const newJob = new Job({
         postedBy: posted_by,
@@ -26,7 +30,12 @@ router.post("/", async function (req, res, next) {
         employmentType: employmentType,
         postedDate: postedDate,
         location: location,
-        jobFunction: jobFunction
+        jobFunction: jobFunction,
+        companyLogo : companyLogo,
+        companyName : companyName,
+        required_skills : jobSkills,
+        applyMethod : applyMethod
+
     })
     newJob.save()
         .then((jobResult, err) => {
