@@ -4,7 +4,7 @@ var pool = require('../connections/mysql')
 var mysql = require('mysql')
 var mongoose = require('mongoose');
 
-
+var kafka = require('../kafka/client');
 
 //var { User } = require('../models/userInfo');
 var bcrypt = require('bcryptjs')
@@ -175,6 +175,7 @@ router.post('/login', async function (req, res, next) {
   })
 });
 ////////////////////////ADDED BY DEVU////////////////////////////////
+
 router.delete("/:userID", async function (req, res, next) {
   console.log('\n\nIn user Delete');
   console.log("Request Got: ", req.body);

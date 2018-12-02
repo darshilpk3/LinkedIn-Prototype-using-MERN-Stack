@@ -1,8 +1,8 @@
 var connection =  new require('./kafka/Connection');
 
 
-var login = require('./services/login.js');
-
+// var login = require('./services/login.js');
+var GetJobList = require('./services/getJobList');
 
 function handleTopicRequest(topic_name,fname){
     var consumer = connection.getConsumer(topic_name);
@@ -34,4 +34,6 @@ function handleTopicRequest(topic_name,fname){
 }
 
 
-handleTopicRequest("login",login)
+// handleTopicRequest("login",login)
+handleTopicRequest("getJobList",GetJobList)
+

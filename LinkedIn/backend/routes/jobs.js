@@ -19,8 +19,10 @@ router.post("/", async function (req, res, next) {
     const jobFunction = req.body.jobFunction
     const required_skills = req.body.required_skills
 
+    console.log("\nPrinting the req.body : "+req.body+"\n");
+
     const newJob = new Job({
-        posted_by: posted_by,
+        postedBy: posted_by,
         jobTitle: jobTitle,
         description: description,
         industry: industry,
@@ -138,7 +140,9 @@ router.post("/search", async function(req, res, next){
 
     Job.find({
     //   jobTitle : {$regex : regex_str}, 
-      $or : [ {jobTitle : {$regex : regex_str}}, {required_skills : {$regex : regex_str}} ],    
+    //   $or : [ {jobTitle : {$regex : regex_str}}, {required_skills : {$regex : regex_str}} ],    
+        $or : [ {jobTitle : {$regex : regex_str}}, {required_skills : {$in:splitted}} ],    
+
       location : searched_job_location
     })
     .then((result,err) => {
