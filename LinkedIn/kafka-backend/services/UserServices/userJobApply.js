@@ -23,13 +23,15 @@ function handle_request(msg, callback) {
             } else {
                 Job.findByIdAndUpdate(msg.jobId, {
                     $push: {
-                        applications: applicationResult._id
+                        applications: applicationResult._id,
+                        jobApplied: msg.userId
                     }
                 }).exec()
                     .then(jobResult => {
                         UserInfo.findByIdAndUpdate(msg.userId, {
                             $push: {
-                                jobs_applied: msg.jobId
+                                jobs_applied: msg.jobId,
+                                applications: applicationResult._id
                             }
                         }).exec()
                             .then(userResult => {

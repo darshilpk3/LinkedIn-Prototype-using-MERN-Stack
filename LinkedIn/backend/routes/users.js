@@ -40,7 +40,6 @@ router.post('/', async function (req, res, next) {
               password: pwd
             })
             console.log(`user ${user}`);
-
             user.save().then(user => {
               console.log("user created in mongo");
               // console.log(`user in then is ${user}`);
@@ -523,6 +522,49 @@ router.get("/:userId/savedJobs",async function(req,res,next){
       const data = {
         "status": 1,
         "msg": "Successfully fetched the details of all the saved jobs",
+        "info": result
+      }
+      res.writeHead(200, {
+        'Content-Type': 'application/json'
+      })
+      res.end(JSON.stringify(data))
+    }
+  })
+})
+
+router.get("/:userId/appliedJobs",async function(req,res,next){
+
+  console.log("Request to get details of jobs applied by the user: ",req.params.userId)
+
+  const data = {
+    userId:req.params.userId
+  }
+
+  kafka.make_request('userAppliedJobs',data,function(err,result){
+    if(err){
+      const data = {
+        "status": 0,
+        "msg": "Failed fetching the details of jobs applied",
+        "info": err
+      }
+      res.writeHead(200, {
+        'Content-Type': 'application/json'
+      })
+      res.end(JSON.stringify(data))
+    }else if(result.message){
+      const data = {
+        "status": 0,
+        "msg": "Failed fetching the details of jobs applied",
+        "info": result.message
+      }
+      res.writeHead(200, {
+        'Content-Type': 'application/json'
+      })
+      res.end(JSON.stringify(data))
+    }else{
+      const data = {
+        "status": 1,
+        "msg": "Successfully fetched the details of all the applied jobs",
         "info": result
       }
       res.writeHead(200, {

@@ -36,7 +36,7 @@ router.post("/", async function (req, res, next) {
                 }
             }
             res.end(JSON.stringify(data))
-        }else if(result.message){
+        }else if(result && (result.message || result.errmsg)){
             res.writeHead(200, {
                 'Content-Type': 'application/json'
             })
@@ -85,7 +85,7 @@ router.get("/:jobId", async function (req, res, next) {
                 }
             }
             res.end(JSON.stringify(data))
-        }else if(result.message){
+        }else if(result && (result.message || result.errmsg)){
             res.writeHead(200, {
                 'Content-Type': 'application/json'
             })
@@ -137,7 +137,7 @@ router.post("/search", async function (req, res, next) {
                 }
             }
             res.end(JSON.stringify(data))
-        }else if(result.message){
+        }else if(result && (result.message || result.errmsg)){
             res.writeHead(200, {
                 'Content-Type': 'application/json'
             })
@@ -197,7 +197,7 @@ router.put("/:jobId", async function (req, res, next) {
                 }
             }
             res.end(JSON.stringify(data))
-        }else if(result.message){
+        }else if(result && (result.message || result.errmsg)){
             res.writeHead(200, {
                 'Content-Type': 'application/json'
             })

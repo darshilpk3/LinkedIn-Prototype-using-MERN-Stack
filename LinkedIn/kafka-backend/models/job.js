@@ -33,9 +33,6 @@ var job= mongoose.Schema({
     companyLogo:{
         type:String
     },
-    skills:{
-        type:Array
-    },
     applications:[
         {
             type:mongoose.Schema.Types.ObjectId,
@@ -50,6 +47,12 @@ var job= mongoose.Schema({
         required:true
     },
     jobSaved:[
+        {
+            type:mongoose.Schema.Types.ObjectId,
+            ref:'Users'
+        }
+    ],
+    jobApplied:[
         {
             type:mongoose.Schema.Types.ObjectId,
             ref:'Users'

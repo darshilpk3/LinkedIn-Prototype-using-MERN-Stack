@@ -10,6 +10,8 @@ var cors = require('cors')
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 var jobsRouter = require('./routes/jobs');
+var messageRouter = require('./routes/message')
+var connectionRouter = require('./routes/connections')
 
 var mongo = require('./connections/mongo');
 var mongoose = require('mongoose');
@@ -58,7 +60,8 @@ mongoose.connect(mongo.url, {
 app.use('/', indexRouter);
 app.use('/user', usersRouter);
 app.use('/job', jobsRouter)
-
+app.use('/message',messageRouter)
+app.use('/connection',connectionRouter)
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
   next(createError(404));

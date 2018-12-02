@@ -59,7 +59,7 @@ var users= mongoose.model('Users',{
     jobs_applied : [
         {
             type: mongoose.Schema.Types.ObjectId,
-            ref: 'Application'
+            ref: 'Job'
         }
     ],
     jobs_posted : [
