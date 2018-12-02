@@ -343,6 +343,7 @@ router.post("/:userID/apply", async function (req, res, next) {
       res.end(JSON.stringify(data))
     }
   })
+
 })
 
 
@@ -409,75 +410,30 @@ getAllJobsPostedByUser_Caching = function (UserInfo, redis1, userID, callback) {
 
     else {
       //user doesn't exist in cache - we need to query the main database
-      // const userID = req.params.userID
-
-      try {
-        Job.find({
-          postedBy: userID
-        })
-          .exec()
-          .then(result => {
-            console.log("The received result is : ", result);
-            // res.writeHead(200, {
-            //   'Content-Type': 'application/json'
-            // })
-            // const data = {
-            //   "status": 1,
-            //   "msg": "Successfully obtained Job List",
-            //   "info": result
-            // }
-            // res.end(JSON.stringify(data))
-
-            redis1.set(userID, JSON.stringify(result), function () {
-              console.log("_____________setting in cache_________________ ")
-              callback(result);
-            });
-          })
-          .catch(err => {
-            // res.writeHead(200, {
-            //   'Content-Type': 'application/json'
-            // })
-            // const data = {
-            //   "status": 0,
-            //   "msg": "No Such User",
-            //   "info": {
-            //     "error": err
-            //   }
-            // }
-            // res.end(JSON.stringify(data))
-            callback(err);
-          })
-      } catch (error) {
-        // res.writeHead(400, {
-        //   'Content-Type': 'application/json'
-        // })
-        // const data = {
-        //   "status": 0,
-        //   "msg": error,
-        //   "info": {
-        //     "error": error
-        //   }
-        // }
-        // res.end(JSON.stringify(data))
-        callback(null);
+      //make kafka call here
+      var data = {
+        userId: userID
       }
 
+      kafka.make_request("userJobList", data, function (err, result) {
+        console.log("inside of response from kafka")
+        if (err) {
+
+          console.log("_______-err _________", data)
+          callback(err);
+
+        } else {
+
+          console.log("The received result is : ", result);
+          redis1.set(userID, JSON.stringify(result), function () {
+            console.log("_____________setting in cache_________________ ")
+            callback(result);
+          });
 
 
+        }
+      })
 
-
-      // db.collection('text').findOne({
-      //     userID: userID
-      // }, function (err, doc) {
-      //     if (err || !doc) callback(null);
-      //     else {
-      //       //user_data found in database, save to cache and
-      //        // return to client
-      //         redis.set(userID, JSON.stringify(doc), function () {
-      //             callback(doc);
-      //         });
-      //     }
-      // });
 
     }
   });
@@ -508,67 +464,25 @@ router.get("/:userID/joblist", async function (req, res, next) {
       }
       else {
         // res.status(200).send(user_data);
+        console.log("_________user.length____", user_data.length);
+
         res.writeHead(200, {
           'Content-Type': 'application/json'
         })
-        console.log("__________user_data________________-", user_data)
-        // const data = {
-        //   "status": 1,
-        //   "msg": "Successfully obtained Job List",
-        //   "info": user_data
-        // }
-        res.end(JSON.stringify(user_data))
+
+        const data = {
+          "status": 1,
+          "msg": "Successfully obtained Job List",
+          "info": user_data
+        }
+        res.end(JSON.stringify(data))
+
+
 
       }
     });
   }
 
-
-
-
-
-  // try {
-  //   UserInfo.findById(userID)
-  //     .populate('jobs_posted')
-  //     .exec()
-  //     .then(result => {
-  //       console.log("The received result is : ", result);
-  //       res.writeHead(200, {
-  //         'Content-Type': 'application/json'
-  //       })
-  //       const data = {
-  //         "status": 1,
-  //         "msg": "Successfully obtained Job List",
-  //         "info": result
-  //       }
-  //       res.end(JSON.stringify(data))
-  //     })
-  //     .catch(err => {
-  //       res.writeHead(200, {
-  //         'Content-Type': 'application/json'
-  //       })
-  //       const data = {
-  //         "status": 0,
-  //         "msg": "No Such User",
-  //         "info": {
-  //           "error": err
-  //         }
-  //       }
-  //       res.end(JSON.stringify(data))
-  //     })
-  // } catch (error) {
-  //   res.writeHead(400, {
-  //     'Content-Type': 'application/json'
-  //   })
-  //   const data = {
-  //     "status": 0,
-  //     "msg": error,
-  //     "info": {
-  //       "error": error
-  //     }
-  //   }
-  //   res.end(JSON.stringify(data))
-  // }
 });
 
 
