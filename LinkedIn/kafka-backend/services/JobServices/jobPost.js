@@ -1,7 +1,9 @@
-var UserInfo = require('../../../backend/models/userInfo').users
-var Application = require('../../../backend/models/application')
-var Job = require('../../../backend/models/job')
-var Message = require('../../../backend/models/message')
+// var UserInfo = require('../../../backend/models/userInfo').users
+var UserInfo = require('../../models/userInfo').users
+
+var Application = require('../../models/application')
+var Job = require('../../models/job')
+var Message = require('../../models/message')
 
 function handle_request(msg, callback) {
 
@@ -20,9 +22,12 @@ function handle_request(msg, callback) {
         required_skills: msg.required_skills
     })
 
+    // console.log("__________new Job is_______________",newJob)
+
     newJob.save()
         .then((jobResult, err) => {
             if (err) {
+                console.log("____________err_____________",err)
                 callback(err, err)
             } else {
                 console.log("Job posted: ", jobResult)

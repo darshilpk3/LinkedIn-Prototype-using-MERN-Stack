@@ -12,8 +12,8 @@ var kafka = require('../kafka/client')
 
 
 /*
-posting a job
-also updating the redis after successful post of a job in the same location and job title 
+*posting a job
+*also updating the redis after successful post of a job in the same location and job title 
 */
 router.post("/", async function (req, res, next) {
 
@@ -74,6 +74,9 @@ router.post("/", async function (req, res, next) {
 })
 
 
+/**
+ * get job details 
+ */
 router.get("/:jobId", async function (req, res, next) {
     console.log("Inside get joblist.")
     
@@ -122,6 +125,11 @@ router.get("/:jobId", async function (req, res, next) {
     })
 })
 
+
+/**
+ * search based on jobs
+ * here apply caching
+ */
 router.post("/search", async function (req, res, next) {
 
     console.log("\nInside the search request for jobs");
@@ -176,6 +184,12 @@ router.post("/search", async function (req, res, next) {
     //making the regex for the mongo query
 })
 
+
+
+/**
+ * edit job details 
+ * update redis cache here and then make the kafka call 
+ */
 router.put("/:jobId", async function (req, res, next) {
     console.log("\nInside the edit request for jobs");
     console.log("\nRequest obtained is : ");
@@ -233,4 +247,8 @@ router.put("/:jobId", async function (req, res, next) {
         }
     })
 })
+
+
+
+
 module.exports = router;
