@@ -499,6 +499,9 @@ router.get("/:userID/joblist", async function (req, res, next) {
 //__________redis cache of sql ending___________
 
 
+/*
+delete a user
+*/
 router.delete("/:userID", async function (req, res, next) {
   console.log('\n\nIn user Delete');
   console.log("Request Got: ", req.body);
@@ -590,6 +593,9 @@ router.delete("/:userID", async function (req, res, next) {
 
 });
 
+/*
+apply for a job
+*/
 router.post("/:userID/apply", async function (req, res, next) {
   console.log("Inside post apply of job.")
   const jobId = req.body.job_id
@@ -639,6 +645,10 @@ router.post("/:userID/apply", async function (req, res, next) {
   }
 })
 
+
+/*
+saving a job
+*/
 router.post("/:userID/save", async function (req, res, next) {
   console.log("Inside post of job save.")
   const jobId = req.body.job_id
@@ -700,7 +710,9 @@ router.post("/:userID/save", async function (req, res, next) {
 })
 
 
-
+/*
+get user by user id
+*/
 router.get("/:userId", async function (req, res, next) {
   UserInfo.findById(req.params.userId)
     .populate('jobs_applied')
@@ -750,6 +762,10 @@ router.get("/:userId", async function (req, res, next) {
     })
 })
 
+
+/*
+update user profile
+*/
 router.put("/:userId", async function (req, res, next) {
 
   console.log("\nInside user profile updation");
@@ -852,5 +868,103 @@ router.put("/:userId", async function (req, res, next) {
   }
 
 })
+
+
+/*
+search by username
+*/
+router.post("/search", async function (req, res, next) {
+
+  console.log("inside post request of search by username");
+  console.log("req.body", req.body)
+  const username = req.body.username;
+
+  // $or: [{ jobTitle: { $regex: regex_str,$options:'i' } }, { required_skills: { $regex: regex_str,$options:'i' } }],
+
+  UserInfo.find({
+    $or: [{ fname: { $regex: username, $options: 'i' } }, { lname: { $regex: username, $options: 'i' } }]
+  })
+    .then((user, err) => {
+      if (err) {
+
+        const data = {
+          "status": 0,
+          "msg": "No Such Data found",
+          "info": {
+            "error": err
+          }
+        }
+        res.writeHead(200, {
+          'Content-Type': 'application/json'
+        })
+        res.end(JSON.stringify(data))
+
+      } else {
+
+        console.log("Search query executed successfully");
+
+        console.log("found the list usernames!", user);
+        res.writeHead(200, {
+          'Content-Type': 'application/json'
+        })
+        const data = {
+          "status": 1,
+          "msg": "list of usernames",
+          "info": { user }
+        }
+        console.log("data being sent to frontend:\n", JSON.stringify(data))
+        res.end(JSON.stringify(data))
+
+      }
+    })
+    .catch(err => {
+
+      res.writeHead(400, {
+        'Content-Type': 'application/json'
+      })
+      const data = {
+        "status": 0,
+        "msg": "Backend Error",
+        "info": {
+          "error": err
+        }
+      }
+      res.end(JSON.stringify(data))
+
+    })
+
+  // function (err, user) {
+  // if (err) {
+  //     console.log("error occured")
+  //     // callback(err, "login failed");
+  //     // console.log("Some error in sql query", err.sqlMessage)
+  //     res.writeHead(400, {
+  //         'Content-Type': 'application/json'
+  //     })
+
+  //     res.end("some error in sql query")
+
+  // }else{
+  //     console.log("found the list usernames!",user);
+  //     res.writeHead(200, {
+  //         'Content-Type': 'application/json'
+  //     })
+  //     const data = {
+  //         "status": 1,
+  //         "msg": "list of usernames",
+  //         "info": {user}
+  //     }
+  //     console.log("data being sent to frontend:\n", JSON.stringify(data))
+  //     res.end(JSON.stringify(data))
+  // }
+})
+
+
+
+
+
+
+
+
 
 module.exports = router;

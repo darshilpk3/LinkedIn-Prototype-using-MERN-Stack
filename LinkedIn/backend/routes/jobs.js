@@ -162,7 +162,7 @@ getJobsSearch_Caching = function (Job, redis, userID, callback) {
     }
     regex_str = regex_str + ")$";
 
-    const key = searched_job_location + searched_job_title
+    const key = (searched_job_location + searched_job_title).toLowerCase();
     console.log("_______________key_________________", key)
     // redis.hmget('offers',userID,function (err, reply) {
     redis.get(key, function (err, reply) {
@@ -179,8 +179,8 @@ getJobsSearch_Caching = function (Job, redis, userID, callback) {
 
             Job.find({
                 //   jobTitle : {$regex : regex_str}, 
-                $or: [{ jobTitle: { $regex: regex_str } }, { required_skills: { $regex: regex_str } }],
-                location: searched_job_location
+                $or: [{ jobTitle: { $regex: regex_str,$options:'i' } }, { required_skills: { $regex: regex_str,$options:'i' } }],
+                location: {$regex:searched_job_location,$options:'i'}
             })
                 .then((result, err) => {
                     if (err) {
@@ -204,7 +204,7 @@ getJobsSearch_Caching = function (Job, redis, userID, callback) {
                                 "result": result
                             }
                         }
-                        const key = searched_job_location + searched_job_title
+                        const key = (searched_job_location + searched_job_title).toLowerCase();
                         // console.log("~~~~~~~~~~~~key~~~~~~~~~~~~~~~`````", key)
 
                         //redis.hmset('offers',userID,JSON.stringify(data), function () {
