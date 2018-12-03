@@ -1,6 +1,6 @@
 var UserInfo = require('../../../backend/models/userInfo').users
 var Application = require('../../../backend/models/application')
-var Job = require('../../../backend/models/job')
+var Job = require('../../models/job')
 var Message = require('../../../backend/models/message')
 
 function handle_request(msg, callback) {
@@ -8,6 +8,7 @@ function handle_request(msg, callback) {
     console.log("\n\nInside kafka backend for fetching jobs")
     console.log("\n\n User data is: ", msg)
 
+    console.log(Job)
     Job.find({
         postedBy : msg.userId
     }).exec()

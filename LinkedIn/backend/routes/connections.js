@@ -112,14 +112,30 @@ router.get("/:userId/getConnections",async function(req,res,next){
     UserInfo.findById(data.userId,{'connections':1})
     .populate({
         path:'connections',
-        select:'fname + lname'
+        select:'fname + lname + headline + connections'
     })
     .exec()
         .then(result => {
-            res.send(200,JSON.stringify(result))
+            res.writeHead(200,{
+                'Content-Type':'application/json'
+            })
+            const data = {
+                status : 1,
+                msg:"Succesfully got all the connections",
+                info:result
+            }
+            res.end(JSON.stringify(data))
         })
         .catch(err => {
-            res.send(400,"Server Error")
+            res.writeHead(200,{
+                'Content-Type':'application/json'
+            })
+            const data = {
+                status : 0,
+                msg:"Getting of connections failed",
+                info:err
+            }
+            res.end(JSON.stringify(data))
         })
 })
 

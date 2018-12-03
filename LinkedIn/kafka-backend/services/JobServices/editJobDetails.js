@@ -1,14 +1,14 @@
-var UserInfo = require('../../../backend/models/userInfo').users
-var Application = require('../../../backend/models/application')
-var Job = require('../../../backend/models/job')
-var Message = require('../../../backend/models/message')
+var UserInfo = require('../../models/userInfo').users
+var Application = require('../../models/application')
+var Job = require('../../models/job')
+var Message = require('../../models/message')
 
 function handle_request(msg, callback) {
 
     console.log("\n\nInside kafka backend for editing details of job")
     console.log("\n\n User data is: ", msg)
 
-    Job.findByIdAndUpdate(setJobId,
+    Job.findByIdAndUpdate(msg.jobId,
         {
             $set: {
                 jobTitle: msg.job_title,
@@ -31,9 +31,9 @@ function handle_request(msg, callback) {
         })
         .catch(err => {
             callback(err,err)
-        })
-    
+        })    
 }
+
 
 
 exports.handle_request = handle_request;

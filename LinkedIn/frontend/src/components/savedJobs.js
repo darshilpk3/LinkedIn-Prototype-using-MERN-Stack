@@ -48,9 +48,6 @@ class savedJobs extends Component {
         require('../styles/savedJobs.css');
         let redirect = null;
 
-        let DisplaySavedJobs = null;
-        let DisplayAppliedJobs = null;
-
         if (this.state.savedJobsDetails) {
             var displaySavedJobs = this.state.savedJobsDetails.map(job => {
                 return (
@@ -110,14 +107,13 @@ class savedJobs extends Component {
                         <div class="myadsborder">
                             <div className="row">
                                 <div class="col-sm-8 col-md-8 col-lg-8" style={{ 'textAlign': 'left' }}>
-                                    Applied Jobs({this.state.appliedJobs})
+                                    Applied Jobs
                                     </div>
                                 <div class="col-sm-4 col-md-4 col-lg-4" style={{ 'textAlign': 'right' }}>
                                     <a href="/appliedJobs">See all</a>
                                 </div>
                             </div>
                             <hr></hr>
-                            {DisplayAppliedJobs}
                             <br></br><br></br><br></br>
                         </div>
 

@@ -12,16 +12,9 @@ import picDS from '../assets/images/PicDS.png'
 class connections extends Component {
     constructor(props) {
         super(props);
-        // this.state={
-        //     userConnections : "205",    //number of connections user have
-        //     userConnections : "20",
-        //     userName : "Alex White",
-        //     userInfo : "Student at San Jose State University",
-        //     userProfileImage: "https://image.freepik.com/free-vector/abstract-dark-blue-polygonal-background_1035-9700.jpg"
-        // }
         this.state = {
-            connectionsResult: null,
-            filteredConnectionsResult: null,
+            peopleResult: null,
+            filteredPeopleResult: null,
             searchName:null
         }
     }
@@ -30,6 +23,13 @@ class connections extends Component {
         var headers = new Headers()
         axios.defaults.withCredentials = true;
 
+
+        if(this.props.match.params){
+            const data = {
+                name : this.props.match.params
+            }
+            
+        }
         if (localStorage.getItem('userId')) {
             const id = localStorage.getItem('userId')
             axios.get(`http://localhost:3001/connection/${id}/getConnections`)

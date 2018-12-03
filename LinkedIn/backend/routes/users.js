@@ -460,7 +460,7 @@ router.put("/:userId", async function (req, res, next) {
         'Content-Type': 'application/json'
       })
       res.end(JSON.stringify(data))
-    }else if(result.message){
+    } else if (result.message) {
       const data = {
         "status": 0,
         "msg": "Failed updating the details",
@@ -470,7 +470,7 @@ router.put("/:userId", async function (req, res, next) {
         'Content-Type': 'application/json'
       })
       res.end(JSON.stringify(data))
-    }else {
+    } else {
       const data = {
         "status": 1,
         "msg": "Successfully updated the details",
@@ -489,16 +489,16 @@ router.put("/:userId", async function (req, res, next) {
 ///////////////////////////////////////////////////////////
 // Had to be added
 
-router.get("/:userId/savedJobs",async function(req,res,next){
+router.get("/:userId/savedJobs", async function (req, res, next) {
 
-  console.log("Getting saved jobs for the user: ",req.params.userId)
+  console.log("Getting saved jobs for the user: ", req.params.userId)
 
   const data = {
-    userId:req.params.userId
+    userId: req.params.userId
   }
 
-  kafka.make_request('userSavedJobs',data,function(err,result){
-    if(err){
+  kafka.make_request('userSavedJobs', data, function (err, result) {
+    if (err) {
       const data = {
         "status": 0,
         "msg": "Failed fetching the details of jobs saved",
@@ -508,7 +508,7 @@ router.get("/:userId/savedJobs",async function(req,res,next){
         'Content-Type': 'application/json'
       })
       res.end(JSON.stringify(data))
-    }else if(result.message){
+    } else if (result.message) {
       const data = {
         "status": 0,
         "msg": "Failed fetching the details of jobs saved",
@@ -518,7 +518,7 @@ router.get("/:userId/savedJobs",async function(req,res,next){
         'Content-Type': 'application/json'
       })
       res.end(JSON.stringify(data))
-    }else{
+    } else {
       const data = {
         "status": 1,
         "msg": "Successfully fetched the details of all the saved jobs",
@@ -532,16 +532,16 @@ router.get("/:userId/savedJobs",async function(req,res,next){
   })
 })
 
-router.get("/:userId/appliedJobs",async function(req,res,next){
+router.get("/:userId/appliedJobs", async function (req, res, next) {
 
-  console.log("Request to get details of jobs applied by the user: ",req.params.userId)
+  console.log("Request to get details of jobs applied by the user: ", req.params.userId)
 
   const data = {
-    userId:req.params.userId
+    userId: req.params.userId
   }
 
-  kafka.make_request('userAppliedJobs',data,function(err,result){
-    if(err){
+  kafka.make_request('userAppliedJobs', data, function (err, result) {
+    if (err) {
       const data = {
         "status": 0,
         "msg": "Failed fetching the details of jobs applied",
@@ -551,7 +551,7 @@ router.get("/:userId/appliedJobs",async function(req,res,next){
         'Content-Type': 'application/json'
       })
       res.end(JSON.stringify(data))
-    }else if(result.message){
+    } else if (result.message) {
       const data = {
         "status": 0,
         "msg": "Failed fetching the details of jobs applied",
@@ -561,7 +561,7 @@ router.get("/:userId/appliedJobs",async function(req,res,next){
         'Content-Type': 'application/json'
       })
       res.end(JSON.stringify(data))
-    }else{
+    } else {
       const data = {
         "status": 1,
         "msg": "Successfully fetched the details of all the applied jobs",
@@ -572,6 +572,72 @@ router.get("/:userId/appliedJobs",async function(req,res,next){
       })
       res.end(JSON.stringify(data))
     }
+  })
+})
+
+router.post("/:userId/search", async function (req, res, next) {
+  console.log("Searching through Users")
+  const connections = []
+  const data = {
+    name: req.body.name
+  }
+  UserInfo.find({
+    fname: data.name
+    //connections: req.params.userId
+  }).exec()
+    .then(result => {
+      result.forEach((user) => {
+        console.log("User is: ",user._id," and connections are : ",user.connections)
+        if(user.connections.indexOf(req.params.userId) != -1){
+          const connectionInfo = {
+            _id: user._id,
+            name: user.fname + " " + user.lname,
+            headline : user.headline,
+            email: user.email,
+            isConnected: "true"
+          }
+          connections.push(connectionInfo)
+        }else if(user.pending_receive.indexOf(req.params.userId) != -1){
+          const connectionInfo = {
+            _id: user._id,
+            name: user.fname + " " + user.lname,
+            headline : user.headline,
+            email: user.email,
+            isConnected: "Accept"
+          }
+          connections.push(connectionInfo)
+        }else if(user.pending_sent.indexOf(req.params.userId) != -1){
+          const connectionInfo = {
+            _id: user._id,
+            name: user.fname + " " + user.lname,
+            headline : user.headline,
+            email: user.email,
+            isConnected: "pending"
+          }
+          connections.push(connectionInfo)
+        }else{
+          const connectionInfo = {
+            _id: user._id,
+            name: user.fname + " " + user.lname,
+            headline : user.headline,
+            email: user.email,
+            isConnected: "false"
+          }
+          connections.push(connectionInfo)
+        }
+      })
+      const data = {
+        "status":"1",
+        "msg":"Successfully Searched",
+        "info":connections
+      }
+      res.writeHead(200,{
+        'Content-Type': 'application/json'
+      })
+      res.end(JSON.stringify(data))
+    })
+  .catch(err => {
+    res.send(400, err)
   })
 })
 module.exports = router;
