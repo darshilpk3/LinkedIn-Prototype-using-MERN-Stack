@@ -1,93 +1,23 @@
-var UserInfo = require('../models/userInfo');
+var { mongoose } = require('../db/mongoose');
+// var { userinfos } = require('../models/userinfos');
 var Job = require('../models/job')
-var { mongoose } = require('../connections/mongo');
-
-var redisClient = require('redis').createClient;
-var redis1 = redisClient(6379, 'localhost');
-//var mongoose = require('mongoose');
 var bcrypt = require('bcryptjs');
-
 
 function handle_request(msg, callback) {
 
-    console.log("\n\nInside kafka backend for get job list request");
-    console.log("Inside get joblist. og ");
-    let userID = msg.userID; 
-  
-    if (!userID) {
-        callback(err,"Error no userid1");
-    
-    }
-    else {
-      getAllJobsPostedByUser_Caching(UserInfo, redis1, userID, function (user_data) {
-        if (!userID) {
-        //   res.status(500).send("Server error");
-            callback(err,"Error no userid 2");
-        }
-        else {
-           // console.log("The received result is : ", user_data);
-
-            const data = {
-                "status": 1,
-                "msg": "Successfully obtained Job List",
-                "info": user_data
-            }
-
-            callback(null, user_data);
-       
-        }
-      });
-    }
+  console.log("\n\nInside kafka backend for getting jobs request")
+  Job.find({
+    postedBy: msg.userID
+  })
+    .exec()
+    .then(result => {
+      console.log("Result fetched ", result)
+      callback(null, result)
+    })
+    .catch(err => {
+      callback(err, err)
+    })
 }
 
-getAllJobsPostedByUser_Caching = function (UserInfo, redis1, userID, callback) {
-    redis1.get(userID, function (err, reply) {
-      if (err) callback(null);
-      else if (reply) {
-        console.log("___________________________from cache_______________________________")
-        callback(JSON.parse(reply));
-      } //user exists in cache
-  
-      else {
-        //user doesn't exist in cache - we need to query the main database
-        // const userID = req.params.userID
-  
-        try {
-          Job.find({
-            postedBy: userID},{'jobTitle':1,'_id':0})
-            .exec()
-            .then(result => {
-              //console.log("The received result is : ", result);
-              // res.writeHead(200, {
-              //   'Content-Type': 'application/json'
-              // })
-              // const data = {
-              //   "status": 1,
-              //   "msg": "Successfully obtained Job List",
-              //   "info": result
-              // }
-              // res.end(JSON.stringify(data))
-  
-              redis1.set(userID, JSON.stringify(result), function () {
-                console.log("_____________setting in cache_________________ ")
-                callback(result);
-              });
-            })
-            .catch(err => {
-              // const data = {
-              //   "status": 0,
-              //   "msg": "No Such User",
-              //   "info": {
-              //     "error": err
-              //   }
-              // } 
-              callback(err);
-            })
-        } catch (error) {
-          callback(null);
-        }
-      }
-    });
-  };
-  
+
 exports.handle_request = handle_request;

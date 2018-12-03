@@ -5,15 +5,64 @@ import axios from 'axios';
 import '../styles/jobposting.css'
 import Stepper from 'react-stepper-horizontal'
 import bulb from '../assets/images/postjobbulb.PNG'
+import jobpostlogo from '../assets/images/jobpostlogo.PNG'
+var swal = require('sweetalert')
+var redirectVar = null;
 
 class JobPosting extends Component{
     constructor(props){
         super(props);
         this.state={
-            userName : "Alex White",
-            userProfileImage: "https://image.freepik.com/free-vector/abstract-dark-blue-polygonal-background_1035-9700.jpg",
+           jobTitle: "",
+           jobDescription : "",
+           jobIndustry : "",
+           jobEmploymentType : "",
+           jobPostedDate : "",
+           jobLocation : "",
+           jobFunction : "",
+           jobSkills : "",
+           companyLogo : "",
+           jobPostedBy : "",
+           companyName : "",
+           jobPosted : false,
+           applyMethod : ""
         }
+        this.PostJobHandler = this.PostJobHandler.bind(this);
+        this.onChange = this.onChange.bind(this);
     }
+
+    PostJobHandler = (e) => {
+        e.preventDefault();
+        const data = {
+            jobTitle: this.state.jobTitle,
+           jobIndustry : this.state.jobIndustry,
+           jobEmploymentType : this.state.jobEmploymentType,
+           jobPostedDate : Date(),
+           jobLocation : this.state.jobLocation,
+           jobFunction : this.state.jobFunction,
+           jobSkills : this.state.jobSkills,
+        //    companyLogo : 
+        //    jobPostedBy : 
+           companyName : this.state.companyName,
+        }
+
+        console.log("Data for posting Job : ", data)
+
+        axios.post("http://localhost:3001/job/", data)
+        .then((response) => {
+            if(response.status === 200){
+            this.setState({
+                jobPosted : true
+            })
+            swal("Job Posted!", "Congratulations", "success")
+            }
+        })
+        
+    }
+
+    onChange(e){
+        this.setState({[e.target.name]:e.target.value})
+    } 
 
     render(){
         return(
@@ -32,8 +81,22 @@ class JobPosting extends Component{
     </div>
 </div>
 <form onSubmit={this.onSubmit}>
-    <div class="row setup-content" id="step-1">
+    <div class="row setup-content" id="step-2">
     <div className="page1background">
+            <div className="JobPostHeader">
+            <nav class="navbar navbar-expand-lg navbar-light bg-light">
+            <img src={jobpostlogo} class="navbar-brand" style={{ width: "10%", height:"49px", padding: "5px 20px 0px 10px", margin : ".5% 0% 0% 13%" }}/>
+            <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
+            <div class="navbar-nav jobpostlinksnavbar">
+                <Link to="#" className="nav-item linkinjobpostheader"><b>HOME</b> &nbsp; &nbsp; &nbsp;</Link>
+                <Link to="/job/post" className="nav-item active linkinjobpostheader"><b>POST A JOB</b> &nbsp; &nbsp; &nbsp; <span class="sr-only">(current)</span></Link>
+                <Link to="/newsfeed" className="nav-item linkinjobpostheader"><b>LINKEDIN.COM</b> </Link>
+            </div>
+            </div>
+            </nav>
+            
+            </div>
+            <hr></hr>
         <div class="col-xs-12">
             <div class="col-md-12">
             <div className="jobpostpage1">
@@ -41,13 +104,13 @@ class JobPosting extends Component{
                 <div className = "containerjobpostpage1">
                 <br></br>
                     <div className ="form-group">
-                        <input type="text" placeholder="Company" name="jobpostpage1input-company" className ="form-control jobpostpage1input"/>
+                        <input onChange = {this.onChange} type="text" value={this.state.companyName} placeholder="Company" name="companyName" className ="form-control jobpostpage1input"/>
                     </div>
                     <div className ="form-group">
-                        <input type="text" placeholder="Job title" name="jobpostpage1input-jobtitle" className ="form-control jobpostpage1input"/>
+                        <input type="text" placeholder="Job title" onChange = {this.onChange} value={this.state.jobTitle} name="jobTitle" className ="form-control jobpostpage1input"/>
                     </div>
                     <div className ="form-group">
-                        <input type="text" placeholder="Job address or city" name="jobpostpage1input-city" className ="form-control jobpostpage1input"/>
+                        <input type="text" placeholder="Job address or city" onChange = {this.onChange} value={this.state.jobLocation} name="jobLocation" className ="form-control jobpostpage1input"/>
                     </div>
                 <button class="btn btn-primary nextBtn btn-lg page1jobpostbutton" type="button" ><b>Start job post</b></button>
                 </div>
@@ -56,7 +119,7 @@ class JobPosting extends Component{
         </div>
         </div>
     </div>
-    <div class="row setup-content" id="step-2">
+    <div class="row setup-content" id="step-1">
     <div className="page2background">
         <div class="col-xs-12">
             <div class="col-md-12">
@@ -66,50 +129,53 @@ class JobPosting extends Component{
                         <div className = "row">
                             <div className ="form-group">
                                 <p className="control-label jobpostrow1label">Company * &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Job title * &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Location *</p>
-                                <input type="text" name="company" placeholder="Company" className ="form-control jobpostcompany"/>
+                                <input type="text" name="companyName"  onChange = {this.onChange} value={this.state.companyName} placeholder="Company" className ="form-control jobpostcompany" required/>
                            </div>
                             <div className ="form-group">
-                                <input type="text" name="jobtitle" placeholder="Job title" className ="form-control jobposttitle"/>
+                                <input type="text" onChange = {this.onChange} value={this.state.jobTitle} name="jobTitle" placeholder="Job title" className ="form-control jobposttitle" required/>
                             </div>
                             <div className ="form-group">
-                                <input type="text" name="jobcity" placeholder="Job address or city" className ="form-control jobpostlocation"/>
+                                <input type="text" onChange = {this.onChange} value={this.state.jobLocation} name="jobLocation" placeholder="Job address or city" className ="form-control jobpostlocation" required/>
                             </div>
                         </div>
                         <br></br>
                         <div className ="form-group">
                             <p className="control-label jobpostrow1label">Job function (Select up to 3) * &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Employment type *</p>
-                            <input type="text" name="jobfunction" placeholder="Add job function" className ="form-control jobpostfunction"/>
+                            <input type="text" name="jobfunction" onChange = {this.onChange} value={this.state.jobFunction} name="jobFunction" placeholder="Add job function" className ="form-control jobpostfunction" required/>
                         </div>
-                        <div className ="form-group">
-                            <input type="text" name="jobtype" placeholder="Choose one..." className ="form-control jobpostlocation"/>
-                        </div>
+                        <div className ="dropdown jobpostemployment">
+                        <button class="btn btn-default dropdown-toggle" style={{width:"78%",height:"60px"}} type="button" data-toggle="dropdown">Choose One... 
+                        <span class="caret"></span></button>
+                        <ul class="dropdown-menu" style={{width:"78%"}}>
+                          <li><a href="#">Part-Time</a></li>
+                          <li><a href="#">Full-Time</a></li>
+                        </ul>
+                      </div>
                         <br></br>
-                        <br></br>
                         <div className ="form-group">
-                            <p className="control-label jobpostrow1label">Company Industry (Select up to 3) * &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Seniority Level *</p>
-                            <input type="text" name="companyindustry" placeholder="Add company industry" className ="form-control jobpostfunction"/>
+                            <p className="control-label jobpostrow1label">Company Industry (Select up to 3) *</p>
+                            <input type="text" onChange = {this.onChange} value={this.state.jobIndustry} name="jobIndustry" placeholder="Add company industry" className ="form-control jobpostfunction" required/>
                         </div>
-                        <div className ="form-group">
-                            <input type="text" name="senioritylevel" placeholder="Choose one..." className ="form-control jobpostlocation"/>
-                        </div>
+                        
                         <br></br><br></br>
                         <div className ="form-group">
                             <p className="control-label jobpostrow1label">Job description *</p>
-                            <input type="text" placeholder="" name="jobdescription" className ="form-control jobpostdescription"/>
+                            <input type="text" placeholder="" onChange = {this.onChange} value={this.state.jobDescription} name="jobDescription" className ="form-control jobpostdescription" required/>
                         </div>
                         <br></br><br></br>
-                        <p className="control-label jobpostrow1label">How would you like to receive your applicants?</p>
-                        <div className ="form-group">
-                            <input type="text" placeholder="example@example.com" name="throughlinkedin" className ="form-control jobpostfunction"/>
-                        </div>
-                        <br></br><br></br>
-                        <div className ="form-group">
-                            <input type="text" placeholder="http://yourcompany.com/job123" name="directapply" className ="form-control jobpostfunction"/>
-                        </div>
+                        <p className="control-label jobpostrow1label">Apply Method *</p>
+                        <div className ="dropdown">
+                        <button class="btn btn-default dropdown-toggle" style={{width:"48%",height:"60px", margin: "0% 0% 2.5% 3%"}} type="button" data-toggle="dropdown">Choose One... 
+                        <span class="caret"></span></button>
+                        <ul class="dropdown-menu" style={{width:"48%"}}>
+                          <li><a href="#">Easy Apply</a></li>
+                          <li><a href="#">Application Form</a></li>
+                        </ul>
+                      </div>
                         <br></br><br></br>
                         <div className ="form-group">
                             <p className="control-label jobpostrow1label">How did you hear about us?</p>
-                            <input type="text" placeholder="Choose one..." name="jobdescription" className ="form-control jobpostfunction"/>
+                            <input type="text" placeholder="Enter Company Name"  onChange = {this.onChange} value={this.state.companyName} name="companyName" className ="form-control jobpostfunction" required/>
                         </div>
                     </div>
                     <button class="btn btn-primary nextBtn btn-lg" type="button" >Continue</button>
@@ -132,19 +198,19 @@ class JobPosting extends Component{
                 <div className="jobpostform">
                         <div className ="form-group">
                             <p className="control-label jobpostrow1label">What are some of the skills needed for this job? *</p>
-                            <input type="text" name="skillspostjob" placeholder="Accounting, Business Analysis, Communication, etc.." className ="form-control jobpostfunction"/>
+                            <input type="text" onChange = {this.onChange} value={this.state.jobSkills} name="jobSkills" placeholder="Accounting, Business Analysis, Communication, etc.." className ="form-control jobpostfunction" required/>
                        </div>
                     <br></br>
                     <br></br>
                     <div className ="form-group">
                         <p className="control-label jobpostrow1label">How many years of relevant experience are you looking for? *</p>
-                        <input type="text" name="jobpostexperience" placeholder="1, 2, 3 .. years of experience." className ="form-control jobpostfunction"/>
+                        <input type="text" name="jobpostexperience" placeholder="1, 2, 3 .. years of experience." className ="form-control jobpostfunction" required/>
                     </div>
                    <br></br>
                     <br></br>
                     <div className ="form-group">
                         <p className="control-label jobpostrow1label">What level of education are you looking for? *</p>
-                        <input type="text" name="companyindustry" placeholder="Add company industry" className ="form-control jobpostfunction"/>
+                        <input type="text" name="companyindustry" placeholder="Add company industry" className ="form-control jobpostfunction" required/>
                     </div>
                     <br></br>
                     <br></br>
@@ -153,7 +219,7 @@ class JobPosting extends Component{
                         <input type="text" name="postjobbudget" placeholder="0 $" className ="form-control jobpostfunction"/>
                     </div>
                 </div>
-                <button class="btn btn-primary btn-lg finishpostjob" type="submit" ><b>Post My Job</b></button>
+                <button class="btn btn-primary btn-lg finishpostjob" onClick={this.PostJobHandler} type="submit" ><b>Post My Job</b></button>
             </div>
             <div className="postjobtippage3">  
             <img src = {bulb} className="postjobtipimage"></img>  

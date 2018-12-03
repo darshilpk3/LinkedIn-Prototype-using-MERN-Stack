@@ -1,7 +1,5 @@
 var mongoose =require('mongoose');
 
-//var { mongoose } = require('../connections/mongo');
-
 var experience_schema = require('./experienceInfo').experience
 var education_scheme = require('./educationInfo').education
 
@@ -77,7 +75,30 @@ var users= mongoose.Schema({
             type: mongoose.Schema.Types.ObjectId,
             ref: 'Job'
         }
-    ]  
+    ],
+    applications : [{
+        type:mongoose.Schema.Types.ObjectId,
+        ref: 'Application'
+    }],
+    connections:[{
+        type:mongoose.Schema.Types.ObjectId,
+        ref:'Users'
+    }],
+    pending_sent:[{
+        type:mongoose.Schema.Types.ObjectId,
+        ref:'Users'
+    }],
+    pending_receive:[{
+        type:mongoose.Schema.Types.ObjectId,
+        ref:'Users'
+    }],
+    conversations : [{
+        type:mongoose.Schema.Types.ObjectId,
+        ref:'Message'
+    }],
+    noOfViews:{
+        type:Number
+    }  
 })
  
 users.pre('remove', { document: true }, function() {

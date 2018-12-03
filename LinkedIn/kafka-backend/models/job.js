@@ -1,5 +1,4 @@
 var mongoose =require('mongoose');
-//var { mongoose } = require('../connections/mongo');
 
 var job= mongoose.Schema({
     postedBy:{
@@ -28,17 +27,26 @@ var job= mongoose.Schema({
     jobFunction:{
           type:String
     },
+    required_skills:[{
+        type:String
+    }],
     companyLogo:{
         type:String
     },
-    applicants:[
+    companyName:{
+        type:String
+    },
+    applications:[
         {
             type:mongoose.Schema.Types.ObjectId,
-            ref:'Users'
+            ref:'Application'
         }
     ],
     noOfViews:{
         type:Number
+    },
+    applyMethod:{
+        type:String
     },
     postedDate:{
         type:String,
@@ -49,15 +57,14 @@ var job= mongoose.Schema({
             type:mongoose.Schema.Types.ObjectId,
             ref:'Users'
         }
+    ],
+    jobApplied:[
+        {
+            type:mongoose.Schema.Types.ObjectId,
+            ref:'Users'
+        }
     ]
 })
 
- /*job.pre('save', function(next) {
-    // Remove all the assignment docs that reference the removed person.
-
-    // this.model('Users').remove({ person: this._id }, next);
- 
-    console.log('-------------------------Removing doc!');
-}); */
- 
+job.index({'postedBy':1,'jobTitle':1,'description':1,'industry':1,'employmentType':1,'location':1},{unique:true})
 module.exports = mongoose.model('Job',job);
