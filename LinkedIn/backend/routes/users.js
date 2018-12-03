@@ -376,8 +376,8 @@ router.post("/:userID/save", async function (req, res, next) {
         res.end(JSON.stringify(data))
       })
   })
-
-  router.get("/:userID/joblist", async function (req, res) {
+ 
+/*   router.get("/:userID/joblist", async function (req, res) {
     console.log("Inside get joblist.")
     req.body.userID = req.params.userID;
 
@@ -409,9 +409,8 @@ router.post("/:userID/save", async function (req, res, next) {
           }
         }
     });
-  })
-  
-
+  }) */
+   
 
 //  router.get("/:userID/joblist", async function (req, res, next) {
 //   console.log("Inside get joblist.")
@@ -461,6 +460,9 @@ router.post("/:userID/save", async function (req, res, next) {
 //   }
 // })
  
+
+
+
 //////////////////////////////End - Devu code/////////////////////////////////
 
 router.get("/:userId", async function (req, res, next) {
