@@ -131,16 +131,19 @@ router.post('/login', async function (req, res, next) {
             res.writeHead(200, {
               'Content-Type': 'application/json'
             })
+            
             const data = {
               "status": 1,
               "msg": "Successfully Logged In",
               "info": {
+                // "uid":result[0].
                 "fullname": result[0].firstName + " " + result[0].lastName,
                 "email": email,
                 "type": result[0].type
               }
             }
             console.log("data being sent to frontend:\n", JSON.stringify(data))
+            console.log(result)
             res.end(JSON.stringify(data))
           } else if (err) {
             console.log("Some error in sql query", err.sqlMessage)

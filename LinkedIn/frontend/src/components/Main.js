@@ -8,10 +8,12 @@ import messaging from './messaging';
 import navbar from './navbar';
 import homepage from './homepage';
 import Profilelocation from './profilelocation';
+import profileType from './profileType';
 import Newsfeed from './newsfeed';
 import UserDelete from './userdelete';
 import JobPosting from './jobposting';
 import JobSearch from './jobsearch';
+import profile from './profile';
 
 class Main extends Component {
     render() {
@@ -30,6 +32,8 @@ class Main extends Component {
                 <Route exact path="/user/delete" component={UserDelete} />
                 <Route exact path="/job/post" component={JobPosting} />
                 <Route exact path="/jobs/" component={JobSearch} />
+                <Route exact path="/profile/" component={profile} />
+                <Route exact path="/profileType/" component={profileType} />
             </div>
         )
     }

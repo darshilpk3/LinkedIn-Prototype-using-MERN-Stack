@@ -2,6 +2,7 @@
 const myData = (localStorage['myData']) ?
     JSON.parse(localStorage.getItem('myData')) :
     {}
+
 const initialStore = {
     myData: myData
 }
@@ -17,6 +18,13 @@ const reducer = (state = initialStore, action) => {
             return state
         }
     }
+    if(action.type==="SIGNUPDATA"){
+        return {
+            ...state,
+            signUpData: action.payload
+        };
+    }
+    
     if (action.type === "UPDATEMYDATA") {
         if (action.payload.status == 1) {
             return Object.assign({}, state, {

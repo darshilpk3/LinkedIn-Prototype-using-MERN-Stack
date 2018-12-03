@@ -23,7 +23,8 @@ class Login extends Component {
             authFlag: false,
             errorFlag: false,
             invalidFlag: false,
-            myData: myData
+            myData: myData,
+            signedUp:false
         }
         this.fieldChangeHandler = this.fieldChangeHandler.bind(this);
         this.login_submit = this.login_submit.bind(this)
@@ -94,53 +95,44 @@ class Login extends Component {
 
     onSubmit(values) {
         console.log(values);
-        values.type = "T";
+        // values.type = "T";
 
 
         this.props.onSubmitHandle(values)
-            .then(response => {
-                console.log("Status Code : ", response.status);
-                if (response.status === 200) {
-                    console.log(response.data)
-                    if (response.data) {
-                        if (response.data.status === 1) {
-                            console.log(response.data.info)
-                            localStorage.setItem('myData', JSON.stringify(response.data.info));
-                            let test = JSON.parse(localStorage.getItem('myData'));
-                            console.log(test.firstname);
-                            this.setState({
-                                authFlag: true,
-                                invalidFlag: false,
-                                myData: test
-                            })
-                        } else if (response.data.status === -1) {
-                            this.setState({
-                                invalidFlag: true
-                            })
-                        }
-                    }
+        this.setState({
+            signedUp: true
+        })
+        // setTimeout(() => {
+        //     this.setState({
+        //         signedUp: true
+        //     })
+        // }, 5000);
+        
 
-                } else {
-                    this.setState({
-                        invalidFlag: false
-                    })
-                }
-            });
 
     }
 
     login_submit() {
         if (this.state.email_login && this.state.password_login && /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(this.state.email_login) && this.state.password_login.length >= 6) {
-            const data={
-                email:this.state.email,
-                pwd:this.state.password_login
+            const data = {
+                email: this.state.email_login,
+                pwd: this.state.password_login
             }
-            this.props.onSubmitLogin(data)
-                .then(response => {
-                   
-                });
+            this.props.onSubmitLogin(data).then(response => {
+                if (response.status > 0) {
+                    localStorage.setItem('myData', JSON.stringify(response.data));
+                    this.setState({
+                        myData: data
+                    })
+                } else {
+                    this.setState({
+                        invalidFlag: response.data.msg
+                    })
+                }
+            })
+
         } else {
-            
+
         }
     }
 
@@ -160,7 +152,10 @@ class Login extends Component {
 
 
         if (this.state.myData) {
-            redirectVar = <Redirect to="/TravelerHome" />
+            redirectVar = <Redirect to="/newsfeed" />
+        }else if (this.state.signedUp){
+            redirectVar = <Redirect to="/profilelocation" />
+
         }
 
         const { handleSubmit } = this.props;
@@ -179,12 +174,8 @@ class Login extends Component {
                                 <img src={linkedIn}></img>
                             </div>
                             <ul className="nav navbar-nav navbar-right">
-
-
-
                                 <li style={{ marginRight: "15px" }}>
                                     <input type="text" onChange={this.fieldChangeHandler} name="email_login" className="login-email" autocapitalize="off" tabindex="1" id="login-email" placeholder="Email" autofocus="autofocus" dir="ltr"></input>
-
                                 </li>
                                 <li style={{ marginRight: "15px" }}>
                                     <input type="password" onChange={this.fieldChangeHandler} name="password_login" class="login-password" id="login-password" aria-required="true" tabindex="1" placeholder="Password" dir="ltr"></input>
@@ -195,7 +186,6 @@ class Login extends Component {
                                 <li style={{ marginRight: "15px" }}>
                                     <a className="linkForgot">Forgot Password?</a>
                                 </li>
-
                             </ul>
                         </div>
 
@@ -278,36 +268,16 @@ const mapStateToProps = state => {
 const mapDispatchStateToProps = dispatch => {
     return {
         onSubmitHandle: (data) => {
-            return axios.post(`${ROOT_URL}/login`, data, { withCredentials: true })
-                .then(response => {
-                    if (response.data.status == 1) {
-                        let res = {
-                            status: 1,
-                            data: {
-                                uid: response.data.info.uid,
-                                email: response.data.info.email,
-                                firstname: response.data.info.firstname,
-                                lastname: response.data.info.lastname,
-                                profileImage: response.data.info.profileImage,
-                                type: response.data.info.type
-                            }
-                        }
-                        dispatch({ type: 'SAVEMYDATA', payload: res });
-                        return response;
-                    } else {
-                        return response;
-                    }
-                }, (error) => {
-
-                    return error;
-                });
+            dispatch({ type: 'SIGNUPDATA', payload: data });
+            
         }
-,
+        ,
         onSubmitLogin: (data) => {
             return axios.post(`${ROOT_URL}/user/login`, data, { withCredentials: true })
                 .then(response => {
+                    console.log(response.data);
                     if (response.data.status == 1) {
-                        console.log("Here");
+                        // console.log("Here");
                         let res = {
                             status: 1,
                             data: {
@@ -320,13 +290,22 @@ const mapDispatchStateToProps = dispatch => {
                             }
                         }
                         dispatch({ type: 'SAVEMYDATA', payload: res });
-                        return response;
+                        // localStorage.setItem('myData', JSON.stringify(res.data))
+
+                        return {
+                            data: data,
+                            status: 1
+                        };
                     } else {
-                        return response;
+                        return {
+                            data: { msg: response.data.msg },
+                            status: 0
+
+                        };
                     }
                 }, (error) => {
 
-                    return error;
+                    // return error;
                 });
         }
 
