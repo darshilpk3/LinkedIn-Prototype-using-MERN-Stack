@@ -13,6 +13,7 @@ import UserDelete from './userdelete';
 import JobPosting from './jobposting';
 import JobSearch from './jobsearch';
 import JobListing from './jobListing';
+import JobApplicantsList from './jobApplicantsList';
 
 class Main extends Component {
     render() {
@@ -32,6 +33,7 @@ class Main extends Component {
                 <Route exact path="/job/post" component={JobPosting} />
                 <Route exact path="/jobs/" component={JobSearch} />
                 <Route exact path="/job/list" component={JobListing} />
+                <Route exact path="/job/applicants" component={JobApplicantsList}/>
                 {/* <Route path="/TravelerLogin" component={Login} /> */}
 
             </div>

@@ -65,7 +65,7 @@ class JobListing extends Component{
                 return(
                     <div>
                         <div class="job-listing">
-                            <a href="#" class="joblisttitle">{joblist.jobTitle}</a>
+                            <Link class = "joblisttitle" to={{ pathname: '/job/applicants', state: { job_id: joblist._id} }}>{joblist.jobTitle}</Link>
                             {/* <a href="#" class="btn btn-primary edit-button">
                                 <span class="edit-button-text">Edit</span>
                             </a> */}
