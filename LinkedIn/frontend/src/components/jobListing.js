@@ -6,6 +6,7 @@ import '../styles/jobposting.css'
 import Stepper from 'react-stepper-horizontal'
 import noJobsImage from '../assets/images/NoJobListings.PNG'
 import gifticon from '../assets/images/gift-icon.png'
+import {ROOT_URL} from '../constants/constants';
 
 class JobListing extends Component{
     constructor(props){
@@ -15,17 +16,71 @@ class JobListing extends Component{
         }
     }
 
+    componentDidMount(){ 
+
+        console.log("\nInside component did mount");
+    
+        axios.defaults.withCredentials = true;
+        
+        axios.get(`${ROOT_URL}/user/5c0313af1e6ee47530f590cb/joblist`)
+                .then((response) => {
+                    console.log("Response received from backend");
+                    console.log("\nPrinting the response body");
+                    console.log(response.data);
+                    if(response.data.status==1)
+                    {
+                        this.setState({
+                            information : response.data.info
+                        })
+                    }
+                    else{
+                        console.log("Some error occured in the query execution");
+                        // alert("Some error occured!");
+                    }
+                    
+                });
+    }
+
     render(){
         require('../styles/jobListing.css');
 
         let noJobsDisplay = null;
+        let JobDisplay = null;
         if(this.state.information.length==0)
         {
             noJobsDisplay = (
                 <div class="center">
-                    <img src= {noJobsImage}></img>
+                <br/><br/>
+                    <center>
+                        <img src= {noJobsImage}></img>
+                        <br></br>
+                        <p class="para">No jobs posted yet</p>
+                    </center>
                 </div>
             )
+        }
+        else if(this.state.information.length>0){
+            
+            JobDisplay = this.state.information.map(joblist => {
+                return(
+                    <div>
+                        <div class="job-listing">
+                            <a href="#" class="joblisttitle">{joblist.jobTitle}</a>
+                            {/* <a href="#" class="btn btn-primary edit-button">
+                                <span class="edit-button-text">Edit</span>
+                            </a> */}
+
+                            <Link class = "btn btn-primary edit-button" to={{ pathname: '/job/post', state: { job_id: joblist._id} }}>
+                                <span class="edit-button-text">Edit</span>
+                            </Link>
+                            <h4>{joblist.location}</h4>
+                            <p class="paragraph">{joblist.description}</p>
+                            <p class="paragraph">Employment type : {joblist.employmentType}</p>
+                        </div>
+                        <hr class="linebreak"></hr>
+                    </div>
+                )
+            })
         }
 
         return(
@@ -46,6 +101,10 @@ class JobListing extends Component{
                                 </div>
                             </div>
                             <hr class="linebreak"></hr>
+                            
+                            {noJobsDisplay}
+                            {JobDisplay}
+                            <br/><br/>
                     </div>
                     <div class="col-md-3 right-content">
                         <h3>&nbsp;&nbsp; No job posting budget</h3>

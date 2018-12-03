@@ -1,7 +1,8 @@
-var UserInfo = require('../../../backend/models/userInfo').users
-var Application = require('../../../backend/models/application')
-var Job = require('../../../backend/models/job')
+var UserInfo = require('../../models/userInfo').users
+var Application = require('../../models/application')
+var Job = require('../../models/job')
 var Message = require('../../../backend/models/message')
+// var {mongoose} = require('../../db/mongoose');
 
 function handle_request(msg, callback) {
 
@@ -12,10 +13,12 @@ function handle_request(msg, callback) {
         postedBy : msg.userId
     }).exec()
         .then(result => {
+            // console.log("\nSending the result");
             callback(null,result)
         })
         .catch(err => {
-            callback(err,err)
+            console.log("\nSome error occured");
+            callback(err, "Some error occured")
         })
 }
 

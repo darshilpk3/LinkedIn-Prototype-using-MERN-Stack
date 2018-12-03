@@ -2,6 +2,7 @@ var connection = new require('./kafka/Connection');
 var mongoose = require('mongoose')
 
 var mongoConnection = require('../backend/connections/mongo')
+
 var UserJobApply = require('./services/UserServices/userJobApply')
 var UserJobSave = require('./services/UserServices/userJobSave')
 var UserJobList = require('./services/UserServices/userJobList')
@@ -15,15 +16,8 @@ var GetJobDetails = require('./services/JobServices/getJobDetails')
 var JobSearch = require('./services/JobServices/jobSearch')
 var EditJobDetails = require('./services/JobServices/editJobDetails')
 
-
-
-
-
-
-
-
 // var login = require('./services/login.js');
-var GetJobList = require('./services/getJobList');
+// var GetJobList = require('./services/getJobList');
 
 mongoose.connect(mongoConnection.url, {
     poolSize: mongoConnection.pool
