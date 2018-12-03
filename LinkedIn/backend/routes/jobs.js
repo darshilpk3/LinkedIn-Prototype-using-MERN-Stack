@@ -15,8 +15,7 @@ var redis = redisClient(6379, 'localhost');
 
 /*
 *posting a job
-left
-*also updating the redis after successful post of a job in the same location and job title 
+* updating the redis after successful post of a job in the same location and job title 
 */
 router.post("/", async function (req, res, next) {
 
@@ -73,6 +72,19 @@ router.post("/", async function (req, res, next) {
             }
 
             //update redis cache here
+            const key = (req.body.location + req.body.jobTitle).toLowerCase();
+            console.log("_______________key to be removed___________________________", key)
+            // redis.DEL(key);
+            redis.del(key, function (err, response) {
+                console.log("___________response_____________", response)
+                console.log("_____________err_____________", err)
+                if (response == 1) {
+                    console.log("Deleted Successfully!")
+                } else {
+                    console.log("Cannot delete")
+                }
+            })
+
             res.end(JSON.stringify(data))
         }
     })
@@ -272,7 +284,7 @@ router.post("/search", async function (req, res, next) {
 
 /**
  * edit job details 
- * update redis cache here and then make the kafka call 
+ * updating redis cache here and then making the kafka call 
  */
 router.put("/:jobId", async function (req, res, next) {
     console.log("\nInside the edit request for jobs");
@@ -327,6 +339,23 @@ router.put("/:jobId", async function (req, res, next) {
                     "result": result
                 }
             }
+            
+
+            //update redis cache here
+            const key = (req.body.location + req.body.jobTitle).toLowerCase();
+            console.log("_______________key to be removed___________________________", key)
+            // redis.DEL(key);
+            redis.del(key, function (err, response) {
+                console.log("___________response_____________", response)
+                console.log("_____________err_____________", err)
+                if (response == 1) {
+                    console.log("Deleted Successfully!")
+                } else {
+                    console.log("Cannot delete")
+                }
+            })
+
+
             res.end(JSON.stringify(data))
         }
     })
