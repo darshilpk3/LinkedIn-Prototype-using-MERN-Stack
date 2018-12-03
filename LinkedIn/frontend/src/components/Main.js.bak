@@ -12,12 +12,11 @@ import Newsfeed from './newsfeed';
 import UserDelete from './userdelete';
 import JobPosting from './jobposting';
 import JobSearch from './jobsearch';
-<<<<<<< HEAD
-import searchResults from './searchResults';
+import JobListing from './jobListing';
 =======
 import JobListing from './jobListing';
+import JobApplicantsList from './jobApplicantsList';
 import PeopleSearchResults from './peoplesearchresults.js';
->>>>>>> development
 
 class Main extends Component {
     render() {
@@ -36,13 +35,11 @@ class Main extends Component {
                 <Route exact path="/user/delete" component={UserDelete} />
                 <Route exact path="/job/post" component={JobPosting} />
                 <Route exact path="/jobs/" component={JobSearch} />
-<<<<<<< HEAD
-                <Route exact path="/searchResults/" component={searchResults} />
-
-=======
                 <Route exact path="/job/list" component={JobListing} />
+ <Route exact path="/searchResults/" component={searchResults} />
+                
+<Route exact path="/job/list" component={JobListing} />
                 <Route exact path="/users/results" component={PeopleSearchResults} />
->>>>>>> development
                 {/* <Route path="/TravelerLogin" component={Login} /> */}
 
             </div>

@@ -361,7 +361,43 @@ router.put("/:jobId", async function (req, res, next) {
     })
 })
 
+router.get("/:jobId/applications",async function(req,res,next){
 
+    console.log("\nGetting all the applications for jobId: ",req.params.jobId)
 
+    const data = {
+        jobId: req.params.jobId
+    }
 
+    Application.find({
+        job: data.jobId
+    })
+    //.populate('job')
+    .populate('applicant')
+    .exec()
+        .then(result => {
+            res.writeHead(200, {
+                'Content-Type': 'application/json'
+            })
+            const data = {
+                "status": 1,
+                "msg": "Job successfully updated",
+                "info": result
+            }
+            res.end(JSON.stringify(data))
+            // res.send(200,result)
+        })
+        .catch(err =>{
+            res.writeHead(200, {
+                'Content-Type': 'application/json'
+            })
+            const data = {
+                "status": 0,
+                "msg": "Couldn't get application details",
+                "info":  err
+            }
+            res.end(JSON.stringify(data))
+            // res.send(400,err)
+        })
+})
 module.exports = router;

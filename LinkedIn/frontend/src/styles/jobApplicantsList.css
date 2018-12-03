@@ -5,17 +5,8 @@
 .left-content{
     margin-top : 90px;
     background-color: white;
-    margin-left : 90px;
+    margin-left : 120px;
     margin-bottom : 20px;
-    min-height : 200px;
-    border: 1px solid #B2B1B1;
-}
-
-.right-content{
-    margin-top : 90px;
-    margin-left : 30px;
-    margin-bottom : 20px;
-    background-color: white;
     min-height : 200px;
     border: 1px solid #B2B1B1;
 }
@@ -49,40 +40,6 @@
     left: -15px;
 }
 
-.search-bar{
-    margin : 20px 0px 0px 20px;
-    width : 100%;
-    height : 45px;
-    border : 1px solid #B2B1B1;
-}
-
-.go-button{
-    width: 80px;
-    height : 45px;
-    font-size: 20px; 
-    margin-left: 10px;
-    margin-top : 20px;
-}
-
-.edit-button{
-    width: 60px;
-    height : 34px;
-    /* font-size: 20px;  */
-    margin-right: 10px;
-    margin-top : 10px;
-    /* padding : 7px; */
-    float : right;
-}
-
-.edit-button-text{
-    font-size : 17px;
-}
-
-.giftimage{
-    margin-left: 15px;
-    margin-top : 10px;
-}
-
 .para {
     margin-left : 10px;
     font-size : 20px;
@@ -110,5 +67,11 @@
 }
 
 .paragraph{
-    font-size : 15px;
+    font-size : 17px;
+    margin-top : -2px;
+}
+
+.paragraph1{
+    font-size : 17px;
+    margin-top : 7px;
 }
