@@ -587,30 +587,6 @@ router.post("/search", async function (req, res, next) {
 
     })
 
-  // function (err, user) {
-  // if (err) {
-  //     console.log("error occured")
-  //     // callback(err, "login failed");
-  //     // console.log("Some error in sql query", err.sqlMessage)
-  //     res.writeHead(400, {
-  //         'Content-Type': 'application/json'
-  //     })
-
-  //     res.end("some error in sql query")
-
-  // }else{
-  //     console.log("found the list usernames!",user);
-  //     res.writeHead(200, {
-  //         'Content-Type': 'application/json'
-  //     })
-  //     const data = {
-  //         "status": 1,
-  //         "msg": "list of usernames",
-  //         "info": {user}
-  //     }
-  //     console.log("data being sent to frontend:\n", JSON.stringify(data))
-  //     res.end(JSON.stringify(data))
-  // }
 })
 
 
