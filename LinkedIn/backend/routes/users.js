@@ -358,7 +358,6 @@ router.post("/:userID/save", async function (req, res, next) {
     userId: req.params.userID
   }
 
-
   kafka.make_request('userJobSave', data, function (err, result) {
     console.log(err && err)
     console.log(result && result)

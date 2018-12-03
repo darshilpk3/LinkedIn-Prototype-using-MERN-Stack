@@ -34,6 +34,7 @@ html{overflow: hidden;}
 }
 .hoverEffect:hover{
     background-color: lightgrey;
+    
 }
 .myConnections{
     margin-top: 50px;
@@ -112,8 +113,10 @@ html{overflow: hidden;}
     border: 1px solid lightgrey;
     background-color: white; 
     height: 80vh;
+    margin-left: inherit;
 }
 .userInvitations{
+    text-align: left;
     padding: 2%;
 }
 
