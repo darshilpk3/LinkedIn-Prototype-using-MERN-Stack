@@ -15,6 +15,8 @@ var GetJobDetails = require('./services/JobServices/getJobDetails')
 var JobSearch = require('./services/JobServices/jobSearch')
 var EditJobDetails = require('./services/JobServices/editJobDetails')
 
+var UsernameSearch = require('./services/UserServices/usernameSearch')
+
 
 
 
@@ -74,3 +76,4 @@ handleTopicRequest('jobSearch',JobSearch)
 handleTopicRequest('editJobDetails',EditJobDetails)
 handleTopicRequest('userSavedJobs',UserSavedJobs)
 handleTopicRequest('userAppliedJobs',UserAppliedJobs)
+handleTopicRequest('usernameSearch',UsernameSearch)

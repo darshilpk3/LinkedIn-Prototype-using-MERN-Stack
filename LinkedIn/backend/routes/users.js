@@ -348,7 +348,7 @@ router.post("/:userID/apply", async function (req, res, next) {
 
 
 /*
-saving a job
+* saving a job
 */
 router.post("/:userID/save", async function (req, res, next) {
   console.log("Inside post of job save.")
@@ -440,7 +440,7 @@ getAllJobsPostedByUser_Caching = function (UserInfo, redis1, userID, callback) {
 };
 
 router.get("/:userID/joblist", async function (req, res, next) {
-  console.log("Inside get joblist. og ")
+  console.log("Inside get joblist.")
   const userID = req.params.userID
 
   if (!userID) {
@@ -523,76 +523,63 @@ router.get("/:userId", async function (req, res, next) {
 })
 
 
-
 /**
 * search by username
 */
-router.post("/search", async function (req, res, next) {
+router.post("/:userId/search", async function (req, res, next) {
 
   console.log("inside post request of search by username");
   console.log("req.body", req.body)
+  const connections = []
+  const data = {
+    userId:req.params.userID,
+    username: req.body.username
+  }
   const username = "^" + req.body.username;
 
-  // $or: [{ jobTitle: { $regex: regex_str,$options:'i' } }, { required_skills: { $regex: regex_str,$options:'i' } }],
 
-  UserInfo.find({
-    $or: [{ fname: { $regex: username, $options: 'i' } }, { lname: { $regex: username, $options: 'i' } }]
-  })
-    .then((user, err) => {
-      if (err) {
 
-        const data = {
-          "status": 0,
-          "msg": "No Such Data found",
-          "info": {
-            "error": err
-          }
-        }
-        res.writeHead(200, {
-          'Content-Type': 'application/json'
-        })
-        res.end(JSON.stringify(data))
-
-      } else {
-
-        console.log("Search query executed successfully");
-
-        console.log("found the list usernames!", user);
-        res.writeHead(200, {
-          'Content-Type': 'application/json'
-        })
-        const data = {
-          "status": 1,
-          "msg": "list of usernames",
-          "info": { user }
-        }
-        console.log("data being sent to frontend:\n", JSON.stringify(data))
-        res.end(JSON.stringify(data))
-
-      }
-    })
-    .catch(err => {
-
-      res.writeHead(400, {
-        'Content-Type': 'application/json'
-      })
+  kafka.make_request('usernameSearch', data, function (err, result) {
+    if (err) {
       const data = {
         "status": 0,
-        "msg": "Backend Error",
-        "info": {
-          "error": err
-        }
+        "msg": "Failed searching the details",
+        "info": err
       }
+      res.writeHead(200, {
+        'Content-Type': 'application/json'
+      })
       res.end(JSON.stringify(data))
-
-    })
+    } else if (result.message) {
+      const data = {
+        "status": 0,
+        "msg": "Failed searching the details",
+        "info": result.message
+      }
+      res.writeHead(200, {
+        'Content-Type': 'application/json'
+      })
+      res.end(JSON.stringify(data))
+    } else {
+      const data = {
+        "status": 1,
+        "msg": "Successfully searched the usernames",
+        "info": result
+      }
+      res.writeHead(200, {
+        'Content-Type': 'application/json'
+      })
+      console.log("____________data_______________",data)
+      res.end(JSON.stringify(data))
+    }
+  })
 
 })
 
+/**
+ * update user profile
+ */
 
-/*
-* update user profile
-*/
 router.put("/:userId", async function (req, res, next) {
 
   console.log("\nInside user profile updation");
