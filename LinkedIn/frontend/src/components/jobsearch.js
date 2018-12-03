@@ -4,6 +4,7 @@ import axios from "axios";
 import {connect} from 'react-redux';
 import {Redirect} from 'react-router';
 import "../styles/jobsearch.css";
+import Login from './navbar'
 
 class JobSearch extends Component {
   constructor(props) {
@@ -52,6 +53,7 @@ class JobSearch extends Component {
         return(
             <div>
                 {redirectVar}
+                <Login/>
                       <div className="jobs-landing-header-container pad-top-1-pc">
                        <form>
                             <input type = "text" onChange = {this.handleJobTitle} className = "jobs" placeholder = "Search Jobs"></input>

@@ -8,6 +8,7 @@ import bulb from '../assets/images/postjobbulb.PNG'
 import jobpostlogo from '../assets/images/jobpostlogo.PNG'
 var swal = require('sweetalert')
 var redirectVar = null;
+var formData = "";
 
 class JobPosting extends Component{
     constructor(props){
@@ -25,30 +26,72 @@ class JobPosting extends Component{
            jobPostedBy : "",
            companyName : "",
            jobPosted : false,
-           applyMethod : ""
+           applyMethod : "",
+           jobId : "",
+           jobDetails : ""
         }
         this.PostJobHandler = this.PostJobHandler.bind(this);
+        this.EmploymentTypeHandler = this.EmploymentTypeHandler.bind(this);
+        this.applyMethodHandler = this.applyMethodHandler.bind(this);
         this.onChange = this.onChange.bind(this);
+        this.onChangeLogo = this.onChangeLogo.bind(this);
+    }
+
+    onChange(e){
+        this.setState({[e.target.name]:e.target.value})
+    } 
+
+    onChangeLogo = (e) =>
+    {
+        for(let size=0; size < e.target.files.length; size++){
+            console.log('Selected file:', e.target.files[size]);
+            let file = e.target.files[size];
+ 
+            console.log("uploading screenshot file for:", this.props.useremail)
+            formData = new FormData();
+            formData.append('selectedFile', file);
+            this.setState({
+                companyLogo : e.target.files[size].name
+            })
+            axios.post(`http://localhost:3001/companylogo`, formData)
+            .then((result) => {
+              // access results...
+            });
+        }
+   }
+
+    applyMethodHandler = (e) => {
+        this.setState({
+            applyMethod : this.state.applyMethod
+        })
+    }
+
+    EmploymentTypeHandler = (e) => {
+        this.setState({
+            jobEmploymentType : this.state.jobEmploymentType
+        })
     }
 
     PostJobHandler = (e) => {
         e.preventDefault();
         const data = {
+            postedBy: localStorage.getItem("userId"),
             jobTitle: this.state.jobTitle,
-           jobIndustry : this.state.jobIndustry,
-           jobEmploymentType : this.state.jobEmploymentType,
-           jobPostedDate : Date(),
-           jobLocation : this.state.jobLocation,
-           jobFunction : this.state.jobFunction,
-           jobSkills : this.state.jobSkills,
-        //    companyLogo : 
-        //    jobPostedBy : 
-           companyName : this.state.companyName,
+            description: this.state.jobDescription,
+            industry: this.state.jobIndustry,
+            employmentType: this.state.jobEmploymentType,
+            postedDate: Date(),
+            location: this.state.jobLocation,
+            jobFunction: this.state.jobFunction,
+            required_skills: this.state.jobSkills,
+            companyLogo : this.state.companyLogo,
+            companyName : this.state.companyName,
+            applyMethod : this.state.applyMethod,
         }
 
         console.log("Data for posting Job : ", data)
 
-        axios.post("http://localhost:3001/job/", data)
+        axios.post("http://localhost:3001/job", data)
         .then((response) => {
             if(response.status === 200){
             this.setState({
@@ -60,9 +103,20 @@ class JobPosting extends Component{
         
     }
 
-    onChange(e){
-        this.setState({[e.target.name]:e.target.value})
-    } 
+    componentDidMount(){
+
+        console.log("\n Printing the job id obtained from another place");
+        console.log(this.props.location.state.job_id);
+
+        axios.get("http://localhost:3001/job/"+this.state.jobId)
+        .then((response) => {
+            if(response.status === 200){
+                this.setState({
+                    jobDetails : response.data
+                })
+            }
+        })
+    }
 
     render(){
         return(
@@ -81,7 +135,7 @@ class JobPosting extends Component{
     </div>
 </div>
 <form onSubmit={this.onSubmit}>
-    <div class="row setup-content" id="step-2">
+    <div class="row setup-content" id="step-1">
     <div className="page1background">
             <div className="JobPostHeader">
             <nav class="navbar navbar-expand-lg navbar-light bg-light">
@@ -119,7 +173,7 @@ class JobPosting extends Component{
         </div>
         </div>
     </div>
-    <div class="row setup-content" id="step-1">
+    <div class="row setup-content" id="step-2">
     <div className="page2background">
         <div class="col-xs-12">
             <div class="col-md-12">
@@ -143,14 +197,11 @@ class JobPosting extends Component{
                             <p className="control-label jobpostrow1label">Job function (Select up to 3) * &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Employment type *</p>
                             <input type="text" name="jobfunction" onChange = {this.onChange} value={this.state.jobFunction} name="jobFunction" placeholder="Add job function" className ="form-control jobpostfunction" required/>
                         </div>
-                        <div className ="dropdown jobpostemployment">
-                        <button class="btn btn-default dropdown-toggle" style={{width:"78%",height:"60px"}} type="button" data-toggle="dropdown">Choose One... 
-                        <span class="caret"></span></button>
-                        <ul class="dropdown-menu" style={{width:"78%"}}>
-                          <li><a href="#">Part-Time</a></li>
-                          <li><a href="#">Full-Time</a></li>
-                        </ul>
-                      </div>
+                        <select className="form-control form-control-lg jobpostemployment" id="exampleFormControlSelect1" defaultValue={this.state.jobEmploymentType} onChange={this.EmploymentTypeHandler} required>
+                            <option value="">Choose One...</option>
+                            <option value="Part-Time" selected={this.state.jobEmploymentType="Part-Time"}>Part-Time</option>
+                            <option value="Full-Time" selected={this.state.jobEmploymentType="Full-Time"}>Full-Time</option>
+                        </select>
                         <br></br>
                         <div className ="form-group">
                             <p className="control-label jobpostrow1label">Company Industry (Select up to 3) *</p>
@@ -164,18 +215,15 @@ class JobPosting extends Component{
                         </div>
                         <br></br><br></br>
                         <p className="control-label jobpostrow1label">Apply Method *</p>
-                        <div className ="dropdown">
-                        <button class="btn btn-default dropdown-toggle" style={{width:"48%",height:"60px", margin: "0% 0% 2.5% 3%"}} type="button" data-toggle="dropdown">Choose One... 
-                        <span class="caret"></span></button>
-                        <ul class="dropdown-menu" style={{width:"48%"}}>
-                          <li><a href="#">Easy Apply</a></li>
-                          <li><a href="#">Application Form</a></li>
-                        </ul>
-                      </div>
+                        <select className="form-control form-control-lg applymethodjobpost" id="exampleFormControlSelect1" selected={this.state.applyMethod} defaultValue={this.state.applyMethod} onChange={this.applyMethodHandler} required>
+                            <option value="">Choose One...</option>
+                            <option value="Part-Time">Easy Apply</option>
+                            <option value="Full-Time">Direct Application</option>
+                        </select>
                         <br></br><br></br>
                         <div className ="form-group">
                             <p className="control-label jobpostrow1label">How did you hear about us?</p>
-                            <input type="text" placeholder="Enter Company Name"  onChange = {this.onChange} value={this.state.companyName} name="companyName" className ="form-control jobpostfunction" required/>
+                            <input type="text" placeholder="Through a Friend/Advertisement/etc.."  className ="form-control jobpostfunction" required/>
                         </div>
                     </div>
                     <button class="btn btn-primary nextBtn btn-lg" type="button" >Continue</button>
@@ -218,7 +266,15 @@ class JobPosting extends Component{
                         <p className="control-label jobpostrow1label">Daily Budget? *</p>
                         <input type="text" name="postjobbudget" placeholder="0 $" className ="form-control jobpostfunction"/>
                     </div>
+                    <br></br>
+                    <br></br>
+                    <p className="control-label jobpostrow1label">Upload Photo *</p>
+                    <div className="companylogoupdate">
+                <label for="uploadpic" name ="description" onChange={this.onChange} multiple className = "btn btn-warning" style={{margin :"0% 0% 0% 3.2%", height:"54px", width:"40%"}}><h4>Click here to upload Company Logo</h4></label>
+                <input type = "file" id ="uploadpic"  className ="hidethis" multiple name="selectedFile" onChange={this.onChangeLogo}/>
                 </div>
+                </div>
+                <br></br>
                 <button class="btn btn-primary btn-lg finishpostjob" onClick={this.PostJobHandler} type="submit" ><b>Post My Job</b></button>
             </div>
             <div className="postjobtippage3">  

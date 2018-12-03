@@ -4,7 +4,7 @@ import React, { Component } from 'react';
 import cookie from 'react-cookies';
 import { Link } from 'react-router-dom';
 import { Redirect } from 'react-router';*/
-
+import Login from './navbar'
 
 import picDS from '../assets/images/PicDS.png'
 import axios from 'axios';
@@ -85,12 +85,7 @@ class savedJobs extends Component {
         return (
             <div>
 
-                <nav className="navbar navbar-expand-sm" style={{ 'border-bottom-color': '', 'padding': ' 0%', 'backgroundColor': 'darkblue', "border-radius": "0px", marginBottom: "0px" }}>
-                    hi
-                </nav>
-                <nav className="navbar navbar-expand-sm" style={{ 'border-bottom-color': '', 'padding': ' 0%', 'backgroundColor': 'lightblue', "border-radius": "0px", marginBottom: "0px" }}>
-                    searchbar
-                </nav>
+                <Login/>
                 <div class="row myNetworkBackground">
 
                     {/* column 1- This is the code for Saved Jobs */}
@@ -104,6 +99,9 @@ class savedJobs extends Component {
                             </div>
                         </div>
                     </div>
+                
+
+                    
 
                     {/* column 2-This is the code for applied Jobs */}
                     <div class="col-sm-4 col-md-4 col-lg-4" >

@@ -4,7 +4,7 @@ import React, { Component } from 'react';
 import cookie from 'react-cookies';
 import { Link } from 'react-router-dom';
 import { Redirect } from 'react-router';*/
-
+import Login from './navbar'
 import ad from '../assets/images/Ad_TDK.png'
 
 class Messaging extends Component {
@@ -112,9 +112,7 @@ class Messaging extends Component {
         
         return (    
             <div>
-                <nav className="navbar navbar-expand-sm" style={{ 'border-bottom-color': '', 'padding': ' 0%', 'backgroundColor': 'darkblue', "border-radius": "0px", marginBottom: "0px" }}>
-                       hi
-                </nav>
+                <Login/>
                 <div className="myMargin"></div>
                     <div class="row myNetworkBackground">
                         {/*column 1- This is the code for msg list */}
