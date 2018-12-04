@@ -24,7 +24,7 @@ class JobListing extends Component{
     
         axios.defaults.withCredentials = true;
         
-        axios.get(`${ROOT_URL}/user/5c0313af1e6ee47530f590cb/joblist`)
+        axios.get(`${ROOT_URL}/user/5c06b8010732546084383d17/joblist`)
                 .then((response) => {
                     console.log("Response received from backend");
                     console.log("\nPrinting the response body");

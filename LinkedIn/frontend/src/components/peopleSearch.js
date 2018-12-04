@@ -26,10 +26,10 @@ class peopleSearch extends Component {
         axios.defaults.withCredentials = true;
 
 
-        if (this.props.match.params || true) {
+        if (this.props.location.state && this.props.location.state.searchedName) {
 
             const data = {
-                username: "harry"
+                username: this.props.location.state.searchedName
             }
             if (localStorage.getItem("userId")) {
                 const id = localStorage.getItem("userId")

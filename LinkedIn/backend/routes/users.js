@@ -661,7 +661,7 @@ router.put("/:userId", async function (req, res, next) {
     country: req.body.country,
     zip: req.body.zipcode,
     state: req.body.state,
-    industry: req.body.industry,
+    //industry: req.body.industry,
     profile_summary: req.body.summary
   }
 
