@@ -121,7 +121,7 @@ class Login extends Component {
             this.props.onSubmitLogin(data).then(response => {
                 if (response.status > 0) {
                     localStorage.setItem('myData', JSON.stringify(response.data));
-                    localStorage.setItem('userId', JSON.stringify(response.data.uid));
+                    localStorage.setItem('userId', response.data.uid);
                     this.setState({
                         myData: data
                     })
