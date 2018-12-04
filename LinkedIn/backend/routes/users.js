@@ -466,28 +466,15 @@ router.put("/:userId", async function (req, res, next) {
 
   const data = {
     userId: req.params.userId,
-    firstname: req.body.firstname,
-    lastname: req.body.lastname,
+    fname: req.body.fname,
+    lname: req.body.lname,
     headline: req.body.headline,
-    address: req.body.address,
-    city: req.body.city,
-    state: req.body.state,
+    current_position:req.body.current_position,
     country: req.body.country,
-    zipcode: req.body.zipcode,
-    contact: req.body.contact,
-    profile_summary: req.body.profile_summary,
-    resume: req.body.resume,
-    currentJobDetails: {
-      title: req.body.title,
-      company: req.body.company,
-      location: req.body.location,
-      start_workDate: req.body.start_workDate,
-      end_workDate: req.body.end_workDate,
-      description: req.body.description
-    },
-    education_data: req.body.education_data,
-    experience_data: req.body.experience_data,
-    skills_data: req.body.skills_data,
+    zip : req.body.zip,
+    state : req.body.state,
+    industry : req.body.industry,
+    profile_summary: req.body.summary
   }
 
   kafka.make_request('editUserDetails', data, function (err, result) {
@@ -807,5 +794,107 @@ router.put("/:userId/skills",async function(req,res,next){
       })
 })
 
+
+router.post("/:userId/person", async function (req, res, next) {
+
+  console.log("Request to view the profile of other user: ", req.params.userId)
+  const user_id = req.params.userId
+  const searched_id = req.body.searched_id
+  console.log("___searched_id_____--", searched_id)
+  console.log("___user_id_____--", user_id)
+  const connections = []
+
+  UserInfo.findOneAndUpdate(
+    { "_id": searched_id },
+    { $inc: { "noOfViews": 1 } }
+  )
+    .exec()
+    .then(result => {
+
+      console.log("User is: ", result._id, " and connections are : ", result.connections)
+      console.log("~~~~~~result~~~~~~", result);
+      if (result.connections.indexOf(searched_id) != -1) {
+        const connectionInfo = {
+          _id: result._id,
+          name: result.fname + " " + result.lname,
+          headline: result.headline,
+          email: result.email,
+          noOfViews: result.noOfViews,
+          headline: result.headline,
+          experience: result.experience,
+          education: result.education,
+          skills: result.skills,
+          noOfConnections: result.connections.length,
+          profileImage: result.profileImage,
+          profile_summary: result.profile_summary,
+          isConnected: "true"
+        }
+        connections.push(connectionInfo)
+      } else if (result.pending_sent.indexOf(searched_id) != -1) {
+        const connectionInfo = {
+          _id: result._id,
+          name: result.fname + " " + result.lname,
+          headline: result.headline,
+          email: result.email,
+          noOfViews: result.noOfViews,
+          headline: result.headline,
+          experience: result.experience,
+          education: result.education,
+          skills: result.skills,
+          noOfConnections: result.connections.length,
+          profileImage: result.profileImage,
+          profile_summary: result.profile_summary,
+          isConnected: "pending"
+        }
+        connections.push(connectionInfo)
+      } else {
+        const connectionInfo = {
+          _id: result._id,
+          name: result.fname + " " + result.lname,
+          headline: result.headline,
+          email: result.email,
+          noOfViews: result.noOfViews,
+          headline: result.headline,
+          experience: result.experience,
+          education: result.education,
+          skills: result.skills,
+          noOfConnections: result.connections.length,
+          profileImage: result.profileImage,
+          profile_summary: result.profile_summary,
+
+          isConnected: "false"
+        }
+        connections.push(connectionInfo)
+      }
+
+      const data = {
+        "status": "1",
+        "msg": "Successfully Searched the profile other user",
+        "info": connections
+      }
+      res.writeHead(200, {
+        'Content-Type': 'application/json'
+      })
+      res.end(JSON.stringify(data))
+      console.log("_______result______", connections);
+
+    })
+    .catch(err => {
+      console.log("____err_____", err)
+      res.send(400, err)
+      res.writeHead(400, {
+        'Content-Type': 'application/json'
+      })
+      const data = {
+        "status": 0,
+        "msg": "Backend Error",
+        "info": {
+          "error": err
+        }
+      }
+      res.end(JSON.stringify(data))
+    })
+
+})
 
 module.exports = router;

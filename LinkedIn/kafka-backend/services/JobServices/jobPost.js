@@ -32,7 +32,7 @@ function handle_request(msg, callback) {
                     }
                 }).exec()
                     .then(userResult => {
-                        callback(null, userResult)
+                        callback(null, jobResult)
                     })
                     .catch(err => {
                         callback(err,err)

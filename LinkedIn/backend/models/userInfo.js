@@ -45,7 +45,6 @@ var users= mongoose.model('Users',{
     job_current : {
         type : JSON
     },
-    currentExperience : experience_schema,
     experience : [experience_schema],
     education : [education_scheme],
     skills : {
