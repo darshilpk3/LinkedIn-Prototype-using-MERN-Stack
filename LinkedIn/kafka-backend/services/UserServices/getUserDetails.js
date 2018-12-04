@@ -1,4 +1,4 @@
-var UserInfo = require('../../../backend/models/userInfo').users
+var UserInfo = require('../../../backend/models/userInfo')//.users
 var Application = require('../../../backend/models/application')
 var Job = require('../../../backend/models/job')
 var Message = require('../../../backend/models/message')

@@ -12,7 +12,7 @@ import { connect } from "react-redux";
 
 
 
-class Login extends Component {
+class Navbar extends Component {
 
     constructor(props) {
         super(props);
@@ -328,10 +328,10 @@ const mapDispatchStateToProps = dispatch => {
 export default reduxForm({
     validate,
     form: "TravelerLoginForm"
-})(connect(mapStateToProps, mapDispatchStateToProps)(Login));
+})(connect(mapStateToProps, mapDispatchStateToProps)(Navbar));
 
 // export default reduxForm({
 //     validate,
 //     form: "TravelerLoginForm"
 // })(connect(null, { login })(Login));
-// export default Login;
+// export default navbar;

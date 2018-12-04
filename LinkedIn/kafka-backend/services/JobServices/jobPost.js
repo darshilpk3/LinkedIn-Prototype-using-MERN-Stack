@@ -10,6 +10,8 @@ function handle_request(msg, callback) {
     console.log("\n\nInside kafka backend for posting job")
     console.log("\n\n User data is: ", msg)
 
+    var required_skills_array = msg.required_skills.split(',');
+
     const newJob = new Job({
         postedBy: msg.postedBy,
         jobTitle: msg.jobTitle,
@@ -19,7 +21,7 @@ function handle_request(msg, callback) {
         postedDate: msg.postedDate,
         location: msg.location,
         jobFunction: msg.jobFunction,
-        required_skills: msg.required_skills
+        required_skills: required_skills_array
     })
 
     // console.log("__________new Job is_______________",newJob)
