@@ -2,6 +2,10 @@ var express = require('express');
 var router = express.Router();
 var pool = require('../connections/mysql')
 var mysql = require('mysql')
+var mongoose = require('mongoose');
+var jwt = require('jsonwebtoken');
+
+var kafka = require('../kafka/client')
 var mongoose1 = require('mongoose');
 
 var { mongoose } = require('../connections/mongo');
@@ -46,11 +50,21 @@ router.post('/', async function (req, res, next) {
 
   console.log('\n\nIn user signup');
   console.log("Request Got: ", req.body)
+
+  const firstName = req.body.fname  
+  const lastName = req.body.lname
   const email = req.body.email
-  const pwd = bcrypt.hashSync(req.body.pwd, 10)
-  const firstName = req.body.firstName
-  const lastName = req.body.lastName
+  const pwd = bcrypt.hashSync(req.body.password, 10)
+  const country = req.body.country
+  const zipcode = req.body.zipcode
+  const current_title = req.body.current_title
+  const current_company = req.body.current_company
+  const current_industry = req.body.current_industry
+  const start_workDate = req.body.start_workDate
+  const end_workDate = req.body.end_workDate
+  const education_data = req.body.education_data
   const type = req.body.type
+
 
   pool.getConnection((
     err, connection) => {
@@ -63,30 +77,35 @@ router.post('/', async function (req, res, next) {
             console.log("Successfully registered")
 
             //mongo query here
+            console.log("Can i get a name: ",firstName)
+            var experience_data = {
+              title : current_title,
+              company : current_company,
+              industry : current_industry,
+              work_startDate : start_workDate,
+              work_endDate  : end_workDate
+            }
             var user = new UserInfo({
               fname: firstName,
               lname: lastName,
               type: type,
               email: email,
-              password: pwd
+              country : country,
+              zipcode : zipcode,
+              currentExperience : experience_data,
+              education_data : education_data
             })
-            console.log(`user ${user}`);
-            user.save().then(user => {
+            //console.log(`user ${user}`);
+            user.save().then(result => {
               console.log("user created in mongo");
               // console.log(`user in then is ${user}`);
-
               res.writeHead(200, {
                 'Content-Type': 'application/json'
               })
               const data = {
                 "status": 1,
                 "msg": "Successfully Signed Up",
-                "info": {
-                  "id": result.insertId,
-                  "fullname": firstName + " " + lastName,
-                  "type": type,
-                  "email": email
-                }
+                "info": {}
               }
               console.log("data being sent to frontend:\n", JSON.stringify(data))
               res.end(JSON.stringify(data))
@@ -101,7 +120,7 @@ router.post('/', async function (req, res, next) {
               })
               const data = {
                 "status": 0,
-                "msg": err.errmsg,
+                "msg": "Unsuccesfull",
                 "info": {
                   "error": err.errmsg
                 }
@@ -158,30 +177,32 @@ router.post('/login', redisMiddleware, async function (req, res, next) {
       const sql = "select * from userinfo WHERE email = " + mysql.escape(email);
       connection.query(sql,
         (err, result) => {
-          console.log("______result______", result);
+          console.log(result[0])
           const password = bcrypt.compareSync(pwd, result[0].pwd);
           if (result && password) {
             console.log("Successfully Logged In")
             res.writeHead(200, {
               'Content-Type': 'application/json'
             })
+            
             const data = {
               "status": 1,
               "msg": "Successfully Logged In",
               "info": {
+                // "uid":result[0].
                 "fullname": result[0].firstName + " " + result[0].lastName,
                 "email": email,
                 "type": result[0].type
               }
             }
             console.log("data being sent to frontend:\n", JSON.stringify(data))
+            console.log(result)
             res.end(JSON.stringify(data))
           } else if (err) {
             console.log("Some error in sql query", err.sqlMessage)
             res.writeHead(400, {
               'Content-Type': 'application/json'
             })
-
             res.end("some error in sql query")
           } else {
             //password doesn't match
@@ -191,12 +212,11 @@ router.post('/login', redisMiddleware, async function (req, res, next) {
             })
             const data = {
               "status": 0,
-              "msg": "Error in login,Incorrect  password",
+              "msg": "The email or password you entered is incorrect",
               "info": {}
             }
             console.log("data being sent to frontend:\n", JSON.stringify(data))
             res.end(JSON.stringify(data))
-
           }
         })
     } else {
@@ -619,28 +639,15 @@ router.put("/:userId", async function (req, res, next) {
 
   const data = {
     userId: req.params.userId,
-    firstname: req.body.firstname,
-    lastname: req.body.lastname,
+    fname: req.body.fname,
+    lname: req.body.lname,
     headline: req.body.headline,
-    address: req.body.address,
-    city: req.body.city,
-    state: req.body.state,
+    current_position:req.body.current_position,
     country: req.body.country,
-    zipcode: req.body.zipcode,
-    contact: req.body.contact,
-    profile_summary: req.body.profile_summary,
-    resume: req.body.resume,
-    currentJobDetails: {
-      title: req.body.title,
-      company: req.body.company,
-      location: req.body.location,
-      start_workDate: req.body.start_workDate,
-      end_workDate: req.body.end_workDate,
-      description: req.body.description
-    },
-    education_data: req.body.education_data,
-    experience_data: req.body.experience_data,
-    skills_data: req.body.skills_data,
+    zip : req.body.zip,
+    state : req.body.state,
+    industry : req.body.industry,
+    profile_summary: req.body.summary
   }
 
   kafka.make_request('editUserDetails', data, function (err, result) {
@@ -820,245 +827,127 @@ router.get("/recruiter/:userId/dashboard/least_5_jobs", async function (req, res
         'Content-Type': 'application/json'
       })
       res.end(JSON.stringify(data))
-      console.log("______err__________", err)
-    })
-
-})
-
-
-/**
- * getting to show first 10 job listings with its applications/month bar chart
- */
-router.get("/recruiter/:userId/dashboard/top_10_jobs", async function (req, res, next) {
-
-  console.log("Request to get details of first 10 jobs applied by the user: ", req.params.userId)
-  const id = req.params.userId
-  console.log("_________id__________", id)
-
-
-  const id1 = mongoose1.Types.ObjectId(req.params.userId)
-  // console.log(typeof id1)
-  Job.aggregate([
-    { $match: { postedBy: id1 } },
-    {
-      $project: {
-        jobTitle: 1, count: { $size: '$jobApplied' }, postedDate: 1,
-        month: { "$substr": ["$postedDate", 5, 2] }
-      }
-    },
-    { $sort: { count: -1 } },
-    { $limit: 10 }
-
-  ])
-
-    .then(result => {
-      console.log("_____________result__________", result)
-
-
-      res.writeHead(200, {
-        'Content-Type': 'application/json'
-      })
-      const data = {
-        "status": 1,
-        "msg": "successfully found top 10 jobs ",
-        "info": {
-          "result": result
-        }
-      }
-      res.end(JSON.stringify(data))
     })
     .catch(err => {
-      const data = {
-        "status": 0,
-        "msg": "Failed fetching the top 10 jobs applied",
-        "info": err
-      }
-      res.writeHead(200, {
-        'Content-Type': 'application/json'
-      })
-      res.end(JSON.stringify(data))
-      console.log("______err__________", err)
+      res.send(400, err)
     })
-
-
 })
 
-/**
- * City wise application/month (Bar, Pie or any kind of graph) for a Job Posting.
- * return city and city count, distinct cities and their count
- */
-router.put("/recruiter/:userId/dashboard/city", async function (req, res, next) {
 
-  console.log("Request to get details of city wise jobs applied by the user: ", req.params.userId)
-  // console.log("Request body",req.body);
-  console.log("Request body", req.body.jobTitle);
+router.put("/:userId/education",async function(req,res,next){
+  console.log("Editing education details")
+  const data = {
+    education : req.body.education
+  }
 
-
-  const id1 = mongoose1.Types.ObjectId(req.params.userId)
-  const j_title = req.body.jobTitle
-  console.log("_________jtitle_________",j_title)
-  console.log(typeof id1)
-  Job.aggregate([
-    // { $match: { postedBy: id1, _id: j_id } },
-    { $match: { postedBy: id1,jobTitle:j_title } },
-
-    {
-      $project: {
-        jobTitle: 1, count: { $size: '$jobApplied' }, postedDate: 1,
-        location: 1,
-        // month: { $month: new Date("$postedDate") }
-        month: { "$substr": ["$postedDate", 5, 2] }
-      }
-    },
-
-  ])
-
-    .then(result => {
-      // callback(null,result)
-      console.log("_____________result__________", result)
-
-
-      res.writeHead(200, {
-        'Content-Type': 'application/json'
-      })
-      const data = {
-        "status": 1,
-        "msg": "successfully found details of city wise jobs applied by the user",
-        "info": {
-          "result": result
+  UserInfo.findByIdAndUpdate(req.params.userId,{
+    $set:{
+      education : data.education
+    }
+  }).exec()
+      .then(result => {
+        res.writeHead(200,{
+          'Content-Type':'application/json'
+        })
+        const data = {
+          "status":1,
+          "msg":"Success",
+          info:{}
         }
-      }
-      // console.log("____________data_________________", data)
-      res.end(JSON.stringify(data))
-    })
-    .catch(err => {
-      // callback(err,err)
-      const data = {
-        "status": 0,
-        "msg": "Failed fetching the details of jobs applied city wise",
-        "info": err
-      }
-      res.writeHead(200, {
-        'Content-Type': 'application/json'
+        res.end(JSON.stringify(data))
       })
-      res.end(JSON.stringify(data))
-      console.log("______err__________", err)
-    })
-
-
-})
-
-/**
- * Graph for number of jobs saved
- */
-router.get("/recruiter/:userId/dashboard/saved_jobs", async function (req, res, next) {
-
-  console.log("Request to get details of number of jos saved by the user: ", req.params.userId)
-  console.log("Request body", req.body.jobId);
-
-  const id1 = mongoose1.Types.ObjectId(req.params.userId)
-  // console.log(typeof id1)
-  Job.aggregate([
-    { $match: { postedBy: id1 } },
-    {
-      $project: {
-        jobTitle: 1, count: { $size: '$jobSaved' }, postedDate: 1,
-        month: { "$substr": ["$postedDate", 5, 2] }
-      }
-    },
-
-  ])
-
-    .then(result => {
-
-      console.log("_____________result__________", result)
-      res.writeHead(200, {
-        'Content-Type': 'application/json'
-      })
-      const data = {
-        "status": 1,
-        "msg": "successfully found details of number of jos saved by the user",
-        "info": {
-          "result": result
+      .catch(err => {
+        res.writeHead(200,{
+          'Content-Type':'application/json'
+        })
+        const data = {
+          "status":0,
+          "msg":"Something went wrong",
+          info:{
+            "error":err
+          }
         }
-      }
-      // console.log("____________data_________________", data)
-      res.end(JSON.stringify(data))
-    })
-    .catch(err => {
-      // callback(err,err)
-      const data = {
-        "status": 0,
-        "msg": "Failed fetching the details  details of number of jos saved by the user",
-        "info": err
-      }
-      res.writeHead(200, {
-        'Content-Type': 'application/json'
+        res.end(JSON.stringify(data))
       })
-      res.end(JSON.stringify(data))
-      console.log("______err__________", err)
-    })
-
-
 })
 
+router.put("/:userId/experience",async function(req,res,next){
+  console.log("Editing experience details")
+  console.log("Req body is: ",req.body)
+  const data = {
+    experience : req.body
+  }
 
-/**
- * clicks per job posting
- */
-router.get("/recruiter/:userId/dashboard/:jobId", async function (req, res, next) {
-
-  console.log("Request to get views per job posting posted by the recruiter: ", req.params.userId)
-  const id1 = mongoose1.Types.ObjectId(req.params.userId)
-  const j_id = mongoose1.Types.ObjectId(req.params.jobId)
-  console.log(typeof id1)
-  Job.aggregate([
-    { $match: { postedBy: id1, _id: j_id } },
-    {
-      $project: {
-        jobTitle: 1, noOfViews: 1,
-      }
-    },
-
-  ])
-
-    .then(result => {
-      console.log("_____________result__________", result)
-
-
-      res.writeHead(200, {
-        'Content-Type': 'application/json'
-      })
-      const data = {
-        "status": 1,
-        "msg": "successfully found views per job posting posted by the recruiter",
-        "info": {
-          "result": result
+  UserInfo.findByIdAndUpdate(req.params.userId,{
+    $set:{
+      experience : data.experience
+    }
+  }).exec()
+      .then(result => {
+        res.writeHead(200,{
+          'Content-Type':'application/json'
+        })
+        const data = {
+          "status":1,
+          "msg":"Success",
+          info:{}
         }
-      }
-      // console.log("____________data_________________", data)
-      res.end(JSON.stringify(data))
-    })
-    .catch(err => {
-
-      const data = {
-        "status": 0,
-        "msg": "Failed fetching the details of jobs applied",
-        "info": err
-      }
-      res.writeHead(200, {
-        'Content-Type': 'application/json'
+        res.end(JSON.stringify(data))
       })
-      res.end(JSON.stringify(data))
-      console.log("______err__________", err)
-    })
-
-
+      .catch(err => {
+        res.writeHead(200,{
+          'Content-Type':'application/json'
+        })
+        const data = {
+          "status":0,
+          "msg":"Something went wrong",
+          info:{
+            "error":err
+          }
+        }
+        res.end(JSON.stringify(data))
+      })
 })
 
-/**
- * get static user details
- */
+
+router.put("/:userId/skills",async function(req,res,next){
+  console.log("Editing skills details")
+  const data = {
+    skills : req.body.skills
+  }
+
+  UserInfo.findByIdAndUpdate(req.params.userId,{
+    $set:{
+      skills : data.skills
+    }
+  }).exec()
+      .then(result => {
+        res.writeHead(200,{
+          'Content-Type':'application/json'
+        })
+        const data = {
+          "status":1,
+          "msg":"Success",
+          info:{}
+        }
+        res.end(JSON.stringify(data))
+      })
+      .catch(err => {
+        res.writeHead(200,{
+          'Content-Type':'application/json'
+        })
+        const data = {
+          "status":0,
+          "msg":"Something went wrong",
+          info:{
+            "error":err
+          }
+        }
+        res.end(JSON.stringify(data))
+      })
+})
+
+
 router.post("/:userId/person", async function (req, res, next) {
 
   console.log("Request to view the profile of other user: ", req.params.userId)

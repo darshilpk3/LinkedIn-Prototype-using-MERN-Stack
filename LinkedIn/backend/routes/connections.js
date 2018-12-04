@@ -46,16 +46,50 @@ router.post("/request", function (req, res, next) {
                             }
                         }).exec()
                             .then(result => {
-                                res.send(200,"Request sent")
+                                res.writeHead(200,{
+                                    'Content-Type':'application/json'
+                                })
+                                const data = {
+                                    "status":"1",
+                                    "msg":"Request sent",
+                                    "info": result
+                                }
+                                res.end(JSON.stringify(data))
+                            })
+                            .catch(err => {
+                                res.writeHead(400,{
+                                    'Content-Type':'application/json'
+                                })
+                                const data = {
+                                    "status":"0",
+                                    "msg":"Server error",
+                                    "info": err
+                                }
+                                res.end(JSON.stringify(data))
                             })
                     })
             }else{
-                res.send(200,"Already connected someway")
+                res.writeHead(200,{
+                    'Content-Type':'application/json'
+                })
+                const data = {
+                    "status":"0",
+                    "msg":"Already connected someway",
+                    "info": {}
+                }
+                res.end(JSON.stringify(data))
             }
-            
         })
         .catch(err => {
-            res.send(200,JSON.stringify(err))
+            res.writeHead(400,{
+                                    'Content-Type':'application/json'
+                                })
+                                const data = {
+                                    "status":"0",
+                                    "msg":"Server error",
+                                    "info": err
+                                }
+                                res.end(JSON.stringify(data))
         })
 })
 
@@ -90,15 +124,58 @@ router.put("/:userId/accept",async function(req,res,next){
                             }
                         }).exec()
                             .then(result=>{
-                                res.send(200,"Connection Accepted")
+                                res.writeHead(200,{
+                                    'Content-Type':'application/json'
+                                })
+                                const data = {
+                                    "status" : 1,
+                                    "msg":"Success",
+                                    "info":{
+                                        "result":result
+                                    }
+                                }
+                                res.end(JSON.stringify(data))
+                            })
+                            .catch(err => {
+                                res.writeHead(200,{
+                                    'Content-Type':'application/json'
+                                })
+                                const data = {
+                                    "status" : 0,
+                                    "msg":"Something went wrong",
+                                    "info":{
+                                        "error":err
+                                    }
+                                }
+                                res.end(JSON.stringify(data))
                             })
                     })
             }else{
-                res.send(200,"Server Error")
+                res.writeHead(200,{
+                    'Content-Type':'application/json'
+                })
+                const data = {
+                    "status" : 0,
+                    "msg":"Something went wrong",
+                    "info":{
+                        "error":"No such request found"
+                    }
+                }
+                res.end(JSON.stringify(data))
             }
         })
         .catch(err => {
-            res.send(400,"Server Error")
+            res.writeHead(200,{
+                'Content-Type':'application/json'
+            })
+            const data = {
+                "status" : 0,
+                "msg":"Something went wrong",
+                "info":{
+                    "error":"Server Error"
+                }
+            }
+            res.end(JSON.stringify(data))
         })
 })
 
@@ -112,15 +189,75 @@ router.get("/:userId/getConnections",async function(req,res,next){
     UserInfo.findById(data.userId,{'connections':1})
     .populate({
         path:'connections',
-        select:'fname + lname'
+        select:'fname + lname + headline + connections + email'
     })
     .exec()
         .then(result => {
-            res.send(200,JSON.stringify(result))
+            res.writeHead(200,{
+                'Content-Type':'application/json'
+            })
+            const data = {
+                status : 1,
+                msg:"Success",
+                info:{
+                    "connections": result.connections,
+                    "totalConnections":result.connections.length
+                }
+            }
+            res.end(JSON.stringify(data))
         })
         .catch(err => {
-            res.send(400,"Server Error")
+            res.writeHead(200,{
+                'Content-Type':'application/json'
+            })
+            const data = {
+                status : 0,
+                msg:"Something went wrong",
+                info:{
+                    "error":err
+                }
+            }
+            res.end(JSON.stringify(data))
         })
 })
 
+router.get("/:userId/getPendingConnections",async function(req,res,next){
+    console.log("Getting all the pending reuests")
+
+    const data = {
+        userId : req.params.userId
+    }
+
+    UserInfo.findById(data.userId,{
+        'pending_receive':1
+    })
+    .populate('pending_receive')
+    .exec()
+        .then(result => {
+            res.writeHead(200,{
+                'Content-Type':'application/json'
+            })
+            const data = {
+                "status":1,
+                "msg":"Success",
+                "info":{
+                    "pendingConnections" : result
+                }
+            }
+            res.end(JSON.stringify(data))
+        })
+        .catch(err => {
+            res.writeHead(200,{
+                'Content-Type':'application/json'
+            })
+            const data = {
+                "status":0,
+                "msg":"Something went error",
+                "info":{
+                    "error" : err
+                }
+            }
+            res.end(JSON.stringify(data))  
+        })
+})
 module.exports = router;
