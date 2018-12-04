@@ -15,7 +15,10 @@ import JobSearch from './jobsearch';
 import JobListing from './jobListing';
 =======
 import JobListing from './jobListing';
+<<<<<<< HEAD
 import JobApplicantsList from './jobApplicantsList';
+=======
+>>>>>>> development
 import PeopleSearchResults from './peoplesearchresults.js';
 
 class Main extends Component {
@@ -36,10 +39,14 @@ class Main extends Component {
                 <Route exact path="/job/post" component={JobPosting} />
                 <Route exact path="/jobs/" component={JobSearch} />
                 <Route exact path="/job/list" component={JobListing} />
+<<<<<<< HEAD
+                <Route exact path="/job/applicants" component={JobApplicantsList}/>
+=======
  <Route exact path="/searchResults/" component={searchResults} />
                 
 <Route exact path="/job/list" component={JobListing} />
                 <Route exact path="/users/results" component={PeopleSearchResults} />
+>>>>>>> development
                 {/* <Route path="/TravelerLogin" component={Login} /> */}
 
             </div>

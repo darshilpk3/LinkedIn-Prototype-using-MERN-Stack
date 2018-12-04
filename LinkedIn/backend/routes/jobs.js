@@ -32,6 +32,10 @@ router.post("/", async function (req, res, next) {
         companyLogo: req.body.companyLogo,
         companyName: req.body.companyName,
         applyMethod: req.body.applyMethod,
+        noOfViews:0,
+        noOfViews_applied:0,
+        noOfViews_submitted:0
+
     }
 
     kafka.make_request('jobPost', data, function (err, result) {
@@ -400,4 +404,9 @@ router.get("/:jobId/applications",async function(req,res,next){
             // res.send(400,err)
         })
 })
+
+
+
+
+
 module.exports = router;

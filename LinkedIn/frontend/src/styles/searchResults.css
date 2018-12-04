@@ -1,3 +1,24 @@
+.savedButton{
+    border: none;
+    margin-right: 2%;
+    padding: 1%;
+    width: 20%;
+    font-size: 20px;
+    background-color: white;
+    border: #0084bf 1px solid;
+    color: #0084bf;
+}
+.applyButton{
+    border: none;
+    margin: 2%;
+    padding: 1%;
+    width: 40%;
+    font-size: 20px;
+    background-color: #0084bf;
+    color: white;
+
+}
+
 .myNetworkBackground{
     background-color: #F5F5F5;
     height:100vh;
@@ -16,8 +37,8 @@ html{overflow: hidden;}
 }
 .myConnections{
     margin-top: 50px;
-    width: 79%;
-    margin-left: 30%;
+    width: 85%;
+    margin-left: 20%;
     border: 1px solid lightgrey;
     overflow-y: scroll;
     overflow-x: hidden;
@@ -84,7 +105,10 @@ html{overflow: hidden;}
     border-radius: 0%;
 }
 .myInvitations{ 
+    overflow-y: scroll;
+    overflow-x: hidden;
     margin-top: 50px;
+    margin-right: 10%;
     border: 1px solid lightgrey;
     background-color: white; 
     height: 80vh;
@@ -94,8 +118,10 @@ html{overflow: hidden;}
 }
 
 .profileImage{
-    width: 150%;
-    height: 150%;
+    padding-left: 15%;
+    padding-top: 15%;
+    width: 95%;
+    height: 95%;
 }
 .userprofileImage{
     width: 250%;

@@ -1,7 +1,7 @@
-var UserInfo = require('../../../backend/models/userInfo').users
-var Application = require('../../../backend/models/application')
-var Job = require('../../../backend/models/job')
-var Message = require('../../../backend/models/message')
+var UserInfo = require('../../models/userInfo')//.users
+var Application = require('../../models/application')
+var Job = require('../../models/job')
+var Message = require('../../models/message')
 
 function handle_request(msg, callback) {
 
@@ -21,19 +21,23 @@ function handle_request(msg, callback) {
                     }
                 }).exec()
                     .then(jobResult => {
+                        console.log("____________jobresult__________",jobResult)
                         UserInfo.findByIdAndUpdate(msg.userId, {
                             $push: {
                                 jobs_saved: msg.jobId
                             }
                         }).exec()
                             .then(userResult => {
+                                console.log("____________userResult_____________",userResult)
                                 callback(null, "Successfull saved a job")
                             })
                             .catch(err => {
+                                console.log("_____________err___________________",err)
                                 callback(err, err)
                             })
                     })
                     .catch(err => {
+                        console.log("~~~~~~~~~~~err~~~~~~~~~~~~~~~~~",err)
                         callback(err, err)
                     })
             } else {
