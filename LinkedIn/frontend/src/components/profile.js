@@ -10,7 +10,7 @@ import PlacesAutocomplete, {
     getLatLng,
 } from 'react-places-autocomplete';
 
-import navbar from './Navbar';
+import Navbar from './Navbar';
 import defaultPic from '../assets/images/default-profile-pic.png'
 
 
@@ -430,6 +430,10 @@ class profile extends Component {
 
     updateEducation() {
         let data = this.state.tempEdu;
+        data.forEach(element => {
+            delete element._id;
+
+        });
         console.log(data)
 
         axios.put(`${ROOT_URL}/user/${this.state.myData.uid}/education`, data, { withCredentials: true })
@@ -859,9 +863,9 @@ class profile extends Component {
 
                             <div className="summary">
                                 <p>
-                                    {this.state.summary.slice(0, 50)} </p>
+                                    {this.state.summary}                                     </p>
                                 <p id="demo" className="collapse">
-                                    {this.state.summary.slice(51)}
+                                    {this.state.summary}
                                 </p>
 
                             </div>
