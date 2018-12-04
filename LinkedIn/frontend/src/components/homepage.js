@@ -121,6 +121,7 @@ class Login extends Component {
             this.props.onSubmitLogin(data).then(response => {
                 if (response.status > 0) {
                     localStorage.setItem('myData', JSON.stringify(response.data));
+                    localStorage.setItem('userId', JSON.stringify(response.data.uid));
                     this.setState({
                         myData: data
                     })
@@ -286,14 +287,25 @@ const mapDispatchStateToProps = dispatch => {
                                 firstname: response.data.info.firstname,
                                 lastname: response.data.info.lastname,
                                 profileImage: response.data.info.profileImage,
-                                type: response.data.info.type
+                                type: response.data.info.type,
+                                token: response.data.info.token
+
                             }
+                        }
+                        let tobeSaved = {
+                            uid: response.data.info.uid,
+                            email: response.data.info.email,
+                            firstname: response.data.info.firstname,
+                            lastname: response.data.info.lastname,
+                            profileImage: response.data.info.profileImage,
+                            type: response.data.info.type,
+                            token: response.data.info.token
                         }
                         dispatch({ type: 'SAVEMYDATA', payload: res });
                         // localStorage.setItem('myData', JSON.stringify(res.data))
 
                         return {
-                            data: data,
+                            data: tobeSaved,
                             status: 1
                         };
                     } else {
