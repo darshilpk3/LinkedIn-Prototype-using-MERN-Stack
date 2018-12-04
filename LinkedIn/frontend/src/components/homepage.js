@@ -24,7 +24,7 @@ class Login extends Component {
             errorFlag: false,
             invalidFlag: false,
             myData: myData,
-            signedUp:false
+            signedUp: false
         }
         this.fieldChangeHandler = this.fieldChangeHandler.bind(this);
         this.login_submit = this.login_submit.bind(this)
@@ -107,7 +107,7 @@ class Login extends Component {
         //         signedUp: true
         //     })
         // }, 5000);
-        
+
 
 
     }
@@ -153,7 +153,7 @@ class Login extends Component {
 
         if (this.state.myData) {
             redirectVar = <Redirect to="/newsfeed" />
-        }else if (this.state.signedUp){
+        } else if (this.state.signedUp) {
             redirectVar = <Redirect to="/profilelocation" />
 
         }
@@ -269,7 +269,7 @@ const mapDispatchStateToProps = dispatch => {
     return {
         onSubmitHandle: (data) => {
             dispatch({ type: 'SIGNUPDATA', payload: data });
-            
+
         }
         ,
         onSubmitLogin: (data) => {
@@ -305,6 +305,7 @@ const mapDispatchStateToProps = dispatch => {
                     }
                 }, (error) => {
 
+                    console.log(error)
                     // return error;
                 });
         }

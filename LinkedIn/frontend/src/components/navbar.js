@@ -8,11 +8,12 @@ import defaultPic from '../assets/images/default-profile-pic.png'
 // import React, { Component } from "react";
 import { Field, reduxForm } from "redux-form";
 import { connect } from "react-redux";
+
 // import { login } from "../../actions";
 
 
 
-class navbar extends Component {
+class Navbar extends Component {
 
     constructor(props) {
         super(props);
@@ -325,13 +326,13 @@ const mapDispatchStateToProps = dispatch => {
 
 
 
-// export default reduxForm({
-//     validate,
-//     form: "TravelerLoginForm"
-// })(connect(mapStateToProps, mapDispatchStateToProps)(Login));
+export default reduxForm({
+    validate,
+    form: "TravelerLoginForm"
+})(connect(mapStateToProps, mapDispatchStateToProps)(Navbar));
 
 // export default reduxForm({
 //     validate,
 //     form: "TravelerLoginForm"
 // })(connect(null, { login })(Login));
-export default navbar;
+// export default navbar;

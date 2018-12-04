@@ -5,7 +5,7 @@ import connections from './connections';
 import savedJobs from './savedJobs';
 import appliedJobs from './appliedJobs';
 import messaging from './messaging';
-import navbar from './navbar';
+import Navbar from './Navbar';
 import homepage from './homepage';
 import Profilelocation from './profilelocation';
 import profileType from './profileType';
@@ -14,6 +14,7 @@ import UserDelete from './userdelete';
 import JobPosting from './jobposting';
 import JobSearch from './jobsearch';
 import profile from './profile';
+import viewProfile from './viewProfile';
 
 class Main extends Component {
     render() {
@@ -25,7 +26,7 @@ class Main extends Component {
                 <Route exact path="/savedJobs" component={savedJobs} />
                 <Route exact path="/appliedJobs" component={appliedJobs} />
                 <Route exact path="/messaging" component={messaging} />
-                <Route exact path="/navbar" component={navbar} />
+                <Route exact path="/Navbar" component={Navbar} />
                 <Route exact path="/" component={homepage} />
                 <Route exact path="/profilelocation" component={Profilelocation} />
                 <Route exact path="/newsfeed" component={Newsfeed} />
@@ -34,6 +35,7 @@ class Main extends Component {
                 <Route exact path="/jobs/" component={JobSearch} />
                 <Route exact path="/profile/" component={profile} />
                 <Route exact path="/profileType/" component={profileType} />
+                <Route exact path="/viewProfile/" component={viewProfile} />
             </div>
         )
     }

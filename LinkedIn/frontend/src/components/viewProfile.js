@@ -5,10 +5,7 @@ import axios from 'axios';
 import { Link } from 'react-router-dom';
 import { Redirect } from 'react-router';
 import { ROOT_URL } from '../constants/constants';
-import PlacesAutocomplete, {
-    geocodeByAddress,
-    getLatLng,
-} from 'react-places-autocomplete';
+
 
 import navbar from './Navbar';
 import defaultPic from '../assets/images/default-profile-pic.png'
@@ -82,7 +79,6 @@ class profile extends Component {
         this.updateSkill = this.updateSkill.bind(this)
         this.saveImage = this.saveImage.bind(this)
         this.saveProfile = this.saveProfile.bind(this)
-        this.fieldLocation=this.fieldLocation.bind(this)
 
     }
 
@@ -113,34 +109,41 @@ class profile extends Component {
     componentDidMount() {
         axios.defaults.withCredentials = true;
         // axios.get(`${ROOT_URL}/userId/5c0508c1b328b5105c67b9a9` , { headers: { Authorization: this.state.myData.token } })
-        axios.get(`${ROOT_URL}/user/5c0313af1e6ee47530f590cb`)
+        let data = {
+            searched_id: "5c0313bc1e6ee47530f590cc"
+        }
+        axios.post(`${ROOT_URL}/user/5c0313af1e6ee47530f590cb/person`, data, { withCredentials: true })
             .then((response) => {
 
                 console.log(response.data);
                 if (response.data.status == 1) {
-                    let data = response.data.info;
+                    let data = response.data.info[0];
                     let temp = "";
                     if (data.type == "R") {
                         temp = data.current_position
                     } else {
-                        temp = data.education[data.education.length - 1].college_name
+                        // temp = data.education[data.education.length - 1].college_name
+                    }
+                    let tempSumm = "";
+                    if (data.profile_summary) {
+                        tempSumm = data.profile_summary
                     }
                     this.setState({
-                        fname: data.fname,
-                        lname: data.lname,
-                        headline: data.headline,
+                        fname: data.name && data.name,
+                        // lname: data.lname && data.lname,
+                        headline: data.headline && data.headline,
                         country: data.country,
-                        summary: data.profile_summary,
+                        summary: tempSumm,
                         Experience: data.experience,
                         tempEdit: data.experience,
                         Education: data.education,
                         tempEdu: data.education,
                         skill: data.skills,
                         tempSkill: data.skills,
-                        connections: data.connections.length,
+                        connections: data.noOfConnections,
                         contactInfo: data.email,
                         currentInfo: temp,
-
+                        isConnected: data.isConnected
                     })
                     localStorage.setItem('profile', JSON.stringify({
                         fname: data.fname,
@@ -148,7 +151,7 @@ class profile extends Component {
                         headline: data.headline,
                         country: data.country,
                         summary: data.profile_summary,
-                        connections: data.connections.length,
+                        connections: data.noOfConnections,
                         contactInfo: data.email,
                         currentInfo: temp
                     }));
@@ -205,7 +208,8 @@ class profile extends Component {
             summary: data.summary,
             connections: data.connections,
             contactInfo: data.contactInfo,
-            currentInfo: data.currentInfo
+            currentInfo: data.currentInfo,
+
         })
 
 
@@ -253,11 +257,6 @@ class profile extends Component {
         let changedVar = {}
         changedVar[e.target.name] = e.target.value
         this.setState(changedVar)
-    }
-
-    fieldLocation(e) {
-
-        this.setState({ location: e })
     }
 
     changeSkill(e, key) {
@@ -525,7 +524,7 @@ class profile extends Component {
 
 
     render() {
-        require('../styles/profile.css');
+        require('../styles/viewProfile.css');
         let redirect = null;
 
         let DisplayData = null;
@@ -750,6 +749,21 @@ class profile extends Component {
                 )
             })
         }
+        let dynoButton = null
+
+        // if (this.state.isConnected === true) {
+        //     dynoButton = <span><button onClick={} className="button-style" >Message </button></span>
+        // }
+        // if (this.state.isConnected === false) {
+        //     dynoButton = <span><button onClick={} className="button-style" >Connect </button></span>
+        // }
+        // if (this.state.isConnected === "pending") {
+        //     dynoButton = <span><button onClick={} className="button-style" >Pending </button></span>
+        // }
+        // if (this.state.isConnected === "accept") {
+        //     dynoButton = <span><button onClick={} className="button-style" >Pending </button></span>
+        // }
+
 
         if (this.state.tempSkill && this.state.tempSkill.length > 0) {
             skillEdit = this.state.tempSkill.map((exp1, key) => {
@@ -812,9 +826,8 @@ class profile extends Component {
 
 
                             </div>
-                            <div style={{ marginTop: "-10%" }}>
+                            {/* <div style={{ marginTop: "-10%" }}>
 
-                                {/* <img data-toggle="modal" data-target="#myModal" style={{ marginRight: "0%", marginLeft: "4%" }} className="profileImg" src={defaultPic} /> */}
                                 <form id="uploadForm"
                                     enctype="multipart/form-data"
                                     action="/api/photo"
@@ -822,15 +835,19 @@ class profile extends Component {
                                     method="post">
                                     <label for="formInput" >
                                         <input id="formInput" style={{ display: "none" }} type="file" onChange={this.onImageChange} name="selectedFile" accept="image/*" />
-                                        <img style={{ "margin-right": "0%", "margin-left": "20%", "width": "175px", "margin-top": "0%", height: "175px" }} className="profileImg" src={this.state.ProfilePic} />
+                                        <img style={{ "margin-right": "0%", "margin-left": "7%", "width": "25%", "margin-top": "0%", height: "187px" }} className="profileImg" src={this.state.ProfilePic} />
 
                                     </label>
                                 </form>
+                            </div> */}
+
+                            <div style={{ marginTop: "-10%" }}>
+                                <img data-toggle="modal" data-target="#myModal1" style={{ marginRight: "0%", marginLeft: "4%" }} className="profileImg" src={defaultPic} />
                             </div>
-                            <div className="graphics">
+                            {/* <div className="graphics">
                                 <i style={{ color: "#0073b1", fontSize: "22px", cursor: "pointer" }} className="ion-edit" data-toggle="modal" data-target="#myModal"></i>
                             </div>
-                            <div id="imagePreview" data-toggle="modal" data-target="#imageModal"></div>
+                            <div id="imagePreview" data-toggle="modal" data-target="#imageModal"></div> */}
                             <table className="table_styling">
                                 <tr>
                                     <td>
@@ -842,7 +859,7 @@ class profile extends Component {
                                         </div>
 
                                         <div style={{ marginTop: "10px", marginLeft: "4%", marginBottom: "6%" }}>
-                                            <span><button className="button-style" >Add profile section <span class="caret"></span></button></span>
+                                            {dynoButton}
                                             <span><button className="button-style_1" style={{ marginLeft: "5px", "border-style": "initial" }} >More...</button></span>
                                         </div>
                                     </td>
@@ -857,18 +874,18 @@ class profile extends Component {
 
                             <div className="summary">
                                 <p>
-                                    {this.state.summary.slice(0, 50)} </p>
+                                    {this.state.summary} </p>
                                 <p id="demo" className="collapse">
-                                    {this.state.summary.slice(51)}
+                                    {this.state.summary && this.state.summary.slice(51)}
                                 </p>
 
                             </div>
-                            <div style={{ padding: "2% 4%", textAlign: "center" }}>
+                            {/* <div style={{ padding: "2% 4%", textAlign: "center" }}>
                                 <a href="#demo" data-toggle="collapse" style={{ textDecoration: "none", color: "#0073b1", "line-height": "0px", fontWeight: "600", "font-size": "1.61rem" }}>
                                     show
                                     </a>
                                 <span class="caret"></span>
-                            </div>
+                            </div> */}
                         </div>
                     </div>
 
@@ -902,13 +919,13 @@ class profile extends Component {
                                     Experience
                                 </h2>
                             </div>
-                            <div style={{ "margin-top": "-35px", "margin-left": "96%" }}>
+                            {/* <div style={{ "margin-top": "-35px", "margin-left": "96%" }}>
                                 <i style={{ color: "#0073b1", fontSize: "22px", cursor: "pointer" }} className="ion-edit" data-toggle="modal" data-target="#experienceModalEdit"></i>
                                 <div>
                                     <i style={{ color: "#0073b1", fontSize: "22px", cursor: "pointer" }} className="ion-plus-round" data-toggle="modal" data-target="#experienceModalAdd"></i>
 
                                 </div>
-                            </div>
+                            </div> */}
 
 
                             <table className="" style={{ marginBottom: "6%" }}>
@@ -925,13 +942,13 @@ class profile extends Component {
                                     Education
                                 </h2>
                             </div>
-                            <div style={{ "margin-top": "-35px", "margin-left": "96%" }}>
+                            {/* <div style={{ "margin-top": "-35px", "margin-left": "96%" }}>
                                 <i style={{ color: "#0073b1", fontSize: "22px", cursor: "pointer" }} className="ion-edit" data-toggle="modal" data-target="#editEducation"></i>
                                 <div>
                                     <i style={{ color: "#0073b1", fontSize: "22px", cursor: "pointer" }} className="ion-plus-round" data-toggle="modal" data-target="#addEductaion"></i>
 
                                 </div>
-                            </div>
+                            </div> */}
                             <table className="" style={{ marginBottom: "6%" }}>
                                 {educations}
 
@@ -944,13 +961,13 @@ class profile extends Component {
                                     Skills and endorsement
                                 </h2>
                             </div>
-                            <div style={{ "margin-top": "-35px", "margin-left": "96%" }}>
+                            {/* <div style={{ "margin-top": "-35px", "margin-left": "96%" }}>
                                 <i style={{ color: "#0073b1", fontSize: "22px", cursor: "pointer" }} className="ion-edit" data-toggle="modal" data-target="#editSkils"></i>
                                 <div>
                                     <i style={{ color: "#0073b1", fontSize: "22px", cursor: "pointer" }} className="ion-plus-round" data-toggle="modal" data-target="#addSkills"></i>
 
                                 </div>
-                            </div>
+                            </div> */}
 
                             {skills}
 
@@ -1055,27 +1072,7 @@ class profile extends Component {
                                                                 <span>State *</span>
                                                             </div>
                                                             <div>
-
-
-                                                                <PlacesAutocomplete value={this.state.location} onChange={this.fieldLocation}>
-                                                                    {({ getInputProps, getSuggestionItemProps, suggestions, loading }) => (
-                                                                        <div className="autocomplete-root">
-                                                                            <input {...getInputProps({ name: "location", autoComplete: "noop", className: "input_styling" })} />
-
-                                                                            <div className="autocomplete-dropdown-container">
-                                                                                {loading && <div>Loading...</div>}
-                                                                                {suggestions.map(suggestion => (
-                                                                                    <div {...getSuggestionItemProps(suggestion)} style={{borderWidth:"thin",borderColor:"black"}}>
-                                                                                        <span>{suggestion.description}</span>
-                                                                                    </div>
-                                                                                ))}
-                                                                            </div>
-                                                                        </div>
-                                                                    )}
-                                                                </PlacesAutocomplete>
-                                                            </div>
-                                                            <div>
-                                                                {/* <input style={{ marginLeft: "0px" }} className="input_styling" value={this.state.location} name="location" onChange={this.fieldChangeHandler} placeholder="" /> */}
+                                                                <input style={{ marginLeft: "0px" }} className="input_styling" value={this.state.location} name="location" onChange={this.fieldChangeHandler} placeholder="" />
                                                             </div>
                                                         </td>
                                                     </tr>
