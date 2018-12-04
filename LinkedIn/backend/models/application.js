@@ -20,6 +20,9 @@ var application= mongoose.Schema({
     },
     ethnicity:{
         type:String
+    },
+    sponsership:{
+        type:String
     }
 })
 

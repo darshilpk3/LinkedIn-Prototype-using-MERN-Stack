@@ -1,7 +1,7 @@
-var UserInfo = require('../../../backend/models/userInfo').users
-var Application = require('../../../backend/models/application')
-var Job = require('../../../backend/models/job')
-var Message = require('../../../backend/models/message')
+var UserInfo = require('../../models/userInfo')
+var Application = require('../../models/application')
+var Job = require('../../models/job')
+var Message = require('../../models/message')
 
 function handle_request(msg, callback) {
 
@@ -21,6 +21,5 @@ function handle_request(msg, callback) {
             callback(err,err)
         })
 }
-
 
 exports.handle_request = handle_request;

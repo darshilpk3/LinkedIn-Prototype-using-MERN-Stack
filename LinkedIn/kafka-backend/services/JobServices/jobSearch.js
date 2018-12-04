@@ -20,7 +20,7 @@ function handle_request(msg, callback) {
         //   jobTitle : {$regex : regex_str}, 
         $or: [{ jobTitle: { $regex: regex_str, $options: 'i' } }, { required_skills: { $regex: regex_str, $options: 'i' } }],
         location: { $regex: msg.location, $options: 'i' }
-    },{jobTitle:1, location:1, description:1, companyLogo:1})
+    })
         .then((result, err) => {
             if (err) {
                 callback(err, err)

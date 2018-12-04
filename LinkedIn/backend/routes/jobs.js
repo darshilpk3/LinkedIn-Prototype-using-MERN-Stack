@@ -206,7 +206,7 @@ getJobsSearch_Caching = function (Job, redis, userID, callback) {
                             }
                         }
                         const key = (searched_job_location + searched_job_title).toLowerCase();
-                        redis.set(key, JSON.stringify(result), function () {
+                        redis.set(key, JSON.stringify(data), function () {
 
                             console.log("_____________setting in cache_________________ ")
                             callback(data);

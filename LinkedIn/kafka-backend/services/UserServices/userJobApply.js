@@ -1,7 +1,7 @@
-var UserInfo = require('../../../backend/models/userInfo').users
-var Application = require('../../../backend/models/application')
-var Job = require('../../../backend/models/job')
-var Message = require('../../../backend/models/message')
+var UserInfo = require('../../models/userInfo')
+var Application = require('../../models/application')
+var Job = require('../../models/job')
+var Message = require('../../models/message')
 
 function handle_request(msg, callback) {
 
@@ -14,7 +14,8 @@ function handle_request(msg, callback) {
         howDidYouHear: msg.howDidYouHear,
         isDisabled: msg.isDisabled,
         resume: msg.resume,
-        ethnicity: msg.ethnicity
+        ethnicity: msg.ethnicity,
+        sponsership: msg.sponsership
     })
 
     application.save()

@@ -317,7 +317,8 @@ router.post("/:userID/apply", async function (req, res, next) {
     howDidyouHear: req.body.howDidyouHear,
     isDisabled: req.body.isDisabled,
     resume: req.body.resume,
-    ethnicity: req.body.ethnicity
+    ethnicity: req.body.ethnicity,
+    sponsership: req.body.sponsership
   }
 
   kafka.make_request("userJobApply", data, function (err, result) {
