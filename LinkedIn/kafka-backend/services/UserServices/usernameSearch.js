@@ -84,36 +84,6 @@ function handle_request(msg, callback) {
 
 
 
-    // Job.findByIdAndUpdate(msg.setJobId,
-    //     {
-    //         $set: {
-    //             jobTitle: msg.job_title,
-    //             description: msg.job_description,
-    //             industry: msg.job_industry,
-    //             employmentType: msg.employment_type,
-    //             location: msg.job_location,
-    //             jobFunction: msg.job_function,
-    //             companyLogo: msg.company_logo
-    //         }
-    //     }
-    // )
-    //     .exec()
-    //     .then((result, err) => {
-    //         if (err) {
-    //             console.log("__________err_________________",err)
-
-    //             callback(err,err)
-    //         } else {
-    //             console.log("__________result_________________",result)
-    //             callback(null,result)
-    //         }
-    //     })
-    //     .catch(err => {
-    //         console.log("__________err_________________",err)
-
-    //         callback(err,err)
-    //     })
-
 }
 
 

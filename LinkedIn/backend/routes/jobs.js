@@ -32,6 +32,7 @@ router.post("/", async function (req, res, next) {
         companyLogo: req.body.companyLogo,
         companyName: req.body.companyName,
         applyMethod: req.body.applyMethod,
+        noOfViews:0
     }
 
     kafka.make_request('jobPost', data, function (err, result) {

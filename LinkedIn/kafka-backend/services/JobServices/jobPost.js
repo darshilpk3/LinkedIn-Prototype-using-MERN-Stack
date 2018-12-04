@@ -19,7 +19,9 @@ function handle_request(msg, callback) {
         postedDate: msg.postedDate,
         location: msg.location,
         jobFunction: msg.jobFunction,
-        required_skills: msg.required_skills
+        required_skills: msg.required_skills,
+        noOfViews:0
+
     })
 
     // console.log("__________new Job is_______________",newJob)
