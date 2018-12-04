@@ -181,45 +181,23 @@ router.post('/login', redisMiddleware, async function (req, res, next) {
           const password = bcrypt.compareSync(pwd, result[0].pwd);
           if (result && password) {
             console.log("Successfully Logged In")
+            res.writeHead(200, {
+              'Content-Type': 'application/json'
+            })
             
-            UserInfo.findOne({
-              email: email
-            }).exec()
-              .then(mongoResult => {
-                var token = jwt.sign(JSON.stringify(mongoResult),"secret")
-                console.log(mongoResult)
-                res.writeHead(200, {
-                  'Content-Type': 'application/json'
-                })
-                const data = {
-                  "status": 1,
-                  "msg": "Successfully Logged In",
-                  "info": {
-                    "firstname": mongoResult.fname,
-                    "lastname": mongoResult.lname,
-                    "email": mongoResult.email,
-                    "type": mongoResult.type,
-                    "uid": mongoResult._id,
-                    "token":token
-                  }
-                }
-                console.log("data being sent to frontend:\n", JSON.stringify(data))
-                res.end(JSON.stringify(data))
-              })
-              .catch(err => {
-                console.log(err)
-                res.writeHead(200, {
-                  'Content-Type': 'application/json'
-                })
-                const data = {
-                  "status": 1,
-                  "msg": "Unsuccessfull",
-                  "info": {
-                    "error": err,
-                  }
-                }
-                res.end(JSON.stringify(data))
-              })
+            const data = {
+              "status": 1,
+              "msg": "Successfully Logged In",
+              "info": {
+                // "uid":result[0].
+                "fullname": result[0].firstName + " " + result[0].lastName,
+                "email": email,
+                "type": result[0].type
+              }
+            }
+            console.log("data being sent to frontend:\n", JSON.stringify(data))
+            console.log(result)
+            res.end(JSON.stringify(data))
           } else if (err) {
             console.log("Some error in sql query", err.sqlMessage)
             res.writeHead(400, {
