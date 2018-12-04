@@ -6,7 +6,7 @@ var mongoose = require('mongoose');
 var kafka = require('../kafka/client')
 
 var bcrypt = require('bcryptjs')
-var UserInfo = require('../models/userInfo').users
+var UserInfo = require('../models/userInfo')
 var Job = require('../models/job')
 var Message = require('../models/message')
 var Connection = require('../models/connections')

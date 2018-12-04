@@ -5,9 +5,12 @@ import cookie from 'react-cookies';
 import { Link } from 'react-router-dom';
 import _ from "lodash";
 import { Redirect } from 'react-router';
+
+import { ROOT_URL } from '../constants/constants';
 import Navbar from './Navbar'
 
 import picDS from '../assets/images/PicDS.png'
+import { ROOT_URL } from '../constants/constants';
 
 // pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.js`;
 
@@ -36,7 +39,7 @@ class connections extends Component {
 
         if (localStorage.getItem('userId')) {
             const id = localStorage.getItem('userId')
-            axios.get(`http://localhost:3001/connection/${id}/getConnections`)
+            axios.get(`${ROOT_URL}/connection/${id}/getConnections`)
                 .then(response => {
                     if (response.status === 200) {
                         console.log("Connections results: ", response.data)
@@ -189,7 +192,7 @@ class connections extends Component {
 
                             </div>
                             {/* <Document
-                                file={"http://localhost:3001/uploads/Lab2_Report_013007280.pdf"}
+                                file={"${ROOT_URL}/uploads/Lab2_Report_013007280.pdf"}
                                 onLoadSuccess={this.onDocumentLoadSuccess}
                             >
                                 <Page pageNumber={this.state.pageNumber} />

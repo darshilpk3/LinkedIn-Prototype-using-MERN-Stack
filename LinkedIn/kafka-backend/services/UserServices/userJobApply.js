@@ -1,7 +1,8 @@
-var UserInfo = require('../../models/userInfo')//.users
+var UserInfo = require('../../models/userInfo')
 var Application = require('../../models/application')
 var Job = require('../../models/job')
 var Message = require('../../models/message')
+var mongoose = require('mongoose');
 
 function handle_request(msg, callback) {
 
@@ -17,6 +18,8 @@ function handle_request(msg, callback) {
         ethnicity: msg.ethnicity,
         sponsership: msg.sponsership
     })
+var id=mongoose.mongo.ObjectID(msg.userId)
+var j_id=mongoose.mongo.ObjectID(msg.jobId)
 
     application.save()
         .then((applicationResult, err) => {
@@ -30,7 +33,7 @@ function handle_request(msg, callback) {
                             jobApplied: msg.userId,
                         },
                         $pull:{
-                            jobSaved:msg.userId
+                            jobSaved :id
                         },
                         $inc: { noOfViews_submitted: 1 } 
                     }).exec()
@@ -42,7 +45,7 @@ function handle_request(msg, callback) {
                                 applications: applicationResult._id
                             },
                             $pull:{
-                                jobs_saved: msg.jobId
+                                jobs_saved : j_id
                             }
                         }).exec()
                             .then(userResult => {

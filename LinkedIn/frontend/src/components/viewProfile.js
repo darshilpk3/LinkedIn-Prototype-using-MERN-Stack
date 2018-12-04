@@ -7,16 +7,22 @@ import { Redirect } from 'react-router';
 import { ROOT_URL } from '../constants/constants';
 
 
-import navbar from './Navbar';
+import Navbar from './Navbar';
 import defaultPic from '../assets/images/default-profile-pic.png'
 
 
 import linkedIn from '../assets/images/linkedIn.png'
-
+var swal = require("sweetalert")
 class profile extends Component {
     constructor(props) {
         super(props);
+        let myData = JSON.parse(localStorage.getItem('myData'));
+        let uid = localStorage.getItem('userId');
+        let oppUser = this.props.location.state && this.props.location.state.applicant_id
         this.state = {
+            myData: myData,
+            oppUser: oppUser,
+            uid: uid,
             userConnections: "205",    //number of connections user have
             userInvitations: "20",
             fname: "Alex White",
@@ -52,7 +58,8 @@ class profile extends Component {
             ProfilePic: defaultPic,
             profileInvalid: false,
             ziperror: false,
-            hidePopUp: false
+            hidePopUp: false,
+            searchedUser: ""
         }
 
         this.changeExperienceTitle = this.changeExperienceTitle.bind(this)
@@ -80,6 +87,12 @@ class profile extends Component {
         this.saveImage = this.saveImage.bind(this)
         this.saveProfile = this.saveProfile.bind(this)
 
+
+
+        this.requestConnection = this.requestConnection.bind(this)
+        this.acceptConnection = this.acceptConnection.bind(this)
+        this.handleChange = this.handleChange.bind(this)
+        this.sendMessage = this.sendMessage.bind(this)
     }
 
     saveProfile() {
@@ -110,9 +123,9 @@ class profile extends Component {
         axios.defaults.withCredentials = true;
         // axios.get(`${ROOT_URL}/userId/5c0508c1b328b5105c67b9a9` , { headers: { Authorization: this.state.myData.token } })
         let data = {
-            searched_id: "5c0313bc1e6ee47530f590cc"
+            searched_id: this.state.oppUser
         }
-        axios.post(`${ROOT_URL}/user/5c0313af1e6ee47530f590cb/person`, data, { withCredentials: true })
+        axios.post(`${ROOT_URL}/user/${this.state.uid}/person`, data, { withCredentials: true })
             .then((response) => {
 
                 console.log(response.data);
@@ -143,7 +156,8 @@ class profile extends Component {
                         connections: data.noOfConnections,
                         contactInfo: data.email,
                         currentInfo: temp,
-                        isConnected: data.isConnected
+                        isConnected: data.isConnected,
+                        searchedUser:data._id
                     })
                     localStorage.setItem('profile', JSON.stringify({
                         fname: data.fname,
@@ -476,6 +490,71 @@ class profile extends Component {
 
 
 
+    requestConnection = (e) => {
+        console.log("requesting connection to userId: ", e.target.id)
+        const data = {
+            sentBy: localStorage.getItem("userId"),
+            sentTo: e.target.id
+        }
+        axios.post(`${ROOT_URL}/connection/request`, data)
+            .then(response => {
+                if (response.status === 200) {
+                    console.log(response.data)
+                    window.location.reload()
+                }
+            })
+    }
+
+    acceptConnection = (e) => {
+        console.log("Accept connection of userId: ", e.target.id)
+        console.log("Current user", localStorage.getItem("userId"))
+        const data = {
+            connection: e.target.id
+        }
+        const id = localStorage.getItem("userId")
+        var headers = new Headers()
+        axios.defaults.withCredentials = true;
+
+        axios.put(`${ROOT_URL}/connection/${id}/accept`, data)
+            .then(response => {
+                if (response.status === 200) {
+                    console.log("Accepted: ", response.data)
+                    window.location.reload()
+                } else {
+                    console.log("failed")
+                }
+            })
+    }
+
+    handleChange = (e) => {
+        this.setState({
+            [e.target.name]: e.target.value
+        })
+    }
+
+    sendMessage = (e) => {
+        const data = {
+            member1: localStorage.getItem("userId"),
+            member2: e.target.id,
+            sentBy: localStorage.getItem("userId"),
+            body: this.state.msgBody && this.state.msgBody
+        }
+        console.log(data)
+        axios.defaults.withCredentials = true
+        axios.post("${ROOT_URL}/message", data)
+            .then(response => {
+                if (response.status === 200) {
+                    if (response.data.status) {
+                        swal("Sent", "", "success")
+                        window.location.reload()
+                    }
+                } else {
+                    swal("Something went wrong", "", "error")
+                }
+            })
+    }
+
+
     changeExperienceTitle(e, key) {
         let temp = this.state.tempEdit
         temp[key].title = e.target.value
@@ -751,18 +830,18 @@ class profile extends Component {
         }
         let dynoButton = null
 
-        // if (this.state.isConnected === true) {
-        //     dynoButton = <span><button onClick={} className="button-style" >Message </button></span>
-        // }
-        // if (this.state.isConnected === false) {
-        //     dynoButton = <span><button onClick={} className="button-style" >Connect </button></span>
-        // }
-        // if (this.state.isConnected === "pending") {
-        //     dynoButton = <span><button onClick={} className="button-style" >Pending </button></span>
-        // }
-        // if (this.state.isConnected === "accept") {
-        //     dynoButton = <span><button onClick={} className="button-style" >Pending </button></span>
-        // }
+        if (this.state.isConnected === true) {
+            dynoButton = <span><button onClick={this.sendMessage} className="button-style" >Message </button></span>
+        }
+        if (this.state.isConnected === false) {
+            dynoButton = <span><button onClick={this.requestConnection} className="button-style" >Connect </button></span>
+        }
+        if (this.state.isConnected === "pending") {
+            dynoButton = <span><button className="button-style" >Pending </button></span>
+        }
+        if (this.state.isConnected === "accept") {
+            dynoButton = <span><button onClick={this.acceptConnection} className="button-style" >Accept </button></span>
+        }
 
 
         if (this.state.tempSkill && this.state.tempSkill.length > 0) {
@@ -817,7 +896,7 @@ class profile extends Component {
                        hi
                 </nav> */}
                 {/* {navbar} */}
-                <navbar />
+                <Navbar />
                 <div className="myMargin"></div>
                 <div class="row myNetworkBackground">
                     <div class="col-sm-8 col-md-8 col-lg-8" >

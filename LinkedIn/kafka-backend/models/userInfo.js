@@ -26,12 +26,6 @@ var users= mongoose.Schema({
     headline : {
         type : String
     },
-    address : {
-        type : String
-    },
-    city : {
-        type : String
-    },
     state : {
         type : String
     },
@@ -41,14 +35,39 @@ var users= mongoose.Schema({
     zipcode : {
         type : String
     },
-    contact : {
-        type : String
+    current_position:{
+        type:String
     },
-    job_current : {
-        type : JSON
+    current_company:{
+        type:String
+    },
+    current_start:{
+        type:String
+    },
+    current_end:{
+        type:String
     },
     experience : [experience_schema],
-    education : [education_scheme],
+    education : [{
+        college_name : {
+            type : String
+        },
+        start_date : {
+            type : String
+        },
+        end_date : {
+            type : String
+        },
+        degree : {
+            type : String
+        },
+        feild_of_study : {
+            type : String
+        },
+        description : {
+            type : String
+        }
+    }],
     skills : {
         type : Array
     },
@@ -101,9 +120,6 @@ var users= mongoose.Schema({
     }],
     noOfViews:{
         type:Number
-    },
-    profileImage:{
-        type:String
     }  
 })
  

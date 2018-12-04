@@ -8,6 +8,7 @@ import linkedIn from '../assets/images/linkedIn.png'
 // import React, { Component } from "react";
 import { Field, reduxForm } from "redux-form";
 import { connect } from "react-redux";
+import Navbar from './Navbar';
 // import { login } from "../../actions";
 
 
@@ -158,6 +159,8 @@ class Login extends Component {
             redirectVar = <Redirect to="/profilelocation" />
 
         }
+
+        
 
         const { handleSubmit } = this.props;
 

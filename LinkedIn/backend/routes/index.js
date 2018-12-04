@@ -143,7 +143,7 @@ router.post('/:userId/upload', async function (req, res, next) {
 
 
 router.post('/:userId/resumeUpload', async function (req, res, next) {
-  console.log("trying to upload a file");
+  console.log("trying to upload a file", req.files);
   let imageFile = req.files.selectedFile
   console.log(imageFile.name);
 

@@ -20,8 +20,10 @@ class profile extends Component {
     constructor(props) {
         super(props);
         let myData = JSON.parse(localStorage.getItem('myData'));
+        let uid = localStorage.getItem('userId');
         this.state = {
-            myData:myData,
+            myData: myData,
+            uid: uid,
             userConnections: "205",    //number of connections user have
             userInvitations: "20",
             fname: "Alex White",
@@ -45,7 +47,7 @@ class profile extends Component {
             addEnd_date: "",
             addDescription: "",
             tempEdit: [],
-
+            selectedFilePdf: "",
             Education: [],
             addCollege_name: "",
             addDegree: "",
@@ -80,12 +82,13 @@ class profile extends Component {
         this.addNewSkill = this.addNewSkill.bind(this)
         this.fieldChangeHandler = this.fieldChangeHandler.bind(this)
         this.updateEducation = this.updateEducation.bind(this)
-        this.updateExperience = this.updateEducation.bind(this)
+        // this.updateExperience = this.updateEducation.bind(this)
         this.updateSkill = this.updateSkill.bind(this)
         this.saveImage = this.saveImage.bind(this)
         this.saveProfile = this.saveProfile.bind(this)
-        this.fieldLocation=this.fieldLocation.bind(this)
-
+        this.fieldLocation = this.fieldLocation.bind(this)
+        this.selectPdf = this.selectPdf.bind(this)
+        this.savePDF = this.savePDF.bind(this)
     }
 
     saveProfile() {
@@ -94,11 +97,78 @@ class profile extends Component {
                 profileInvalid: false
             })
             if (/(^\d{5}$)|(^\d{5}-\d{4}$)/g.test(this.state.zip)) {
+
+                let data1 = {
+                    fname: this.state.fname,
+                    lname: this.state.lname,
+                    headline: this.state.headline,
+                    current_position: this.state.current_position,
+                    country: this.state.country,
+                    summary: this.state.profile_summary,
+                    zipcode: this.state.zip,
+                    state: this.state.location,
+                    summary: this.state.summary,
+
+
+
+                }
+
+                axios.defaults.withCredentials = true;
+                axios.put(`${ROOT_URL}/user/${this.state.uid}`, data1)
+                    .then((response) => {
+
+                        console.log(response.data);
+
+                        this.setState({
+                            currentInfo: this.state.current_position
+                        })
+                        // if (response.data.status == 1) {
+                        //     let data = response.data.info;
+                        //     let temp = "";
+                        //     if (data.type == "R") {
+                        //         temp = data.current_position
+                        //     } else {
+                        //         temp = data.education[data.education.length - 1].college_name
+                        //     }
+                        //     let data2 = {
+                        //         fname: data.fname,
+                        //         lname: data.lname,
+                        //         headline: data.headline,
+                        //         country: data.country,
+                        //         summary: data.profile_summary || "",
+                        //         Experience: data.experience,
+                        //         tempEdit: data.experience,
+                        //         Education: data.education,
+                        //         tempEdu: data.education,
+                        //         skill: data.skills,
+                        //         tempSkill: data.skills,
+                        //         connections: data.connections.length,
+                        //         contactInfo: data.email,
+                        //         currentInfo: temp,
+
+                        //     }
+                        //     localStorage.setItem('profile', JSON.stringify({
+                        //         fname: data.fname,
+                        //         lname: data.lname,
+                        //         headline: data.headline,
+                        //         country: data.country,
+                        //         summary: data.profile_summary,
+                        //         connections: data.connections.length,
+                        //         contactInfo: data.email,
+                        //         currentInfo: temp
+                        //     }));
+
+                        // }
+
+                    });
                 this.setState({
                     profileInvalid: false,
                     ziperror: false,
                     hidePopUp: true
                 })
+
+
+
             } else {
                 this.setState({
                     ziperror: true
@@ -114,49 +184,63 @@ class profile extends Component {
 
     componentDidMount() {
         axios.defaults.withCredentials = true;
-        // axios.get(`${ROOT_URL}/userId/5c0508c1b328b5105c67b9a9` , { headers: { Authorization: this.state.myData.token } })
-        axios.get(`${ROOT_URL}/user/${this.state.myData.uid}`)
+        axios.get(`${ROOT_URL}/user/${this.state.uid}`)
             .then((response) => {
 
                 console.log(response.data);
                 if (response.data.status == 1) {
                     let data = response.data.info;
                     let temp = "";
-                    if (data.type == "R") {
-                        temp = data.current_position
-                    } else {
-                        temp = data.education[data.education.length - 1].college_name
-                    }
-                    this.setState({
-                        fname: data.fname,
-                        lname: data.lname,
-                        headline: data.headline,
-                        country: data.country,
-                        summary: data.profile_summary || "",
-                        Experience: data.experience,
-                        tempEdit: data.experience,
-                        Education: data.education,
-                        tempEdu: data.education,
-                        skill: data.skills,
-                        tempSkill: data.skills,
-                        connections: data.connections.length,
-                        contactInfo: data.email,
-                        currentInfo: temp,
+                    if (data) {
+                        if (data && data.type == "R") {
+                            temp = data.current_position
+                        } else {
+                            if (data.education && data.education.length > 0) {
+                                temp = data.education[data.education.length - 1].college_name
 
-                    })
-                    localStorage.setItem('profile', JSON.stringify({
-                        fname: data.fname,
-                        lname: data.lname,
-                        headline: data.headline,
-                        country: data.country,
-                        summary: data.profile_summary,
-                        connections: data.connections.length,
-                        contactInfo: data.email,
-                        currentInfo: temp
-                    }));
-                    localStorage.setItem('education', JSON.stringify(data.education));
-                    localStorage.setItem('experience', JSON.stringify(data.experience));
-                    localStorage.setItem('skill', JSON.stringify(data.skills));
+                            } else {
+                                temp = [];
+                            }
+                        }
+                        let image = defaultPic;
+                        if (data.profileImage) {
+                            image = ROOT_URL + "/" + data.profileImage
+                        }
+                        this.setState({
+                            fname: data.fname,
+                            lname: data.lname,
+                            headline: data.headline,
+                            country: data.country,
+                            summary: data.profile_summary || "",
+                            Experience: data.experience,
+                            tempEdit: data.experience,
+                            Education: data.education,
+                            tempEdu: data.education,
+                            skill: data.skills,
+                            tempSkill: data.skills,
+                            connections: data.connections && data.connections.length,
+                            contactInfo: data.email,
+                            currentInfo: temp,
+                            ProfilePic: image,
+                            current_position: temp,
+                            zip: data.zipcode
+                        })
+                        localStorage.setItem('profile', JSON.stringify({
+                            fname: data.fname,
+                            lname: data.lname,
+                            headline: data.headline,
+                            country: data.country,
+                            summary: data.profile_summary,
+                            connections: data.connections && data.connections.length,
+                            contactInfo: data.email,
+                            currentInfo: temp,
+                            ProfilePic: image
+                        }));
+                        localStorage.setItem('education', JSON.stringify(data.education));
+                        localStorage.setItem('experience', JSON.stringify(data.experience));
+                        localStorage.setItem('skill', JSON.stringify(data.skills));
+                    }
+
 
                 }
 
@@ -207,7 +291,8 @@ class profile extends Component {
             summary: data.summary,
             connections: data.connections,
             contactInfo: data.contactInfo,
-            currentInfo: data.currentInfo
+            currentInfo: data.currentInfo,
+
         })
 
 
@@ -225,6 +310,18 @@ class profile extends Component {
 
     }
 
+    selectPdf = (e) => {
+        if (e.target.files[0] && e.target.files.length > 0) {
+            this.setState({
+                selectedFilePdf: e.target.files[0],
+                // tempImage: URL.createObjectURL(e.target.files[0]),
+                // viewImagePreview: true,
+
+            })
+        }
+
+    }
+
     saveImage() {
 
         let formData = new FormData();
@@ -235,7 +332,7 @@ class profile extends Component {
         // formData.set("token", this.state.myData.token)
         axios.defaults.withCredentials = true;
 
-        axios.post(`${ROOT_URL}/${this.state.myData.uid}/upload`, formData).then((resp) => {
+        axios.post(`${ROOT_URL}/${this.state.uid}/upload`, formData).then((resp) => {
             console.log(resp)
             if (resp.status == 200) {
                 if (resp.data.status == 1) {
@@ -243,6 +340,30 @@ class profile extends Component {
                         ProfilePic: ROOT_URL + "/" + resp.data.info.path,
                         viewImagePreview: false
                     })
+                    console.log(this.state.ProfilePic)
+                }
+
+            }
+
+        })
+    }
+
+
+    savePDF() {
+
+        let formData = new FormData();
+
+        formData.append('selectedFile', this.state.selectedFilePdf);
+        axios.defaults.withCredentials = true;
+
+        axios.post(`${ROOT_URL}/${this.state.uid}/resumeUpload`, formData).then((resp) => {
+            console.log(resp)
+            if (resp.status == 200) {
+                if (resp.data.status == 1) {
+                    // this.setState({
+                    //     ProfilePic: ROOT_URL + "/" + resp.data.info.path,
+                    //     viewImagePreview: false
+                    // })
                     console.log(this.state.ProfilePic)
                 }
 
@@ -329,7 +450,7 @@ class profile extends Component {
         temp.push(data)
         console.log(temp)
         //this.state.myData.uid
-        axios.put(`${ROOT_URL}/user/${this.state.myData.uid}/experience`, temp, { withCredentials: true })
+        axios.put(`${ROOT_URL}/user/${this.state.uid}/experience`, temp, { withCredentials: true })
             .then(response => {
                 console.log(response.data);
                 if (response.data.status == 1) {
@@ -360,7 +481,7 @@ class profile extends Component {
         temp.push(data)
         console.log(temp)
         //this.state.myData.uid
-        axios.put(`${ROOT_URL}/user/${this.state.myData.uid}/education`, temp, { withCredentials: true })
+        axios.put(`${ROOT_URL}/user/${this.state.uid}/education`, temp, { withCredentials: true })
             .then(response => {
                 console.log(response.data);
                 if (response.data.status == 1) {
@@ -384,7 +505,7 @@ class profile extends Component {
         temp.push(this.state.addSkill)
         console.log(temp)
         //this.state.myData.uid
-        axios.put(`${ROOT_URL}/user/${this.state.myData.uid}/skill`, temp, { withCredentials: true })
+        axios.put(`${ROOT_URL}/user/${this.state.uid}/skills`, temp, { withCredentials: true })
             .then(response => {
                 console.log(response.data);
                 if (response.data.status == 1) {
@@ -409,7 +530,7 @@ class profile extends Component {
         console.log(data)
         console.log(this.state.Experience === this.state.tempEdit)
 
-        axios.put(`${ROOT_URL}/user/${this.state.myData.uid}/experience`, data, { withCredentials: true })
+        axios.put(`${ROOT_URL}/user/${this.state.uid}/experience`, data, { withCredentials: true })
             .then(response => {
                 console.log(response.data);
                 if (response.data.status == 1) {
@@ -436,7 +557,7 @@ class profile extends Component {
         });
         console.log(data)
 
-        axios.put(`${ROOT_URL}/user/${this.state.myData.uid}/education`, data, { withCredentials: true })
+        axios.put(`${ROOT_URL}/user/${this.state.uid}/education`, data, { withCredentials: true })
             .then(response => {
                 console.log(response.data);
                 if (response.data.status == 1) {
@@ -460,7 +581,7 @@ class profile extends Component {
         console.log(data)
         console.log(this.state.Experience === this.state.tempEdit)
 
-        axios.put(`${ROOT_URL}/user/${this.state.myData.uid}/skills`, data, { withCredentials: true })
+        axios.put(`${ROOT_URL}/user/${this.state.uid}/skills`, data, { withCredentials: true })
             .then(response => {
                 console.log(response.data);
                 if (response.data.status == 1) {
@@ -809,7 +930,7 @@ class profile extends Component {
                        hi
                 </nav> */}
                 {/* {navbar} */}
-                <navbar />
+                <Navbar />
                 <div className="myMargin"></div>
                 <div class="row myNetworkBackground">
                     <div class="col-sm-8 col-md-8 col-lg-8" >
@@ -1071,7 +1192,7 @@ class profile extends Component {
                                                                             <div className="autocomplete-dropdown-container">
                                                                                 {loading && <div>Loading...</div>}
                                                                                 {suggestions.map(suggestion => (
-                                                                                    <div {...getSuggestionItemProps(suggestion)} style={{borderWidth:"thin",borderColor:"black"}}>
+                                                                                    <div {...getSuggestionItemProps(suggestion)} style={{ borderWidth: "thin", borderColor: "black" }}>
                                                                                         <span>{suggestion.description}</span>
                                                                                     </div>
                                                                                 ))}
@@ -1119,10 +1240,23 @@ class profile extends Component {
                                                                 <span>Summary *</span>
                                                             </div>
                                                             <div>
-                                                                <textarea style={{ marginLeft: "0px", height: "85px" }} value={this.state.summary} name="summary" className="input_styling" placeholder="" />
+                                                                <textarea style={{ marginLeft: "0px", height: "85px" }} onChange={this.fieldChangeHandler} value={this.state.summary} name="summary" className="input_styling" placeholder="" />
                                                             </div>
                                                         </td>
                                                     </tr>
+
+                                                    <tr style={{ marginTop: "20px" }}>
+                                                        <td colspan="2" style={{ paddingTop: "20px" }}>
+                                                            <div>
+                                                                <span>Summary *</span>
+                                                            </div>
+                                                            <div>
+                                                                <input name="file1" onChange={this.selectPdf} type="file" accept="application/pdf" />
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+
+
                                                     {/* <tr style={{ marginTop: "20px" }}>
                                                         <td colspan="2" style={{ paddingTop: "20px" }}>
                                                             <div onClick={this.addEdu} classname="under" style={{ "color": "#0073b1", fontWeight: "600", cursor: "pointer" }}>
@@ -1149,7 +1283,7 @@ class profile extends Component {
                                                     <tr style={{ marginTop: "20px" }}>
                                                         <td colspan="2" style={{ paddingTop: "20px" }}>
                                                             <div style={{ "marginTop": "15px" }}>
-                                                                <span><button className="button-style_1" style={{ borderColor: "#0073b1", marginLeft: "0px", "border-style": "solid", color: "#0073b1", padding: "8px 20px", borderWidth: "thin", boxShadow: "none" }} >Upload</button></span>
+                                                                <span><button className="button-style_1" onClick={this.savePDF} style={{ borderColor: "#0073b1", marginLeft: "0px", "border-style": "solid", color: "#0073b1", padding: "8px 20px", borderWidth: "thin", boxShadow: "none" }} >Upload</button></span>
                                                                 <span><button className="button-style_1" style={{ marginLeft: "5px", "border-style": "initial", padding: "8px 20px" }} >Link</button></span>
                                                             </div>
 
@@ -1418,7 +1552,7 @@ class profile extends Component {
                                                         <span>Skill*</span>
                                                     </div>
                                                     <div>
-                                                        <input style={{ marginLeft: "0px", width: "97.5%" }} name="addSkill" onChange={this.changeHandler} className="input_styling" placeholder="Your Skill" />
+                                                        <input style={{ marginLeft: "0px", width: "97.5%" }} name="addSkill" onChange={this.fieldChangeHandler} className="input_styling" placeholder="Your Skill" />
                                                     </div>
                                                 </td>
                                             </tr>
