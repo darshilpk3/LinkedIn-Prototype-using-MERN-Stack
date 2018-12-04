@@ -1,4 +1,4 @@
-var UserInfo = require('../../models/userInfo').users
+var UserInfo = require('../../models/userInfo')
 var Application = require('../../models/application')
 var Job = require('../../models/job')
 var Message = require('../../models/message')

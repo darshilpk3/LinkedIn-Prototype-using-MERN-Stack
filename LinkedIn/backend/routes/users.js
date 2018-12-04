@@ -462,6 +462,8 @@ getAllJobsPostedByUser_Caching = function (UserInfo, redis1, userID, callback) {
         userId: userID
       }
 
+      console.log("The userId of the user for which job details are being fetched : "+data.userId);
+
       kafka.make_request("userJobList", data, function (err, result) {
         console.log("inside of response from kafka")
         if (err) {
@@ -469,7 +471,12 @@ getAllJobsPostedByUser_Caching = function (UserInfo, redis1, userID, callback) {
           console.log("_______-err _________", data)
           callback(err);
 
-        } else {
+        } 
+        else if(typeof(result)=="string")
+        {
+
+        }
+        else {
 
           console.log("The received result is : ", result);
           redis1.set(userID, JSON.stringify(result), function () {
@@ -487,7 +494,7 @@ getAllJobsPostedByUser_Caching = function (UserInfo, redis1, userID, callback) {
 };
 
 router.get("/:userID/joblist", async function (req, res, next) {
-  console.log("Inside get joblist.")
+  console.log("Inside fetching the joblist for a user")
   const userID = req.params.userID
 
   if (!userID) {
@@ -652,7 +659,7 @@ router.put("/:userId", async function (req, res, next) {
     headline: req.body.headline,
     current_position: req.body.current_position,
     country: req.body.country,
-    zip: req.body.zip,
+    zip: req.body.zipcode,
     state: req.body.state,
     industry: req.body.industry,
     profile_summary: req.body.summary
