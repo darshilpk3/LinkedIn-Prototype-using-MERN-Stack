@@ -48,7 +48,26 @@ var users= mongoose.Schema({
         type:String
     },
     experience : [experience_schema],
-    education : [education_scheme],
+    education : [{
+        college_name : {
+            type : String
+        },
+        start_date : {
+            type : String
+        },
+        end_date : {
+            type : String
+        },
+        degree : {
+            type : String
+        },
+        feild_of_study : {
+            type : String
+        },
+        description : {
+            type : String
+        }
+    }],
     skills : {
         type : Array
     },

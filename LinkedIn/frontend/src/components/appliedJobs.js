@@ -64,7 +64,7 @@ class appliedJobs extends Component {
                 return (
                     <div class="row userInvitations">
                         <div className="col-sm-2 col-md-2 col-lg-2">
-                            <img src={job.companyLogo} className="img savedjobImage" />
+                            <img src={""+ROOT_URL+"/"+job.companyLogo} className="img savedjobImage" />
                         </div>
                         <div className="col-sm-5 col-md-5 col-lg-5">
                             <h4><a href="#" onClick={this.showJobDetails} id={job._id}>{job.jobTitle}</a></h4>

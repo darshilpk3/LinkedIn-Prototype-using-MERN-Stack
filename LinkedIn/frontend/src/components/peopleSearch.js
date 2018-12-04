@@ -65,7 +65,7 @@ class peopleSearch extends Component {
             .then(response => {
                 if (response.status === 200) {
                     console.log(response.data)
-                    window.location.reload()
+                    //window.location.reload()
                 }
             })
     }
@@ -84,7 +84,7 @@ class peopleSearch extends Component {
             .then(response => {
                 if (response.status === 200) {
                     console.log("Accepted: ", response.data)
-                    window.location.reload()
+                    //window.location.reload()
                 } else {
                     console.log("failed")
                 }
@@ -111,7 +111,7 @@ class peopleSearch extends Component {
                 if (response.status === 200) {
                     if (response.data.status) {
                         swal("Sent", "", "success")
-                        window.location.reload()
+                        //window.location.reload()
                     }
                 } else {
                     swal("Something went wrong", "", "error")

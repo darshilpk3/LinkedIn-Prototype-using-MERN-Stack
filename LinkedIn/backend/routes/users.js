@@ -596,13 +596,13 @@ router.post("/:userId/search", async function (req, res, next) {
 
   console.log("inside post request of search by username");
   console.log("req.body", req.body)
-  const connections = []
-  const data = {
-    userId: req.params.userID,
-    username: req.body.username
-  }
+  //const connections = []
+  
   const username = "^" + req.body.username;
-
+  const data = {
+    userId: req.params.userId,
+    username: username
+  }
 
 
   kafka.make_request('usernameSearch', data, function (err, result) {
@@ -661,7 +661,7 @@ router.put("/:userId", async function (req, res, next) {
     country: req.body.country,
     zip: req.body.zipcode,
     state: req.body.state,
-    industry: req.body.industry,
+    //industry: req.body.industry,
     profile_summary: req.body.summary
   }
 
