@@ -30,8 +30,16 @@ class Navbar extends Component {
         }
 
         this.fieldChangeHandler = this.fieldChangeHandler.bind(this)
+        this.logout = this.logout.bind(this)
     }
 
+    logout() {
+        localStorage.clear();
+        this.setState({
+            myData: ""
+        })
+
+    }
 
     fieldChangeHandler(e) {
         let changedVar = {}
@@ -155,7 +163,7 @@ class Navbar extends Component {
         }
 
         const { handleSubmit } = this.props;
-        let posting = null
+        let posting = null, graphs = null;
         if (this.state.myData && this.state.myData.type == "R") {
             posting = <li style={{ margin: "-10px 0px -10px 0px" }}>
                 <Link to="/job/post" >
@@ -168,6 +176,17 @@ class Navbar extends Component {
         } else {
             posting = null
         }
+
+        if (this.state.myData && this.state.myData.type == "S") {
+            graphs = <li style={{ padding: "15px", color: "#828282", fontWeight: "600" }}>
+                <a href="/applicantgraph"> View Graphs</a>
+            </li>
+        } else {
+            graphs = null
+        }
+
+
+
         return (
 
 
@@ -248,7 +267,7 @@ class Navbar extends Component {
                                 <li style={{ margin: "-10px 0px -10px 0px", padding: " 11px" }} className="dropdown" >
                                     {/* <Link to="" > */}
 
-                                    <img className="profileImg" src={defaultPic} />
+                                    <img className="profileImg1" src={defaultPic} />
                                     <div>
                                         <a className="icons_nav dropdown-toggle" data-toggle="dropdown" style={{ color: "#c7d1d8" }}>Me<span class="caret"></span></a>
                                         <ul className="dropdown-menu" style={{ minWidth: "277px" }}>
@@ -288,13 +307,15 @@ class Navbar extends Component {
                                             <li style={{ padding: "10px", backgroundColor: "#f3f6f8", fontWeight: "600" }}>
                                                 MANAGE
                                             </li>
+
                                             <li style={{ padding: "15px", color: "#828282", fontWeight: "600" }}>
-                                                Posts and Activity
+                                                <a href="/user/delete">Delete user</a>
                                             </li>
+                                            {graphs}
                                             {/* <li style={{ padding: "15px", color: "#828282", fontWeight: "600" }}>
                                                 Job postings
                                             </li> */}
-                                            <li style={{ padding: "15px", color: "#828282", fontWeight: "600" }}>
+                                            <li onClick={this.logout} style={{ cursor: "pointer", padding: "15px", color: "#828282", fontWeight: "600" }}>
                                                 Sign out
                                             </li>
                                         </ul>
