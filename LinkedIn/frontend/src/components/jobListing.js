@@ -9,12 +9,14 @@ import jobpostlogo from '../assets/images/jobpostlogo.PNG'
 import gifticon from '../assets/images/gift-icon.png' 
 
 import {ROOT_URL} from '../constants/constants';
+import jobpostlogo from '../assets/images/jobpostlogo.PNG'
 
 class JobListing extends Component{
     constructor(props){
         super(props);
         this.state={
-            information : []
+            information : [],
+            
         }
     }
 
@@ -23,8 +25,8 @@ class JobListing extends Component{
         console.log("\nInside component did mount");
     
         axios.defaults.withCredentials = true;
-        
-        axios.get(`${ROOT_URL}/user/5c0313af1e6ee47530f590cb/joblist`)
+        const userId =  localStorage.getItem("userId")
+        axios.get(`${ROOT_URL}/user/${userId}/joblist`)
                 .then((response) => {
                     console.log("Response received from backend");
                     console.log("\nPrinting the response body");
@@ -74,10 +76,11 @@ class JobListing extends Component{
                                 <span class="edit-button-text">View graphs</span>
                             </Link>
 
-                            <Link class = "btn btn-primary edit-button" to={{ pathname: '/job/post', state: { job_id: joblist._id} }}>
+                            <Link class = "btn btn-primary edit-button" to={{ pathname: '/job/post', state: { job_id: joblist._id,  jobTitlefromrd :joblist.jobTitle } }}>
                                 <span class="edit-button-text">Edit</span>
                             </Link>
-                            <h4>{joblist.location}</h4>
+                            <h4>{joblist.companyName}</h4>
+                            <p class="paragraph">{joblist.location}</p>
                             <p class="paragraph">{joblist.description}</p>
                             <p class="paragraph">Employment type : {joblist.employmentType}</p>
                             <p class="paragraph">Industry : {joblist.industry}</p>

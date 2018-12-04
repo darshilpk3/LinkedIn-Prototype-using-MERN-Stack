@@ -10,6 +10,9 @@ import { ROOT_URL } from '../constants/constants';
 import picDS from '../assets/images/PicDS.png'
 import axios from 'axios';
 
+import {ROOT_URL} from '../constants/constants';
+
+
 const userID = localStorage.getItem("userId")
 class savedJobs extends Component {
     constructor(props) {
@@ -161,10 +164,9 @@ class savedJobs extends Component {
 
         console.log("component did mount should be called")
 
-       // if (localStorage.getItem("userId")) {
-            const userId = "5c06b8010732546084383d17"//localStorage.getItem("userId")
+        if (localStorage.getItem("userId")) {
+            const userId = localStorage.getItem("userId")
             axios.get(`${ROOT_URL}/user/${userId}/savedJobs`)
-
                 .then(response => {
                     console.log("---------------------------")
                     if (response.status === 200) {

@@ -4,9 +4,9 @@ import axios from 'axios';
 import cookie from 'react-cookies';
 import { Link } from 'react-router-dom';
 import { Redirect } from 'react-router';
-import Login from './Navbar'
 import ad from '../assets/images/Ad_TDK.png'
 import Navbar from './Navbar'
+import {ROOT_URL} from '../constants/constants';
 
 var swal = require('sweetalert')
 
@@ -87,6 +87,7 @@ class Messaging extends Component {
         }
         console.log(data)
         axios.defaults.withCredentials = true
+        // axios.post("http://localhost:3001/message", data)
         axios.post(`${ROOT_URL}/message`, data)
             .then(response => {
                 if (response.status === 200) {
@@ -157,7 +158,7 @@ class Messaging extends Component {
 
         return (
             <div>
-                <Login/>
+                <Navbar/>
                 <div className="myMargin"></div>
                 <div class="row myNetworkBackground">
                     {/*column 1- This is the code for msg list */}

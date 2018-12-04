@@ -7,7 +7,6 @@ import appliedJobs from './appliedJobs';
 
 import Navbar from './Navbar';
 import Messaging from './messaging';
-
 import homepage from './homepage';
 import Profilelocation from './profilelocation';
 import profileType from './profileType';
@@ -20,7 +19,7 @@ import Profile from './profile'
 import viewProfile from './viewProfile';
 import JobApplicantsList from './jobApplicantsList';
 import JobListing from './jobListing';
-import PeopleSearchResults from './peoplesearchresults.js';
+
 import Graphs from './graphs.js';
 import ApplicantGraph from './applicantgraph'
 import searchResults from './searchResults'
@@ -56,7 +55,7 @@ class Main extends Component {
                 <Route exact path="/viewProfile/" component={viewProfile} />
 				<Route exact path="/job/applicants" component={JobApplicantsList}/>
                 <Route exact path="/job/list" component={JobListing} />
-                <Route exact path="/users/results" component={PeopleSearchResults} />
+ />
                 <Route exact path="/user/graphs" component={Graphs} />
                 <Route exact path="/applicantgraph" component={ApplicantGraph} />
                 <Route exact path="/pdftry" component={TryPDF} />

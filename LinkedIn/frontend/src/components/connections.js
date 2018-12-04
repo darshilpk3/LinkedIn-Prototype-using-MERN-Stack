@@ -5,6 +5,8 @@ import cookie from 'react-cookies';
 import { Link } from 'react-router-dom';
 import _ from "lodash";
 import { Redirect } from 'react-router';
+
+import { ROOT_URL } from '../constants/constants';
 import Navbar from './Navbar'
 
 import picDS from '../assets/images/PicDS.png'
@@ -190,7 +192,7 @@ class connections extends Component {
 
                             </div>
                             {/* <Document
-                                file={"http://localhost:3001/uploads/Lab2_Report_013007280.pdf"}
+                                file={"${ROOT_URL}/uploads/Lab2_Report_013007280.pdf"}
                                 onLoadSuccess={this.onDocumentLoadSuccess}
                             >
                                 <Page pageNumber={this.state.pageNumber} />
