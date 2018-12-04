@@ -99,6 +99,9 @@ class profile extends Component {
                     ziperror: false,
                     hidePopUp: true
                 })
+
+
+                
             } else {
                 this.setState({
                     ziperror: true
@@ -809,7 +812,7 @@ class profile extends Component {
                        hi
                 </nav> */}
                 {/* {navbar} */}
-                <navbar />
+                <Navbar />
                 <div className="myMargin"></div>
                 <div class="row myNetworkBackground">
                     <div class="col-sm-8 col-md-8 col-lg-8" >

@@ -20,6 +20,7 @@ class Newsfeed extends Component{
     render(){
         
         require('../styles/jobsearch.css')
+        require('../styles/newsfeed.css')
         return(
            <div className="page">
            <Login />
