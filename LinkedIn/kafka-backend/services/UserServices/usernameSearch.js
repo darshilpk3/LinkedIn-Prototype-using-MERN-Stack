@@ -9,7 +9,7 @@ function handle_request(msg, callback) {
     console.log("\n\n User data is: ", msg)
     // console.log("\n\n User data is: ", msg.setJobId)
     const username = "^" + msg.username;
-    UserInfo.find({
+    UserInfo.find({         
         $or: [{ fname: { $regex: username, $options: 'i' } }, { lname: { $regex: username, $options: 'i' } }]
     })
         .then(result => {
@@ -41,7 +41,7 @@ function handle_request(msg, callback) {
                         name: user.fname + " " + user.lname,
                         headline: user.headline,
                         email: user.email,
-                        isConnected: "Accept"
+                        isConnected: "pending"
                     }
                     connections.push(connectionInfo)
                 } else if (user.pending_sent.indexOf(msg.userId) != -1) {
@@ -50,7 +50,7 @@ function handle_request(msg, callback) {
                         name: user.fname + " " + user.lname,
                         headline: user.headline,
                         email: user.email,
-                        isConnected: "pending"
+                        isConnected: "Accept"
                     }
                     connections.push(connectionInfo)
                 } else {
