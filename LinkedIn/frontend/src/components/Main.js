@@ -15,7 +15,9 @@ import JobSearch from './jobsearch';
 import JobApplicantsList from './jobApplicantsList';
 import JobListing from './jobListing';
 import PeopleSearchResults from './peoplesearchresults.js';
-
+// import TryPDF from './pdfTrial';
+import TryPDF from './PDF'
+import ProfileView from './profileView';
 class Main extends Component {
     render() {
         return (
@@ -36,6 +38,8 @@ class Main extends Component {
 				<Route exact path="/job/applicants" component={JobApplicantsList}/>
                 <Route exact path="/job/list" component={JobListing} />
                 <Route exact path="/users/results" component={PeopleSearchResults} />
+                <Route exact path="/pdftry" component={TryPDF} />
+                <Route exact path="/profile/view" component={ProfileView} />
                 {/* <Route path="/TravelerLogin" component={Login} /> */}
 
             </div>
