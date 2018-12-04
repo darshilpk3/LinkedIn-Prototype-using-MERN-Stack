@@ -1,3 +1,5 @@
+
+import {ROOT_URL} from '../constants/constants';
 import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
 import { Redirect } from 'react-router';
@@ -9,7 +11,6 @@ import jobpostlogo from '../assets/images/jobpostlogo.PNG'
 var swal = require('sweetalert')
 var redirectVar = null;
 var formData = "";
-import {ROOT_URL} from '../constants/constants';
 
 
 class JobPosting extends Component {

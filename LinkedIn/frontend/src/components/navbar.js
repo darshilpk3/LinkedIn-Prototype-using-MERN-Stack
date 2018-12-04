@@ -3,7 +3,6 @@ import { Link } from 'react-router-dom';
 import { Redirect } from 'react-router';
 import axios from 'axios';
 import { ROOT_URL } from '../constants/constants';
-
 import defaultPic from '../assets/images/default-profile-pic.png'
 // import React, { Component } from "react";
 import { Field, reduxForm } from "redux-form";

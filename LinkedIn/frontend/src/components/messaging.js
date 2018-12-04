@@ -6,6 +6,7 @@ import { Link } from 'react-router-dom';
 import { Redirect } from 'react-router';*/
 import Login from './navbar'
 import ad from '../assets/images/Ad_TDK.png'
+import Navbar from './Navbar'
 
 class Messaging extends Component {
     constructor(props) {
