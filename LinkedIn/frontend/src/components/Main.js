@@ -36,7 +36,7 @@ class Main extends Component {
                 <Route exact path="/connections" component={connections} />
                 <Route exact path="/savedJobs" component={savedJobs} />
                 <Route exact path="/appliedJobs" component={appliedJobs} />
-                <Route exact path="/messaging" component={messaging} />
+                <Route exact path="/messaging" component={Messaging} />
                 <Route exact path="/Navbar" component={Navbar} />
 
                 <Route exact path="/messaging" component={Messaging} />    

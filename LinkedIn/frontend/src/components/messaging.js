@@ -4,7 +4,7 @@ import axios from 'axios';
 import cookie from 'react-cookies';
 import { Link } from 'react-router-dom';
 import { Redirect } from 'react-router';
-import Login from './navbar'
+import Login from './Navbar'
 import ad from '../assets/images/Ad_TDK.png'
 import Navbar from './Navbar'
 

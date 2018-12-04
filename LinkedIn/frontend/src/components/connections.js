@@ -5,11 +5,11 @@ import cookie from 'react-cookies';
 import { Link } from 'react-router-dom';
 import _ from "lodash";
 import { Redirect } from 'react-router';
-import Login from './navbar'
+import Login from './Navbar'
 
 import picDS from '../assets/images/PicDS.png'
 
-pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.js`;
+// pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.js`;
 
 class connections extends Component {
     constructor(props) {
@@ -188,12 +188,12 @@ class connections extends Component {
                                 {displayData}
 
                             </div>
-                            <Document
+                            {/* <Document
                                 file={"http://localhost:3001/uploads/Lab2_Report_013007280.pdf"}
                                 onLoadSuccess={this.onDocumentLoadSuccess}
                             >
                                 <Page pageNumber={this.state.pageNumber} />
-                            </Document>
+                            </Document> */}
                         </div>
                     </div>
 

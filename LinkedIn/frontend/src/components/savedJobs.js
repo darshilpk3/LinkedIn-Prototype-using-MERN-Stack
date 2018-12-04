@@ -4,7 +4,7 @@ import React, { Component } from 'react';
 import cookie from 'react-cookies';
 import { Link } from 'react-router-dom';
 import { Redirect } from 'react-router';*/
-import Login from './navbar'
+import Login from './Navbar'
 
 import picDS from '../assets/images/PicDS.png'
 import axios from 'axios';
