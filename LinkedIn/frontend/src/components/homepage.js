@@ -221,6 +221,7 @@ class Login extends Component {
                                 />
 
 
+
                                 <div class="form-group padding5 " style={{ "marginBottom": '-14px', "marginTop": "-5%" }}>
                                     <div className="agreement">By clicking Join now, you agree to the LinkedIn User Agreement, Privacy Policy, and Cookie Policy.
                                     </div>
@@ -232,7 +233,7 @@ class Login extends Component {
 
                         </div>
                     </div>
-                    <br />
+                    <br /><br /><br /><br /><br /><br /><br /><br />
                 </div>
             </div>
         )

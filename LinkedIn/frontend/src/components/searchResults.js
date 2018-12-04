@@ -7,6 +7,8 @@ import { Link } from 'react-router-dom';
 import { Redirect } from 'react-router';
 import { ROOT_URL } from '../constants/constants';
 import _ from "lodash";
+import Navbar from './Navbar'
+
 
 class searchResults extends Component {
     constructor(props) {
@@ -513,9 +515,7 @@ class searchResults extends Component {
 
         return (
             <div>
-                <nav className="navbar navbar-expand-sm" style={{ 'border-bottom-color': '', 'padding': ' 0%', 'backgroundColor': 'darkblue', "border-radius": "0px", marginBottom: "0px" }}>
-                    hi
-                </nav>
+                 <Navbar/>
                 <nav className="navbar navbar-expand-sm" style={{ 'border-bottom-color': 'black', 'padding': ' 0%', 'backgroundColor': 'white', "border-radius": "0px", marginBottom: "0px" }}>
                     <h4 style={{ marginBottom: "-2%", marginLeft: '5%' }}>Search with Filters:</h4>
                     <input type="text" name="filtercompany" placeholder="Enter Company Name" onChange={this.handleChange} style={{ "border-radius": "4px", width: "205px", height: "5px", marginLeft: "20%", marginTop: "-200px" }}></input>
