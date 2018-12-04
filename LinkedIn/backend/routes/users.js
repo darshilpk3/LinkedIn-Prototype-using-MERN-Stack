@@ -891,14 +891,17 @@ router.put("/recruiter/:userId/dashboard/city", async function (req, res, next) 
 
   console.log("Request to get details of city wise jobs applied by the user: ", req.params.userId)
   // console.log("Request body",req.body);
-  console.log("Request body", req.body.jobId);
+  console.log("Request body", req.body.jobTitle);
 
 
   const id1 = mongoose1.Types.ObjectId(req.params.userId)
-  const j_id = mongoose1.Types.ObjectId(req.body.jobId)
+  const j_title = req.body.jobTitle
+  console.log("_________jtitle_________",j_title)
   console.log(typeof id1)
   Job.aggregate([
-    { $match: { postedBy: id1, _id: j_id } },
+    // { $match: { postedBy: id1, _id: j_id } },
+    { $match: { postedBy: id1,jobTitle:j_title } },
+
     {
       $project: {
         jobTitle: 1, count: { $size: '$jobApplied' }, postedDate: 1,
