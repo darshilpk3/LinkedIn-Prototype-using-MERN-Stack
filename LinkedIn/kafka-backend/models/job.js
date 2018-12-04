@@ -42,13 +42,13 @@ var job= mongoose.Schema({
             ref:'Application'
         }
     ],
-    noOfViews:{
-        type:Number
-    },
     noOfViews_applied:{
         type:Number
     },
     noOfViews_submitted:{
+        type:Number
+    },
+    noOfViews:{
         type:Number
     },
     applyMethod:{

@@ -1,4 +1,4 @@
-var UserInfo = require('../../models/userInfo').users
+var UserInfo = require('../../models/userInfo')
 var Application = require('../../models/application')
 var Job = require('../../models/job')
 var Message = require('../../models/message')
@@ -27,8 +27,8 @@ function handle_request(msg, callback) {
 
 
 
-    const jobId = msg.jobId
-    // const jobId = mongoose1.Types.ObjectId(msg.jobId)
+    // const jobId = msg.jobId
+    const jobId = mongoose1.Types.ObjectId(msg.jobId)
     console.log("___________jobid_________", jobId, "\n_______________________type", typeof jobId)
    
     Job.findOneAndUpdate(
