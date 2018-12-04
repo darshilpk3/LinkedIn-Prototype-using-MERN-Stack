@@ -7,7 +7,7 @@ import { Redirect } from 'react-router';
 import { ROOT_URL } from '../constants/constants';
 
 
-import navbar from './Navbar';
+import Navbar from './Navbar';
 import defaultPic from '../assets/images/default-profile-pic.png'
 
 
@@ -16,7 +16,9 @@ import linkedIn from '../assets/images/linkedIn.png'
 class profile extends Component {
     constructor(props) {
         super(props);
+        let myData = JSON.parse(localStorage.getItem('myData'));
         this.state = {
+            myData: myData,
             userConnections: "205",    //number of connections user have
             userInvitations: "20",
             fname: "Alex White",
@@ -110,9 +112,9 @@ class profile extends Component {
         axios.defaults.withCredentials = true;
         // axios.get(`${ROOT_URL}/userId/5c0508c1b328b5105c67b9a9` , { headers: { Authorization: this.state.myData.token } })
         let data = {
-            searched_id: "5c0313bc1e6ee47530f590cc"
+            searched_id: this.state.myData.uid
         }
-        axios.post(`${ROOT_URL}/user/5c0313af1e6ee47530f590cb/person`, data, { withCredentials: true })
+        axios.post(`${ROOT_URL}/user/${this.state.myData.uid}/person`, data, { withCredentials: true })
             .then((response) => {
 
                 console.log(response.data);
@@ -817,7 +819,7 @@ class profile extends Component {
                        hi
                 </nav> */}
                 {/* {navbar} */}
-                <navbar />
+                <Navbar />
                 <div className="myMargin"></div>
                 <div class="row myNetworkBackground">
                     <div class="col-sm-8 col-md-8 col-lg-8" >

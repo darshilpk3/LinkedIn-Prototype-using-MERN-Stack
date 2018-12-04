@@ -5,8 +5,10 @@ import cookie from 'react-cookies';
 import { Link } from 'react-router-dom';
 import _ from "lodash";
 import { Redirect } from 'react-router';
-import Login from './Navbar'
+
 import { ROOT_URL } from '../constants/constants';
+import Navbar from './Navbar'
+
 import picDS from '../assets/images/PicDS.png'
 
 // pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.js`;
@@ -131,7 +133,7 @@ class connections extends Component {
         return (
             <div>
                 
-                <Login/>
+                <Navbar/>
                 <div className="myMargin"></div>
                 <div class="row myNetworkBackground">
 

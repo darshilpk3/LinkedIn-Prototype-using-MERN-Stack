@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
 import { Redirect } from 'react-router';
 import axios from 'axios';
-import '../styles/userdelete.css';
+// import '../styles/userdelete.css';
 import Login from './Navbar';
 import { ROOT_URL } from '../constants/constants';
 var swal = require('sweetalert');
@@ -37,6 +37,8 @@ class UserDelete extends Component{
         if(this.state.userDeleted == true){
             redirectVar = <Redirect to= "/"/>
         }
+        require('../styles/userdelete.css');
+
         return(
             <div className="page">
             {redirectVar}

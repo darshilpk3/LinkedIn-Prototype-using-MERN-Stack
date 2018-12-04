@@ -5,7 +5,7 @@ import axios from 'axios';
 // import { Document, Page } from 'react-pdf/dist/entry.parcel';
 import { Page, Document } from "react-pdf"; 
 import PDF from 'react-pdf-js-infinite';
-import '../styles/jobposting.css'
+// import '../styles/jobposting.css'
 import Stepper from 'react-stepper-horizontal'
 import noJobsImage from '../assets/images/NoJobListings.PNG'
 import gifticon from '../assets/images/gift-icon.png'
@@ -78,6 +78,7 @@ class JobApplicantsList extends Component{
     }
 
     render(){
+        require('../styles/jobposting.css')
         require('../styles/jobApplicantsList.css');
 
         const pageNumber = this.state.pageNumber;
