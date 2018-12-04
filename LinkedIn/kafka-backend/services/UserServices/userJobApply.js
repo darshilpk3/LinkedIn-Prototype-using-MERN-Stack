@@ -29,6 +29,9 @@ function handle_request(msg, callback) {
                             applications: applicationResult._id,
                             jobApplied: msg.userId,
                         },
+                        $pull:{
+                            jobSaved:msg.userId
+                        },
                         $inc: { noOfViews_submitted: 1 } 
                     }).exec()
                     .then(jobResult => {
@@ -37,6 +40,9 @@ function handle_request(msg, callback) {
                             $push: {
                                 jobs_applied: msg.jobId,
                                 applications: applicationResult._id
+                            },
+                            $pull:{
+                                jobs_saved: msg.jobId
                             }
                         }).exec()
                             .then(userResult => {

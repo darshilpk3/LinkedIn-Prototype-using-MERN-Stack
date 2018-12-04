@@ -542,6 +542,7 @@ router.get("/:userId", async function (req, res, next) {
   const data = {
     userId: req.params.userId
   }
+  console.log("_________data received is_________",data.userId)
 
   kafka.make_request('getUserDetails', data, function (err, result) {
 
@@ -967,115 +968,236 @@ router.post("/:userId/person", async function (req, res, next) {
   console.log("__________searched_id____________--", searched_id)
   console.log("__________user_id____________--", user_id)
   const connections = []
-
-  UserInfo.findOneAndUpdate(
-    { "_id": searched_id },
-    { $inc: { "noOfViews": 1 } }
-  )
-    .exec()
-    .then(result => {
-
-      console.log("User is: ", result._id, " and connections are : ", result.connections)
-      console.log("~~~~~~~~~~~~~~~result~~~~~~~~~~~~~~~~~", result);
-      if (result.connections.indexOf(searched_id) != -1) {
-        const connectionInfo = {
-          _id: result._id,
-          name: result.fname + " " + result.lname,
-          headline: result.headline,
-          email: result.email,
-          noOfViews: result.noOfViews,
-          headline: result.headline,
-          experience: result.experience,
-          education: result.education,
-          skills: result.skills,
-          noOfConnections: result.connections.length,
-          profileImage: result.profileImage,
-          profile_summary: result.profile_summary,
-          isConnected: "true"
-        }
-        connections.push(connectionInfo)
-      } else if (result.pending_receive.indexOf(result.userId) != -1) {
-        const connectionInfo = {
-          _id: result._id,
-          name: result.fname + " " + result.lname,
-          headline: result.headline,
-          email: result.email,
-          noOfViews: result.noOfViews,
-          headline: result.headline,
-          experience: result.experience,
-          education: result.education,
-          skills: result.skills,
-          noOfConnections: result.connections.length,
-          profileImage: result.profileImage,
-          profile_summary: result.profile_summary,
-          isConnected: "Accept"
-        }
-        connections.push(connectionInfo)
-      }
-      else if (result.pending_sent.indexOf(searched_id) != -1) {
-        const connectionInfo = {
-          _id: result._id,
-          name: result.fname + " " + result.lname,
-          headline: result.headline,
-          email: result.email,
-          noOfViews: result.noOfViews,
-          headline: result.headline,
-          experience: result.experience,
-          education: result.education,
-          skills: result.skills,
-          noOfConnections: result.connections.length,
-          profileImage: result.profileImage,
-          profile_summary: result.profile_summary,
-          isConnected: "pending"
-        }
-        connections.push(connectionInfo)
-      } else {
-        const connectionInfo = {
-          _id: result._id,
-          name: result.fname + " " + result.lname,
-          headline: result.headline,
-          email: result.email,
-          noOfViews: result.noOfViews,
-          headline: result.headline,
-          experience: result.experience,
-          education: result.education,
-          skills: result.skills,
-          noOfConnections: result.connections.length,
-          profileImage: result.profileImage,
-          profile_summary: result.profile_summary,
-
-          isConnected: "false"
-        }
-        connections.push(connectionInfo)
-      }
-
-      const data = {
-        "status": "1",
-        "msg": "Successfully Searched the profile other user",
-        "info": connections
-      }
-      res.writeHead(200, {
-        'Content-Type': 'application/json'
-      })
-      res.end(JSON.stringify(data))
-      console.log("__________________result_______________", connections);
-
+  if(!user_id||!searched_id){
+    res.writeHead(404, {
+      'Content-Type': 'application/json'
     })
-    .catch(err => {
-      console.log("_____________err______________", err)
-      res.send(400, err)
-      res.writeHead(400, {
-        'Content-Type': 'application/json'
-      })
-      const data = {
-        "status": 0,
-        "msg": "Backend Error",
-        "info": {
-          "error": err
+    const data = {
+      "status": 0,
+      "msg": "No id's provided"//,
+      // "info": {
+      //   "error": err
+      // }
+    }
+    res.end(JSON.stringify(data))
+  }else{
+    UserInfo.findOneAndUpdate(
+      { "_id": searched_id },
+      { $inc: { "noOfViews": 1 } }
+    )
+      .exec()
+      .then(result => {
+  
+        console.log("User is: ", result._id, " and connections are : ", result.connections)
+        console.log("~~~~~~~~~~~~~~~result~~~~~~~~~~~~~~~~~", result);
+        if (result.connections.indexOf(searched_id) != -1) {
+          const connectionInfo = {
+            _id: result._id,
+            name: result.fname + " " + result.lname,
+            headline: result.headline,
+            email: result.email,
+            noOfViews: result.noOfViews,
+            headline: result.headline,
+            experience: result.experience,
+            education: result.education,
+            skills: result.skills,
+            noOfConnections: result.connections.length,
+            profileImage: result.profileImage,
+            profile_summary: result.profile_summary,
+            isConnected: "true"
+          }
+          connections.push(connectionInfo)
+        } else if (result.pending_receive.indexOf(result.userId) != -1) {
+          const connectionInfo = {
+            _id: result._id,
+            name: result.fname + " " + result.lname,
+            headline: result.headline,
+            email: result.email,
+            noOfViews: result.noOfViews,
+            headline: result.headline,
+            experience: result.experience,
+            education: result.education,
+            skills: result.skills,
+            noOfConnections: result.connections.length,
+            profileImage: result.profileImage,
+            profile_summary: result.profile_summary,
+            isConnected: "Accept"
+          }
+          connections.push(connectionInfo)
         }
-      }
-      res.end(JSON.stringify(data))
-    })
+        else if (result.pending_sent.indexOf(searched_id) != -1) {
+          const connectionInfo = {
+            _id: result._id,
+            name: result.fname + " " + result.lname,
+            headline: result.headline,
+            email: result.email,
+            noOfViews: result.noOfViews,
+            headline: result.headline,
+            experience: result.experience,
+            education: result.education,
+            skills: result.skills,
+            noOfConnections: result.connections.length,
+            profileImage: result.profileImage,
+            profile_summary: result.profile_summary,
+            isConnected: "pending"
+          }
+          connections.push(connectionInfo)
+        } else {
+          const connectionInfo = {
+            _id: result._id,
+            name: result.fname + " " + result.lname,
+            headline: result.headline,
+            email: result.email,
+            noOfViews: result.noOfViews,
+            headline: result.headline,
+            experience: result.experience,
+            education: result.education,
+            skills: result.skills,
+            noOfConnections: result.connections.length,
+            profileImage: result.profileImage,
+            profile_summary: result.profile_summary,
+  
+            isConnected: "false"
+          }
+          connections.push(connectionInfo)
+        }
+  
+        const data = {
+          "status": "1",
+          "msg": "Successfully Searched the profile other user",
+          "info": connections
+        }
+        res.writeHead(200, {
+          'Content-Type': 'application/json'
+        })
+        res.end(JSON.stringify(data))
+        console.log("__________________result_______________", connections);
+  
+      })
+      .catch(err => {
+        console.log("_____________err______________", err)
+        res.send(400, err)
+        res.writeHead(400, {
+          'Content-Type': 'application/json'
+        })
+        const data = {
+          "status": 0,
+          "msg": "Backend Error",
+          "info": {
+            "error": err
+          }
+        }
+        res.end(JSON.stringify(data))
+      })
+  }
+  // UserInfo.findOneAndUpdate(
+  //   { "_id": searched_id },
+  //   { $inc: { "noOfViews": 1 } }
+  // )
+  //   .exec()
+  //   .then(result => {
+
+  //     console.log("User is: ", result._id, " and connections are : ", result.connections)
+  //     console.log("~~~~~~~~~~~~~~~result~~~~~~~~~~~~~~~~~", result);
+  //     if (result.connections.indexOf(searched_id) != -1) {
+  //       const connectionInfo = {
+  //         _id: result._id,
+  //         name: result.fname + " " + result.lname,
+  //         headline: result.headline,
+  //         email: result.email,
+  //         noOfViews: result.noOfViews,
+  //         headline: result.headline,
+  //         experience: result.experience,
+  //         education: result.education,
+  //         skills: result.skills,
+  //         noOfConnections: result.connections.length,
+  //         profileImage: result.profileImage,
+  //         profile_summary: result.profile_summary,
+  //         isConnected: "true"
+  //       }
+  //       connections.push(connectionInfo)
+  //     } else if (result.pending_receive.indexOf(result.userId) != -1) {
+  //       const connectionInfo = {
+  //         _id: result._id,
+  //         name: result.fname + " " + result.lname,
+  //         headline: result.headline,
+  //         email: result.email,
+  //         noOfViews: result.noOfViews,
+  //         headline: result.headline,
+  //         experience: result.experience,
+  //         education: result.education,
+  //         skills: result.skills,
+  //         noOfConnections: result.connections.length,
+  //         profileImage: result.profileImage,
+  //         profile_summary: result.profile_summary,
+  //         isConnected: "Accept"
+  //       }
+  //       connections.push(connectionInfo)
+  //     }
+  //     else if (result.pending_sent.indexOf(searched_id) != -1) {
+  //       const connectionInfo = {
+  //         _id: result._id,
+  //         name: result.fname + " " + result.lname,
+  //         headline: result.headline,
+  //         email: result.email,
+  //         noOfViews: result.noOfViews,
+  //         headline: result.headline,
+  //         experience: result.experience,
+  //         education: result.education,
+  //         skills: result.skills,
+  //         noOfConnections: result.connections.length,
+  //         profileImage: result.profileImage,
+  //         profile_summary: result.profile_summary,
+  //         isConnected: "pending"
+  //       }
+  //       connections.push(connectionInfo)
+  //     } else {
+  //       const connectionInfo = {
+  //         _id: result._id,
+  //         name: result.fname + " " + result.lname,
+  //         headline: result.headline,
+  //         email: result.email,
+  //         noOfViews: result.noOfViews,
+  //         headline: result.headline,
+  //         experience: result.experience,
+  //         education: result.education,
+  //         skills: result.skills,
+  //         noOfConnections: result.connections.length,
+  //         profileImage: result.profileImage,
+  //         profile_summary: result.profile_summary,
+
+  //         isConnected: "false"
+  //       }
+  //       connections.push(connectionInfo)
+  //     }
+
+  //     const data = {
+  //       "status": "1",
+  //       "msg": "Successfully Searched the profile other user",
+  //       "info": connections
+  //     }
+  //     res.writeHead(200, {
+  //       'Content-Type': 'application/json'
+  //     })
+  //     res.end(JSON.stringify(data))
+  //     console.log("__________________result_______________", connections);
+
+  //   })
+  //   .catch(err => {
+  //     console.log("_____________err______________", err)
+  //     res.send(400, err)
+  //     res.writeHead(400, {
+  //       'Content-Type': 'application/json'
+  //     })
+  //     const data = {
+  //       "status": 0,
+  //       "msg": "Backend Error",
+  //       "info": {
+  //         "error": err
+  //       }
+  //     }
+  //     res.end(JSON.stringify(data))
+  //   })
 
 })
 
@@ -1129,6 +1251,8 @@ router.get("/:userId/daily_views", async function (req, res, next) {
  * user clicks on the apply button to fill the appli so update the noOfViews_applied count
  */
 router.put("/:jobId/start_application", async function (req, res, next) {
+  console.log("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~`");
+  console.log("__________start appli counter____________")
 
   const job_id = req.params.jobId
   console.log("__________user_id____________--", job_id)

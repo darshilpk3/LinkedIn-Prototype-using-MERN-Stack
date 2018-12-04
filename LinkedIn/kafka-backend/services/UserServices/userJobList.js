@@ -17,7 +17,7 @@ function handle_request(msg, callback) {
             callback(null,result)
         })
         .catch(err => {
-            console.log("\nSome error occured");
+            console.log("\nSome error occured",err);
             callback(err, "Some error occured")
         })
 }
