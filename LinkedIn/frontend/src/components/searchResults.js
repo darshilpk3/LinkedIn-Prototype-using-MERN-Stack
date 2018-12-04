@@ -9,6 +9,7 @@ import { ROOT_URL } from '../constants/constants';
 import Navbar from './Navbar';
 import _ from "lodash";
 const userID = localStorage.getItem("userId")
+var swal = require('sweetalert');
 
 //const userID = "5c06b8010732546084383d17";//localStorage.getItem("userId")
 
@@ -41,7 +42,7 @@ class searchResults extends Component {
             clickedProfileImage: "https://image.freepik.com/free-vector/abstract-dark-blue-polygonal-background_1035-9700.jpg",
 
             testProfileImage: "https://image.freepik.com/free-vector/abstract-dark-blue-polygonal-background_1035-9700.jpg",
-
+            userProfileImage: "",
 
             isSaved: "",
 
@@ -200,7 +201,8 @@ class searchResults extends Component {
 
                 console.log("------on load-------", res.data.length);
                 console.log("------on load-------", res.data);
-                alert("Applied successfully");
+                alert(res.data.msg);
+                
                 /*this.setState({
                     jobResults: res.data
                 });*/
@@ -232,7 +234,8 @@ class searchResults extends Component {
         axios.defaults.withCredentials = true;
         const data = {
             job_title: this.state.job_title,
-            location: this.state.location
+            location: this.state.location,
+            userId: userID
         }
         axios.post(`${ROOT_URL}/job/search/`, data)
 
@@ -318,48 +321,32 @@ class searchResults extends Component {
 
                 console.log("------on getting user data for easy apply-------", res.data.info);
 
-                /*console.log("userid---------------" + userID);
-                console.log("clickedJobId---------------" + this.state.clickedJobId);
-                console.log("clickedJobId---------------" + res.data.info.jobs_saved);
-
-                var saved = JSON.stringify(res.data.info.jobs_saved[0].jobSaved);
-                console.log("see if saved---------------" + saved);
-                if (saved.indexOf(userID) > -1) {
-                    //In the array!
-                    alert("You have already applied for this job!")
-                    console.log("its already applied")
-                    this.setState({
-                        alreadyApplied: true
+                axios.put(`${ROOT_URL}/user/${this.state.clickedJobId}/start_application`)
+                    .then(res => {
+                        console.log("------Updated counter-------");
+                    })
+                    .catch(err => {
+                        console.log("Error in put start application.");
                     });
-                } else {
-                    //Not in the array
-                    console.log("its not already applied");
-                }*/
-                    axios.put(`${ROOT_URL}/user/${this.state.clickedJobId}/start_application`)
-                        .then(res => {
-                            console.log("------Updated counter-------");
-                        })
-                        .catch(err => {
-                            console.log("Error in put start application.");
-                        });
 
-                    if (this.state.clickedApplyMethod == "Easy Apply") {
-                        console.log("--------------------------",res.data.info);
+                if (this.state.clickedApplyMethod == "Easy Apply") {
+                    console.log("--------------------------", res.data.info);
 
-                        this.setState({
-                            applyJobfname: res.data.info.fname,
-                            applyJoblname: res.data.info.lname,
-                            applyJobEmail: res.data.info.email,
-                            applyJobAddress: res.data.info.address,
-                            applyJobResume: res.data.info.resume
-                        });
-                        console.log("--------------------------",this.state.applyJobfname);
-                    } else if (this.state.clickedApplyMethod == "Custom Apply") {
-                        this.setState({
-                            applyJobResume: res.data.info.resume
-                        });
-                    }
-                
+                    this.setState({
+                        applyJobfname: res.data.info.fname,
+                        applyJoblname: res.data.info.lname,
+                        applyJobEmail: res.data.info.email,
+                        applyJobAddress: res.data.info.address,
+                        applyJobResume: res.data.info.resume,
+                        userProfileImage: res.data.info.profileImage
+                    });
+                    console.log("--------------------------", this.state.applyJobfname);
+                } else if (this.state.clickedApplyMethod == "Custom Apply") {
+                    this.setState({
+                        applyJobResume: res.data.info.resume
+                    });
+                }
+
 
             })
             .catch(err => {
@@ -389,7 +376,7 @@ class searchResults extends Component {
                     <div key={index} onClick={() => this.handleClickedViewJob(jobResults._id)}>
 
                         <div className="col-sm-3 col-md-3 col-lg-3">
-                            <img src={jobResults.companyLogo} className=" profileImage" />
+                            <img src={ROOT_URL + "/" + jobResults.companyLogo} className=" profileImage" />
                         </div>
 
                         <div className="col-sm-9 col-md-9 col-lg-9 hoverEffect" >
@@ -421,66 +408,57 @@ class searchResults extends Component {
             </div>
         )
 
-        let myData=JSON.parse(localStorage.getItem('myData'));
+        let myData = JSON.parse(localStorage.getItem('myData'));
         clickedModal = (
             <div>
-                <div className="row">
-                    <div className="col-sm-3 col-md-3 col-lg-3">
-                        <img src={this.state.clickedCompanyLogo} className="img-circle ModalProfileImage" />
-                    </div>
-                    <div className="col-sm-9 col-md-9 col-lg-9" style={{ "textAlign": "left" }}>
-                         <h4>{myData.firstname} {myData.lastname}</h4> 
-                        
+                <h4>{myData.firstname} {myData.lastname}</h4>
+            <div style={{ "textAlign": "left", "padding": "5%" }}>
+                <label>First Name:</label>
+                <p><input type="text" onChange={this.onChange} name="applyJobfname" className="modalTextBox" value={this.state.applyJobfname}></input></p>
+                <label>Last Name:</label>
+                <p><input type="text" onChange={this.onChange} name="applyJoblname" className="modalTextBox" value={this.state.applyJoblname}></input></p>
+                <label>Address:</label>
+                <p><input type="text" onChange={this.onChange} name="applyJobAddress" className="modalTextBox" value={this.state.applyJobAddress}></input></p>
 
-                    </div>
-                </div><br></br>
-                <div style={{ "textAlign": "left", "padding": "5%" }}>
-                    <label>First Name:</label>
-                    <p><input type="text" onChange={this.onChange} name="applyJobfname" className="modalTextBox" value={this.state.applyJobfname}></input></p>
-                    <label>Last Name:</label>
-                    <p><input type="text" onChange={this.onChange} name="applyJoblname" className="modalTextBox" value={this.state.applyJoblname}></input></p>
-                    <label>Address:</label>
-                    <p><input type="text" onChange={this.onChange} name="applyJobAddress" className="modalTextBox" value={this.state.applyJobAddress}></input></p>
+                <label>Email:</label>
+                <p><input type="text" onChange={this.onChange} name="applyJobEmail" className="modalTextBox" value={this.state.applyJobEmail}></input></p>
+                <label>Resume(optional):</label>
+                <p><input type="text" onChange={this.onChange} name="applyJobResume" className="modalTextBox" value={this.state.applyJobResume}></input></p>
 
-                    <label>Email:</label>
-                    <p><input type="text" onChange={this.onChange} name="applyJobEmail" className="modalTextBox" value={this.state.applyJobEmail}></input></p>
-                    <label>Resume(optional):</label>
-                    <p><input type="text" onChange={this.onChange} name="applyJobResume" className="modalTextBox" value={this.state.applyJobResume}></input></p>
-
-                    <label>How did you hear about this:</label>
-                    <p><input type="text" onChange={this.onChange} name="applyJobHowDidYouHear" className="modalTextBox"></input></p>
+                <label>How did you hear about this:</label>
+                <p><input type="text" onChange={this.onChange} name="applyJobHowDidYouHear" className="modalTextBox"></input></p>
 
 
-                    <label for="sel1">Diversity:</label>
-                    <select onChange={this.handleDiversity} class="form-control" id="sel1">
-                        <option value="" >Select</option>
-                        <option value="American" selected={this.state.applyJobDiversity == "American"}>American</option>
-                        <option value="Asian" selected={this.state.applyJobDiversity == "Asian"}>Asian</option>
-                        <option value="Hispanic" selected={this.state.applyJobDiversity == "Hispanic"}>Hispanic</option>
-                        <option value="Latino" selected={this.state.applyJobDiversity == "Latino"}>Latino</option>
-                        <option value="Other" selected={this.state.applyJobDiversity == "Other"}>Other</option>
-                        <option value="Decine to self identify" selected={this.state.applyJobDiversity == "Decine to self identify"}>Decine to self identify</option>
-                    </select>
-                    <p></p>
+                <label for="sel1">Diversity:</label>
+                <select onChange={this.handleDiversity} class="form-control" id="sel1">
+                    <option value="" >Select</option>
+                    <option value="American" selected={this.state.applyJobDiversity == "American"}>American</option>
+                    <option value="Asian" selected={this.state.applyJobDiversity == "Asian"}>Asian</option>
+                    <option value="Hispanic" selected={this.state.applyJobDiversity == "Hispanic"}>Hispanic</option>
+                    <option value="Latino" selected={this.state.applyJobDiversity == "Latino"}>Latino</option>
+                    <option value="Other" selected={this.state.applyJobDiversity == "Other"}>Other</option>
+                    <option value="Decine to self identify" selected={this.state.applyJobDiversity == "Decine to self identify"}>Decine to self identify</option>
+                </select>
+                <p></p>
 
-                    <label for="sel2">Do you require Sponsership?</label>
-                    <select onChange={this.handleSponsership} class="form-control" id="sel2">
-                        <option value="" >Select</option>
-                        <option value="Yes" selected={this.state.applyJobSponsership == "Yes"}>Yes</option>
-                        <option value="No" selected={this.state.applyJobSponsership == "No"}>No</option>
-                    </select>
-                    <p></p>
-                    <label for="sel3">Disability Status:</label>
-                    <select onChange={this.handleDisability} class="form-control" id="sel3">
-                        <option value="" >Select</option>
-                        <option value="Yes, I have a disability(or previously had a disability)" selected={this.state.applyJobDisability == "Yes, I have a disability(or previously had a disability)"}>Yes, I have a disability(or previously had a disability)</option>
-                        <option value="No, I don't have a disability" selected={this.state.applyJobDisability == "No, I don't have a disability"}>No, I don't have a disability</option>
-                        <option value="I don't wish to answer" selected={this.state.applyJobDisability == "I don't wish to answer"}>I don't wish to answer</option>
-                    </select>
+                <label for="sel2">Do you require Sponsership?</label>
+                <select onChange={this.handleSponsership} class="form-control" id="sel2">
+                    <option value="" >Select</option>
+                    <option value="Yes" selected={this.state.applyJobSponsership == "Yes"}>Yes</option>
+                    <option value="No" selected={this.state.applyJobSponsership == "No"}>No</option>
+                </select>
+                <p></p>
+                <label for="sel3">Disability Status:</label>
+                <select onChange={this.handleDisability} class="form-control" id="sel3">
+                    <option value="" >Select</option>
+                    <option value="Yes, I have a disability(or previously had a disability)" selected={this.state.applyJobDisability == "Yes, I have a disability(or previously had a disability)"}>Yes, I have a disability(or previously had a disability)</option>
+                    <option value="No, I don't have a disability" selected={this.state.applyJobDisability == "No, I don't have a disability"}>No, I don't have a disability</option>
+                    <option value="I don't wish to answer" selected={this.state.applyJobDisability == "I don't wish to answer"}>I don't wish to answer</option>
+                </select>
 
-                    <p style={{ "paddingTop": "5%" }}>We include a copy of your full profile with your application</p>
-                </div>
+                <p style={{ "paddingTop": "5%" }}>We include a copy of your full profile with your application</p>
             </div>
+            </div >
         )
 
         if (!this.state.alreadyApplied) {
@@ -509,7 +487,7 @@ class searchResults extends Component {
             clickedJobInfo = (
                 <div>
                     <div className="col-sm-3 col-md-3 col-lg-3">
-                        <img src={this.state.clickedCompanyLogo} className=" profileImage" />
+                        <img src={ROOT_URL + "/" + this.state.clickedCompanyLogo} className=" profileImage" />
                     </div>
 
                     <div className="col-sm-9 col-md-9 col-lg-9 " >
@@ -531,7 +509,7 @@ class searchResults extends Component {
 
                         <div className="row">
                             <div className="col-sm-3 col-md-3 col-lg-3">
-                                <img src={this.state.clickedPostedBy.profileImage} className=" profileImage" />
+                                <img src={ROOT_URL + "/" + this.state.clickedPostedBy.profileImage} className=" profileImage" />
                             </div>
                             <div className="col-sm-9 col-md-9 col-lg-9">
                                 <h6>Posted By:</h6>
