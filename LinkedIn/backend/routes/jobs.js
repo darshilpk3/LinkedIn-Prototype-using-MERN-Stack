@@ -228,7 +228,7 @@ router.put("/:jobId", async function (req, res, next) {
 
 router.get("/:jobId/applications",async function(req,res,next){
     console.log("Getting all the applications for jobId: ",req.params.jobId)
-
+    
     const data = {
         jobId: req.params.jobId
     }

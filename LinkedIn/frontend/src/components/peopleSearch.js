@@ -5,17 +5,19 @@ import cookie from 'react-cookies';
 import { Link } from 'react-router-dom';
 import { Redirect } from 'react-router';
 import _ from "lodash";
-
-
 import picDS from '../assets/images/PicDS.png'
 
-class connections extends Component {
+var swal = require('sweetalert')
+
+
+class peopleSearch extends Component {
     constructor(props) {
         super(props);
         this.state = {
             peopleResult: null,
             filteredPeopleResult: null,
-            searchName:null
+            searchName: null,
+            msgBody : null
         }
     }
 
@@ -24,27 +26,66 @@ class connections extends Component {
         axios.defaults.withCredentials = true;
 
 
-        if(this.props.match.params){
+        if (this.props.match.params || true) {
+
             const data = {
-                name : this.props.match.params
+                name: "maulin"
             }
-            
+            if (localStorage.getItem("userId")) {
+                const id = localStorage.getItem("userId")
+                axios.post(`http://localhost:3001/user/${id}/search/`, data)
+                    .then(response => {
+                        if (response.status === 200) {
+                            this.setState({
+                                peopleResult: response.data.info,
+                                filteredPeopleResult: response.data.info
+                            })
+                        }
+                    })
+            }
         }
-        if (localStorage.getItem('userId')) {
-            const id = localStorage.getItem('userId')
-            axios.get(`http://localhost:3001/connection/${id}/getConnections`)
-                .then(response => {
-                    if (response.status === 200) {
-                        console.log("Connections results: ",response.data)
-                        this.setState({
-                            connectionsResult: response.data.info.connections,
-                            filteredConnectionsResult: response.data.info.connections
-                        },() => {
-                            console.log("Filtered Result: ",this.state.filteredConnectionsResult)
-                        })
-                    }
-                })
+    }
+
+    handleChange = (e) => {
+        this.setState({
+            [e.target.name]: e.target.value
+        })
+    }
+
+    requestConnection = (e) => {
+        console.log("requesting connection to userId: ", e.target.id)
+        const data = {
+            sentBy: localStorage.getItem("userId"),
+            sentTo: e.target.id
         }
+        axios.post("http://localhost:3001/connection/request", data)
+            .then(response => {
+                if (response.status === 200) {
+                    console.log(response.data)
+                    window.location.reload()
+                }
+            })
+    }
+
+    acceptConnection = (e) => {
+        console.log("Accept connection of userId: ", e.target.id)
+        console.log("Current user", localStorage.getItem("userId"))
+        const data = {
+            connection: e.target.id
+        }
+        const id = localStorage.getItem("userId")
+        var headers = new Headers()
+        axios.defaults.withCredentials = true;
+
+        axios.put(`http://localhost:3001/connection/${id}/accept`, data)
+            .then(response => {
+                if (response.status === 200) {
+                    console.log("Accepted: ", response.data)
+                    window.location.reload()
+                } else {
+                    console.log("failed")
+                }
+            })
     }
 
     handleChange = (e) => {
@@ -53,28 +94,27 @@ class connections extends Component {
         })
     }
 
-    filterResult = () => {
-        console.log("filtering result")
-        if(this.state.searchName){
-            const oldList = this.state.connectionsResult
-            const searchName = this.state.searchName
-            this.setState({
-                filteredConnectionsResult : _.filter(oldList,function(o){return (o.fname.toLowerCase().includes(searchName.toLowerCase())|| o.fname.toLowerCase().includes(searchName.toLowerCase()))})
-            },() => {
-                console.log("After Filter ",this.state.filteredConnectionsResult)
-            })
+    sendMessage = (e) => {
+        const data = {
+            member1: localStorage.getItem("userId"),
+            member2: e.target.id,
+            sentBy: localStorage.getItem("userId"),
+            body: this.state.msgBody && this.state.msgBody
         }
+        console.log(data)
+        axios.defaults.withCredentials = true
+        axios.post("http://localhost:3001/message", data)
+            .then(response => {
+                if (response.status === 200) {
+                    if (response.data.status) {
+                        swal("Sent", "", "success")
+                        window.location.reload()
+                    }
+                } else {
+                    swal("Something went wrong", "", "error")
+                }
+            })
     }
-
-    clearFilter = () => {
-        console.log("Clearing filter")
-        this.setState({
-            searchName:"",
-            filteredConnectionsResult:this.state.connectionsResult
-        })
-    }
-
-    
 
 
     render() {
@@ -85,34 +125,64 @@ class connections extends Component {
             console.log("Id is:", e.target.id)
             return (
                 <Redirect to="/messaging"></Redirect>
-                )
+            )
         }
 
-        if (this.state.filteredConnectionsResult) {
-            var displayData = this.state.filteredConnectionsResult.map(connection => {
-                console.log("Mapped connection", connection)
+        if (this.state.filteredPeopleResult) {
+            var displayData = this.state.filteredPeopleResult.map(user => {
+                console.log("Mapped user", user)
+                if (user.isConnected == "none") {
+                    var button = <div className="col-sm-3 col-md-3 col-lg-4" >
+                    </div>
+                } else if (user.isConnected == "false") {
+                    var button = <div className="col-sm-3 col-md-3 col-lg-4" >
+                        <button class="btn btn-primary myConnectionButton" style={{ 'float': 'right', 'width': '50%' }} id={user._id} onClick={this.requestConnection}>Connect</button>
+                    </div>
+                } else if (user.isConnected == "true") {
+                    var button = <div className="col-sm-3 col-md-3 col-lg-4" >
+                        <button type="button" class="btn btn-primary myConnectionButton" data-toggle="modal" data-target={"#exampleModalCenter" + user._id}>
+                            Message
+                  </button>
+                        <div class="modal fade" id={"exampleModalCenter" + user._id} tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+                            <div class="modal-dialog modal-dialog-centered" role="document">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="exampleModalLongTitle">Message to {user.name}</h5>
+                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                            <span aria-hidden="true">&times;</span>
+                                        </button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <textarea rows="10" cols="70" name="msgBody" onChange={this.handleChange}></textarea>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-primary" id={user._id} onClick={this.sendMessage}>Send</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                } else if (user.isConnected == "pending") {
+                    var button = <div className="col-sm-3 col-md-3 col-lg-4" >
+                        <p class="myConnectionButton" style={{ 'float': 'right', 'width': '50%' }} id={user._id}>Pending</p>
+                    </div>
+                } else if (user.isConnected == "Accept") {
+                    var button = <div className="col-sm-3 col-md-3 col-lg-4" >
+                        <button class="btn btn-primary myConnectionButton" style={{ 'float': 'right', 'width': '50%' }} id={user._id} onClick={this.acceptConnection}>Accept</button>
+                    </div>
+                }
                 return (
                     <div class="row userInvitations">
                         <div className="col-sm-6 col-md-6 col-lg-2">
-                            <img src={connection.profileImage} className="img-circle profileImage" />
+                            <img src={user.profileImage} className="img-circle profileImage" />
                         </div>
                         <div className="col-sm-5 col-md-5 col-lg-5">
-                            <h4>{connection.fname + " " + connection.lname}</h4>
-                            <h5>{connection.headline}</h5>
+                            <h4>{user.name}</h4>
+                            <h5>{user.email}</h5>
                             {/* <h5>Connections {connection.connections.length}</h5> */}
                         </div>
-
-                        <div className="col-sm-3 col-md-3 col-lg-4" >
-                            <Link to = "/messaging" class="btn btn-primary myConnectionButton" style={{ 'float': 'right', 'width': '50%' }} id={connection._id}>Message</Link>
-                        </div>
-                        <div className="col-sm-2 col-md-2 col-lg-1">
-                            <div class="dropdown">
-                                <a class="dropdown-toggle" type="button" data-toggle="dropdown" style={{ 'float': 'left', 'font-size': '150%' }}>...</a>
-                                <ul class="dropdown-menu">
-                                    <li><a>Remove Connection</a></li>
-                                </ul>
-                            </div>
-                        </div>
+                        {button}
                     </div>
                 )
             })
@@ -134,7 +204,7 @@ class connections extends Component {
                     <div class="col-sm-8 col-md-8 col-lg-8">
                         <div class="card myInvitations">
                             <div class="card-title ">
-                                <h4>{this.state.connectionsResult && this.state.connectionsResult.length} Connections</h4><br></br>
+                                <h4>{this.state.connectionsResult && this.state.connectionsResult.length} People Search</h4><br></br>
 
                                 <div className="row aligntextleft">
                                     <div class="col-sm-2 col-md-2 col-lg-2" style={{ 'textAlign': 'right' }}>
@@ -155,7 +225,7 @@ class connections extends Component {
                                     </div>
 
                                     <div class="col-sm-4 col-md-4 col-lg-4" style={{ 'textAlign': 'right', 'height': '100%', 'marginTop': '0.5%' }}>
-                                        <input type="text" placeholder="Search.." value={this.state.searchName} name="searchName" onChange={this.handleChange}/>
+                                        <input type="text" placeholder="Search.." value={this.state.searchName} name="searchName" onChange={this.handleChange} />
                                         <button type="submit" className="submitbutton" onClick={this.filterResult}><i class="fa fa-search"></i></button>
                                     </div>
 
@@ -213,4 +283,4 @@ class connections extends Component {
 
 
 
-export default connections;
+export default peopleSearch;

@@ -5,14 +5,15 @@ import connections from './connections';
 import savedJobs from './savedJobs';
 import appliedJobs from './appliedJobs';
 import messaging from './messaging';
-import navbar from './navbar';
+import Navbar from './Navbar';
 import homepage from './homepage';
 import Profilelocation from './profilelocation';
 import Newsfeed from './newsfeed';
 import UserDelete from './userdelete';
 import JobPosting from './jobposting';
 import JobSearch from './jobsearch';
-
+import PeopleSearch from './peopleSearch'
+import Profile from './profile'
 class Main extends Component {
     render() {
         return (
@@ -23,13 +24,16 @@ class Main extends Component {
                 <Route exact path="/savedJobs" component={savedJobs} /> 
                 <Route exact path="/appliedJobs" component={appliedJobs} /> 
                 <Route exact path="/messaging" component={messaging} />                 
-				<Route exact path="/navbar" component={navbar} />
+				<Route exact path="/navbar" component={Navbar} />
                 <Route exact path="/" component={homepage} />
                 <Route exact path="/profilelocation" component={Profilelocation} />
                 <Route exact path="/newsfeed" component={Newsfeed} />
                 <Route exact path="/user/delete" component={UserDelete} />
                 <Route exact path="/job/post" component={JobPosting} />
                 <Route exact path="/jobs/" component={JobSearch} />
+                <Route exact path="/peopleSearch/" component={PeopleSearch} />
+                <Route exact path="/profile" component={Profile} />
+
                 {/* <Route path="/TravelerLogin" component={Login} /> */}
 
             </div>

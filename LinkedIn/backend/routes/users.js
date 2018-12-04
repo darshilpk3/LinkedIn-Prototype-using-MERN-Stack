@@ -3,6 +3,8 @@ var router = express.Router();
 var pool = require('../connections/mysql')
 var mysql = require('mysql')
 var mongoose = require('mongoose');
+var jwt = require('jsonwebtoken');
+
 var kafka = require('../kafka/client')
 
 
@@ -15,11 +17,21 @@ router.post('/', async function (req, res, next) {
 
   console.log('\n\nIn user signup');
   console.log("Request Got: ", req.body)
+
+  const firstName = req.body.fname  
+  const lastName = req.body.lname
   const email = req.body.email
-  const pwd = bcrypt.hashSync(req.body.pwd, 10)
-  const firstName = req.body.firstName
-  const lastName = req.body.lastName
+  const pwd = bcrypt.hashSync(req.body.password, 10)
+  const country = req.body.country
+  const zipcode = req.body.zipcode
+  const current_title = req.body.current_title
+  const current_company = req.body.current_company
+  const current_industry = req.body.current_industry
+  const start_workDate = req.body.start_workDate
+  const end_workDate = req.body.end_workDate
+  const education_data = req.body.education_data
   const type = req.body.type
+
 
   pool.getConnection((
     err, connection) => {
@@ -32,30 +44,35 @@ router.post('/', async function (req, res, next) {
             console.log("Successfully registered")
 
             //mongo query here
+            console.log("Can i get a name: ",firstName)
+            var experience_data = {
+              title : current_title,
+              company : current_company,
+              industry : current_industry,
+              work_startDate : start_workDate,
+              work_endDate  : end_workDate
+            }
             var user = new UserInfo({
               fname: firstName,
               lname: lastName,
               type: type,
               email: email,
-              password: pwd
+              country : country,
+              zipcode : zipcode,
+              currentExperience : experience_data,
+              education_data : education_data
             })
-            console.log(`user ${user}`);
-            user.save().then(user => {
+            //console.log(`user ${user}`);
+            user.save().then(result => {
               console.log("user created in mongo");
               // console.log(`user in then is ${user}`);
-
               res.writeHead(200, {
                 'Content-Type': 'application/json'
               })
               const data = {
                 "status": 1,
                 "msg": "Successfully Signed Up",
-                "info": {
-                  "id": result.insertId,
-                  "fullname": firstName + " " + lastName,
-                  "type": type,
-                  "email": email
-                }
+                "info": {}
               }
               console.log("data being sent to frontend:\n", JSON.stringify(data))
               res.end(JSON.stringify(data))
@@ -70,7 +87,7 @@ router.post('/', async function (req, res, next) {
               })
               const data = {
                 "status": 0,
-                "msg": err.sqlMessage,
+                "msg": "Unsuccesfull",
                 "info": {
                   "error": err.sqlMessage
                 }
@@ -124,29 +141,54 @@ router.post('/login', async function (req, res, next) {
       const sql = "select * from userinfo WHERE email = " + mysql.escape(email);
       connection.query(sql,
         (err, result) => {
+          console.log(result[0])
           const password = bcrypt.compareSync(pwd, result[0].pwd);
           if (result && password) {
             console.log("Successfully Logged In")
-            res.writeHead(200, {
-              'Content-Type': 'application/json'
-            })
-            const data = {
-              "status": 1,
-              "msg": "Successfully Logged In",
-              "info": {
-                "fullname": result[0].firstName + " " + result[0].lastName,
-                "email": email,
-                "type": result[0].type
-              }
-            }
-            console.log("data being sent to frontend:\n", JSON.stringify(data))
-            res.end(JSON.stringify(data))
+            
+            UserInfo.findOne({
+              email: email
+            }).exec()
+              .then(mongoResult => {
+                var token = jwt.sign(JSON.stringify(mongoResult),"secret")
+                console.log(mongoResult)
+                res.writeHead(200, {
+                  'Content-Type': 'application/json'
+                })
+                const data = {
+                  "status": 1,
+                  "msg": "Successfully Logged In",
+                  "info": {
+                    "firstname": mongoResult.fname,
+                    "lastname": mongoResult.lname,
+                    "email": mongoResult.email,
+                    "type": mongoResult.type,
+                    "uid": mongoResult._id,
+                    "token":token
+                  }
+                }
+                console.log("data being sent to frontend:\n", JSON.stringify(data))
+                res.end(JSON.stringify(data))
+              })
+              .catch(err => {
+                console.log(err)
+                res.writeHead(200, {
+                  'Content-Type': 'application/json'
+                })
+                const data = {
+                  "status": 1,
+                  "msg": "Unsuccessfull",
+                  "info": {
+                    "error": err,
+                  }
+                }
+                res.end(JSON.stringify(data))
+              })
           } else if (err) {
             console.log("Some error in sql query", err.sqlMessage)
             res.writeHead(400, {
               'Content-Type': 'application/json'
             })
-
             res.end("some error in sql query")
           } else {
             //password doesn't match
@@ -156,12 +198,11 @@ router.post('/login', async function (req, res, next) {
             })
             const data = {
               "status": 0,
-              "msg": "Error in login,Incorrect  password",
+              "msg": "The email or password you entered is incorrect",
               "info": {}
             }
             console.log("data being sent to frontend:\n", JSON.stringify(data))
             res.end(JSON.stringify(data))
-
           }
         })
     } else {
@@ -575,6 +616,7 @@ router.get("/:userId/appliedJobs", async function (req, res, next) {
   })
 })
 
+// Had to deleted before committiing
 router.post("/:userId/search", async function (req, res, next) {
   console.log("Searching through Users")
   const connections = []
@@ -587,39 +629,49 @@ router.post("/:userId/search", async function (req, res, next) {
   }).exec()
     .then(result => {
       result.forEach((user) => {
-        console.log("User is: ",user._id," and connections are : ",user.connections)
-        if(user.connections.indexOf(req.params.userId) != -1){
+        console.log("User is: ", user._id, " and connections are : ", user.connections)
+        if(user._id == req.params.userId){
+          console.log("User Itself")
           const connectionInfo = {
             _id: user._id,
             name: user.fname + " " + user.lname,
-            headline : user.headline,
+            headline: user.headline,
+            email: user.email,
+            isConnected: "none"
+          }
+          connections.push(connectionInfo)
+        }else if (user.connections.indexOf(req.params.userId) != -1) {
+          const connectionInfo = {
+            _id: user._id,
+            name: user.fname + " " + user.lname,
+            headline: user.headline,
             email: user.email,
             isConnected: "true"
           }
           connections.push(connectionInfo)
-        }else if(user.pending_receive.indexOf(req.params.userId) != -1){
+        } else if (user.pending_receive.indexOf(req.params.userId) != -1) {
           const connectionInfo = {
             _id: user._id,
             name: user.fname + " " + user.lname,
-            headline : user.headline,
-            email: user.email,
-            isConnected: "Accept"
-          }
-          connections.push(connectionInfo)
-        }else if(user.pending_sent.indexOf(req.params.userId) != -1){
-          const connectionInfo = {
-            _id: user._id,
-            name: user.fname + " " + user.lname,
-            headline : user.headline,
+            headline: user.headline,
             email: user.email,
             isConnected: "pending"
           }
           connections.push(connectionInfo)
-        }else{
+        } else if (user.pending_sent.indexOf(req.params.userId) != -1) {
           const connectionInfo = {
             _id: user._id,
             name: user.fname + " " + user.lname,
-            headline : user.headline,
+            headline: user.headline,
+            email: user.email,
+            isConnected: "Accept"
+          }
+          connections.push(connectionInfo)
+        } else {
+          const connectionInfo = {
+            _id: user._id,
+            name: user.fname + " " + user.lname,
+            headline: user.headline,
             email: user.email,
             isConnected: "false"
           }
@@ -627,17 +679,133 @@ router.post("/:userId/search", async function (req, res, next) {
         }
       })
       const data = {
-        "status":"1",
-        "msg":"Successfully Searched",
-        "info":connections
+        "status": "1",
+        "msg": "Successfully Searched",
+        "info": connections
       }
-      res.writeHead(200,{
+      res.writeHead(200, {
         'Content-Type': 'application/json'
       })
       res.end(JSON.stringify(data))
     })
-  .catch(err => {
-    res.send(400, err)
-  })
+    .catch(err => {
+      res.send(400, err)
+    })
 })
+
+
+router.put("/:userId/education",async function(req,res,next){
+  console.log("Editing education details")
+  const data = {
+    education : req.body.education
+  }
+
+  UserInfo.findByIdAndUpdate(req.params.userId,{
+    $set:{
+      education : data.education
+    }
+  }).exec()
+      .then(result => {
+        res.writeHead(200,{
+          'Content-Type':'application/json'
+        })
+        const data = {
+          "status":1,
+          "msg":"Success",
+          info:{}
+        }
+        res.end(JSON.stringify(data))
+      })
+      .catch(err => {
+        res.writeHead(200,{
+          'Content-Type':'application/json'
+        })
+        const data = {
+          "status":0,
+          "msg":"Something went wrong",
+          info:{
+            "error":err
+          }
+        }
+        res.end(JSON.stringify(data))
+      })
+})
+
+router.put("/:userId/experience",async function(req,res,next){
+  console.log("Editing experience details")
+  console.log("Req body is: ",req.body)
+  const data = {
+    experience : req.body
+  }
+
+  UserInfo.findByIdAndUpdate(req.params.userId,{
+    $set:{
+      experience : data.experience
+    }
+  }).exec()
+      .then(result => {
+        res.writeHead(200,{
+          'Content-Type':'application/json'
+        })
+        const data = {
+          "status":1,
+          "msg":"Success",
+          info:{}
+        }
+        res.end(JSON.stringify(data))
+      })
+      .catch(err => {
+        res.writeHead(200,{
+          'Content-Type':'application/json'
+        })
+        const data = {
+          "status":0,
+          "msg":"Something went wrong",
+          info:{
+            "error":err
+          }
+        }
+        res.end(JSON.stringify(data))
+      })
+})
+
+
+router.put("/:userId/skills",async function(req,res,next){
+  console.log("Editing skills details")
+  const data = {
+    skills : req.body.skills
+  }
+
+  UserInfo.findByIdAndUpdate(req.params.userId,{
+    $set:{
+      skills : data.skills
+    }
+  }).exec()
+      .then(result => {
+        res.writeHead(200,{
+          'Content-Type':'application/json'
+        })
+        const data = {
+          "status":1,
+          "msg":"Success",
+          info:{}
+        }
+        res.end(JSON.stringify(data))
+      })
+      .catch(err => {
+        res.writeHead(200,{
+          'Content-Type':'application/json'
+        })
+        const data = {
+          "status":0,
+          "msg":"Something went wrong",
+          info:{
+            "error":err
+          }
+        }
+        res.end(JSON.stringify(data))
+      })
+})
+
+
 module.exports = router;

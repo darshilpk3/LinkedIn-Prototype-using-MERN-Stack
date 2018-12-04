@@ -9,6 +9,7 @@ var logger = require('morgan');
 var cors = require('cors')
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
+var fileUpload = require('express-fileupload');
 var jobsRouter = require('./routes/jobs');
 var messageRouter = require('./routes/message')
 var connectionRouter = require('./routes/connections')
@@ -27,7 +28,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
-
+app.use(fileUpload())
 
 mongoose.connect(mongo.url, {
   poolSize: mongo.pool
@@ -56,6 +57,10 @@ mongoose.connect(mongo.url, {
     next();
   });
 
+app.use(express.json());
+app.use(express.urlencoded({ extended: false }));
+app.use(cookieParser());
+app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', indexRouter);
 app.use('/user', usersRouter);

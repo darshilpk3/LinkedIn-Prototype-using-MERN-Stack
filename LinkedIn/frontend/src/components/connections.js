@@ -3,11 +3,15 @@ import React, { Component } from 'react';
 import axios from 'axios';
 import cookie from 'react-cookies';
 import { Link } from 'react-router-dom';
+import { Document, Page } from 'react-pdf';
+import { pdfjs } from 'react-pdf';
+
 import { Redirect } from 'react-router';
 import _ from "lodash";
 
-
 import picDS from '../assets/images/PicDS.png'
+
+pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.js`;
 
 class connections extends Component {
     constructor(props) {
@@ -22,7 +26,9 @@ class connections extends Component {
         this.state = {
             connectionsResult: null,
             filteredConnectionsResult: null,
-            searchName:null
+            searchName: null,
+            numPages: null,
+            pageNumber: 1
         }
     }
 
@@ -35,12 +41,12 @@ class connections extends Component {
             axios.get(`http://localhost:3001/connection/${id}/getConnections`)
                 .then(response => {
                     if (response.status === 200) {
-                        console.log("Connections results: ",response.data)
+                        console.log("Connections results: ", response.data)
                         this.setState({
                             connectionsResult: response.data.info.connections,
                             filteredConnectionsResult: response.data.info.connections
-                        },() => {
-                            console.log("Filtered Result: ",this.state.filteredConnectionsResult)
+                        }, () => {
+                            console.log("Filtered Result: ", this.state.filteredConnectionsResult)
                         })
                     }
                 })
@@ -49,19 +55,19 @@ class connections extends Component {
 
     handleChange = (e) => {
         this.setState({
-            [e.target.name]:e.target.value
+            [e.target.name]: e.target.value
         })
     }
 
     filterResult = () => {
         console.log("filtering result")
-        if(this.state.searchName){
+        if (this.state.searchName) {
             const oldList = this.state.connectionsResult
             const searchName = this.state.searchName
             this.setState({
-                filteredConnectionsResult : _.filter(oldList,function(o){return (o.fname.toLowerCase().includes(searchName.toLowerCase())|| o.fname.toLowerCase().includes(searchName.toLowerCase()))})
-            },() => {
-                console.log("After Filter ",this.state.filteredConnectionsResult)
+                filteredConnectionsResult: _.filter(oldList, function (o) { return (o.fname.toLowerCase().includes(searchName.toLowerCase()) || o.lname.toLowerCase().includes(searchName.toLowerCase())) })
+            }, () => {
+                console.log("After Filter ", this.state.filteredConnectionsResult)
             })
         }
     }
@@ -69,12 +75,16 @@ class connections extends Component {
     clearFilter = () => {
         console.log("Clearing filter")
         this.setState({
-            searchName:"",
-            filteredConnectionsResult:this.state.connectionsResult
+            searchName: "",
+            filteredConnectionsResult: this.state.connectionsResult
         })
     }
 
-    
+    onDocumentLoadSuccess = (numPages) => {
+        console.log("Successfully loaded")
+        this.setState({numPages})
+    }
+
 
 
     render() {
@@ -85,7 +95,7 @@ class connections extends Component {
             console.log("Id is:", e.target.id)
             return (
                 <Redirect to="/messaging"></Redirect>
-                )
+            )
         }
 
         if (this.state.filteredConnectionsResult) {
@@ -98,12 +108,13 @@ class connections extends Component {
                         </div>
                         <div className="col-sm-5 col-md-5 col-lg-5">
                             <h4>{connection.fname + " " + connection.lname}</h4>
+                            <h5>{connection.email}</h5>
                             <h5>{connection.headline}</h5>
                             {/* <h5>Connections {connection.connections.length}</h5> */}
                         </div>
 
                         <div className="col-sm-3 col-md-3 col-lg-4" >
-                            <Link to = "/messaging" class="btn btn-primary myConnectionButton" style={{ 'float': 'right', 'width': '50%' }} id={connection._id}>Message</Link>
+                            <Link to="/messaging" class="btn btn-primary myConnectionButton" style={{ 'float': 'right', 'width': '50%' }} id={connection._id}>Message</Link>
                         </div>
                         <div className="col-sm-2 col-md-2 col-lg-1">
                             <div class="dropdown">
@@ -155,7 +166,7 @@ class connections extends Component {
                                     </div>
 
                                     <div class="col-sm-4 col-md-4 col-lg-4" style={{ 'textAlign': 'right', 'height': '100%', 'marginTop': '0.5%' }}>
-                                        <input type="text" placeholder="Search.." value={this.state.searchName} name="searchName" onChange={this.handleChange}/>
+                                        <input type="text" placeholder="Search.." value={this.state.searchName} name="searchName" onChange={this.handleChange} />
                                         <button type="submit" className="submitbutton" onClick={this.filterResult}><i class="fa fa-search"></i></button>
                                     </div>
 
@@ -170,6 +181,12 @@ class connections extends Component {
                                 {displayData}
 
                             </div>
+                            <Document
+                                file={"http://localhost:3001/uploads/Lab2_Report_013007280.pdf"}
+                                onLoadSuccess={this.onDocumentLoadSuccess}
+                            >
+                                <Page pageNumber={this.state.pageNumber} />
+                            </Document>
                         </div>
                     </div>
 
