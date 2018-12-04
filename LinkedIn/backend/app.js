@@ -32,6 +32,8 @@ app.set('view engine', 'jade');
 //use cors to allow cross origin resource sharing
 app.use(cors({ origin: 'http://localhost:3000', credentials: true }));
 
+app.use(fileUpload())
+
 //use express session to maintain session data
 app.use(session({
     secret: 'cmpe273_homeaway',

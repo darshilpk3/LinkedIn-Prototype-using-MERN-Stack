@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
 import { Redirect } from 'react-router';
 import axios from 'axios';
-import '../styles/jobposting.css'
 import Stepper from 'react-stepper-horizontal'
 import bulb from '../assets/images/postjobbulb.PNG'
 import jobpostlogo from '../assets/images/jobpostlogo.PNG'
@@ -11,12 +10,13 @@ import {ROOT_URL} from '../constants/constants';
 var swal = require('sweetalert')
 var redirectVar = null;
 var formData = "";
-
+var jobIdfromrd =""
 
 class JobPosting extends Component {
     constructor(props) {
         super(props);
         this.state = {
+            editFlag:false,
             jobTitle: "",
             jobDescription: "",
             jobIndustry: "",
@@ -84,8 +84,7 @@ class JobPosting extends Component {
     PostJobHandler = (e) => {
         e.preventDefault();
         const data = {
-            // postedBy: localStorage.getItem("userId"),
-            postedBy: "5c0313af1e6ee47530f590cb",
+            postedBy: localStorage.getItem("userId"),
             jobTitle: this.state.jobTitle,
             description: this.state.jobDescription,
             industry: this.state.jobIndustry,
@@ -99,8 +98,24 @@ class JobPosting extends Component {
             applyMethod: this.state.applyMethod,
         }
 
-        console.log("Data for posting Job : ", data)
+        console.log("Data for updating Job : ", data)
+if(this.state.editFlag){
+    console.log(`${ROOT_URL}/job/${jobIdfromrd}`)
+    axios.put(`${ROOT_URL}/job/${jobIdfromrd}`, data)
+    .then((response) => {
+        if (response.status === 200) {
+            if (response.data.status) {
+                this.setState({
+                    jobPosted: true
+                })
+                swal("Job Updated!", "Congratulations", "success")
 
+            }
+
+        }
+    })
+}
+else{
         axios.post(`${ROOT_URL}/job`, data)
             .then((response) => {
                 if (response.status === 200) {
@@ -109,7 +124,7 @@ class JobPosting extends Component {
 
                         formData = new FormData();
                         formData.append('selectedFile', this.state.companyLogoFile);
-                        
+                        console.log("response.data.info.result._id job posting", response.data.info.result._id)
                         axios.post(`${ROOT_URL}/${response.data.info.result._id}/companylogo`, formData)
                             .then((result) => {
                                 // access results...
@@ -123,14 +138,18 @@ class JobPosting extends Component {
 
                 }
             })
-
+        }
     }
 
     componentDidMount() {
         console.log("\n Printing the job id obtained from another place");
-        //console.log(this.props.location.state.job_id);
-
-        axios.get(`${ROOT_URL}/job/` + this.state.jobId)
+        if(this.props.location.state){
+            this.setState({
+                editFlag :true
+            })
+        console.log(this.props.location.state.job_id);
+        jobIdfromrd = this.props.location.state.job_id
+        axios.get(`${ROOT_URL}/job/` + this.props.location.state.job_id)
             .then((response) => {
                 console.log("response.data of job get", response.data.info.result)
                 console.log("Response status of job get", response.data.status)
@@ -153,11 +172,17 @@ class JobPosting extends Component {
                     })
                 }
             })
+        }
     }
 
     render(){
+        if(this.state.jobPosted == true){
+        redirectVar = <Redirect to= "/newsfeed"/>
+    }
+        require('../styles/jobposting.css');
         return(
             <div>
+            {redirectVar}
 <div class="stepwizard">
     <div class="stepwizard-row setup-panel">
         <div class="stepwizard-step">
@@ -179,7 +204,7 @@ class JobPosting extends Component {
             <img src={jobpostlogo} class="navbar-brand" style={{ width: "10%", height:"49px", padding: "5px 20px 0px 10px", margin : ".5% 0% 0% 13%" }}/>
             <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
             <div class="navbar-nav jobpostlinksnavbar">
-                <Link to="#" className="nav-item linkinjobpostheader"><b>HOME</b> &nbsp; &nbsp; &nbsp;</Link>
+                <Link to="/job/list" className="nav-item linkinjobpostheader"><b>HOME</b> &nbsp; &nbsp; &nbsp;</Link>
                 <Link to="/job/post" className="nav-item active linkinjobpostheader"><b>POST A JOB</b> &nbsp; &nbsp; &nbsp; <span class="sr-only">(current)</span></Link>
                 <Link to="/newsfeed" className="nav-item linkinjobpostheader"><b>LINKEDIN.COM</b> </Link>
             </div>

@@ -7,6 +7,8 @@ import { Redirect } from 'react-router';
 import _ from "lodash";
 import picDS from '../assets/images/PicDS.png'
 
+import {ROOT_URL} from '../constants/constants';
+
 var swal = require('sweetalert')
 
 
@@ -33,7 +35,7 @@ class peopleSearch extends Component {
             }
             if (localStorage.getItem("userId")) {
                 const id = localStorage.getItem("userId")
-                axios.post(`http://localhost:3001/user/${id}/search/`, data)
+                axios.post(`${ROOT_URL}/user/${id}/search/`, data)
                     .then(response => {
                         if (response.status === 200) {
                             this.setState({
@@ -58,7 +60,7 @@ class peopleSearch extends Component {
             sentBy: localStorage.getItem("userId"),
             sentTo: e.target.id
         }
-        axios.post("http://localhost:3001/connection/request", data)
+        axios.post(`${ROOT_URL}/connection/request`, data)
             .then(response => {
                 if (response.status === 200) {
                     console.log(response.data)
@@ -77,7 +79,7 @@ class peopleSearch extends Component {
         var headers = new Headers()
         axios.defaults.withCredentials = true;
 
-        axios.put(`http://localhost:3001/connection/${id}/accept`, data)
+        axios.put(`${ROOT_URL}/connection/${id}/accept`, data)
             .then(response => {
                 if (response.status === 200) {
                     console.log("Accepted: ", response.data)
@@ -103,7 +105,7 @@ class peopleSearch extends Component {
         }
         console.log(data)
         axios.defaults.withCredentials = true
-        axios.post("http://localhost:3001/message", data)
+        axios.post(`${ROOT_URL}/message`, data)
             .then(response => {
                 if (response.status === 200) {
                     if (response.data.status) {

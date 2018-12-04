@@ -5,6 +5,7 @@ import cookie from 'react-cookies';
 import { Link } from 'react-router-dom';
 import { Redirect } from 'react-router';
 import Login from './Navbar'
+import {ROOT_URL} from '../constants/constants';
 
 class appliedJobs extends Component {
     constructor(props) {
@@ -36,7 +37,7 @@ class appliedJobs extends Component {
 
         if (localStorage.getItem("userId")) {
             const id = localStorage.getItem("userId")
-            axios.get(`http://localhost:3001/user/${id}/appliedJobs`)
+            axios.get(`${ROOT_URL}/user/${id}/appliedJobs`)
                 .then(response => {
                     if (response.status === 200) {
                         this.setState({

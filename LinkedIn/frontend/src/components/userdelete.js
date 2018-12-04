@@ -4,7 +4,9 @@ import { Redirect } from 'react-router';
 import axios from 'axios';
 import '../styles/userdelete.css';
 import Login from './Navbar';
+import { ROOT_URL } from '../constants/constants';
 var swal = require('sweetalert');
+var redirectVar = null;
 
 class UserDelete extends Component{
     constructor(props){
@@ -19,7 +21,7 @@ class UserDelete extends Component{
     }
 
     deleteuserHandler = (e) => {
-        axios.delete("http://localhost:3001/user/" + this.state.userId)
+        axios.delete(`${ROOT_URL}/user/` + this.state.userId)
         .then((response) => {
             if(response.status === 200){
             this.setState({
@@ -27,13 +29,17 @@ class UserDelete extends Component{
             })
             swal("User Deleted", "Success!", "success")
             }
+            localStorage.clear()
         })
     }
 
     render(){
-
+        if(this.state.userDeleted == true){
+            redirectVar = <Redirect to= "/"/>
+        }
         return(
             <div className="page">
+            {redirectVar}
             <Login/>
             <div className="userdelete">
                 <h2 className="userdeleteh2">
