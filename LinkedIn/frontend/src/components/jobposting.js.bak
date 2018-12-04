@@ -8,7 +8,10 @@ import bulb from '../assets/images/postjobbulb.PNG'
 import jobpostlogo from '../assets/images/jobpostlogo.PNG'
 var swal = require('sweetalert')
 var redirectVar = null;
+<<<<<<< HEAD
 var formData = "";
+=======
+>>>>>>> development
 
 class JobPosting extends Component{
     constructor(props){
@@ -26,6 +29,7 @@ class JobPosting extends Component{
            jobPostedBy : "",
            companyName : "",
            jobPosted : false,
+<<<<<<< HEAD
            applyMethod : "",
            jobId : "",
            jobDetails : ""
@@ -116,6 +120,12 @@ class JobPosting extends Component{
                 })
             }
         })
+=======
+           applyMethod : ""
+        }
+        this.PostJobHandler = this.PostJobHandler.bind(this);
+        this.onChange = this.onChange.bind(this);
+>>>>>>> development
     }
 
     PostJobHandler = (e) => {
@@ -230,11 +240,22 @@ class JobPosting extends Component{
                             <p className="control-label jobpostrow1label">Job function (Select up to 3) * &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Employment type *</p>
                             <input type="text" name="jobfunction" onChange = {this.onChange} value={this.state.jobFunction} name="jobFunction" placeholder="Add job function" className ="form-control jobpostfunction" required/>
                         </div>
+<<<<<<< HEAD
                         <select className="form-control form-control-lg jobpostemployment" id="exampleFormControlSelect1" defaultValue={this.state.jobEmploymentType} onChange={this.EmploymentTypeHandler} required>
                             <option value="">Choose One...</option>
                             <option value="Part-Time" selected={this.state.jobEmploymentType="Part-Time"}>Part-Time</option>
                             <option value="Full-Time" selected={this.state.jobEmploymentType="Full-Time"}>Full-Time</option>
                         </select>
+=======
+                        <div className ="dropdown jobpostemployment">
+                        <button class="btn btn-default dropdown-toggle" style={{width:"78%",height:"60px"}} type="button" data-toggle="dropdown">Choose One... 
+                        <span class="caret"></span></button>
+                        <ul class="dropdown-menu" style={{width:"78%"}}>
+                          <li><a href="#">Part-Time</a></li>
+                          <li><a href="#">Full-Time</a></li>
+                        </ul>
+                      </div>
+>>>>>>> development
                         <br></br>
                         <div className ="form-group">
                             <p className="control-label jobpostrow1label">Company Industry (Select up to 3) *</p>
@@ -248,6 +269,7 @@ class JobPosting extends Component{
                         </div>
                         <br></br><br></br>
                         <p className="control-label jobpostrow1label">Apply Method *</p>
+<<<<<<< HEAD
                         <select className="form-control form-control-lg applymethodjobpost" id="exampleFormControlSelect1" selected={this.state.applyMethod} defaultValue={this.state.applyMethod} onChange={this.applyMethodHandler} required>
                             <option value="">Choose One...</option>
                             <option value="Part-Time">Easy Apply</option>
@@ -257,6 +279,20 @@ class JobPosting extends Component{
                         <div className ="form-group">
                             <p className="control-label jobpostrow1label">How did you hear about us?</p>
                             <input type="text" placeholder="Through a Friend/Advertisement/etc.."  className ="form-control jobpostfunction" required/>
+=======
+                        <div className ="dropdown">
+                        <button class="btn btn-default dropdown-toggle" style={{width:"48%",height:"60px", margin: "0% 0% 2.5% 3%"}} type="button" data-toggle="dropdown">Choose One... 
+                        <span class="caret"></span></button>
+                        <ul class="dropdown-menu" style={{width:"48%"}}>
+                          <li><a href="#">Easy Apply</a></li>
+                          <li><a href="#">Application Form</a></li>
+                        </ul>
+                      </div>
+                        <br></br><br></br>
+                        <div className ="form-group">
+                            <p className="control-label jobpostrow1label">How did you hear about us?</p>
+                            <input type="text" placeholder="Enter Company Name"  onChange = {this.onChange} value={this.state.companyName} name="companyName" className ="form-control jobpostfunction" required/>
+>>>>>>> development
                         </div>
                     </div>
                     <button class="btn btn-primary nextBtn btn-lg" type="button" >Continue</button>
@@ -306,8 +342,11 @@ class JobPosting extends Component{
                 <label for="uploadpic" name ="description" onChange={this.onChange} multiple className = "btn btn-warning" style={{margin :"0% 0% 0% 3.2%", height:"54px", width:"40%"}}><h4>Click here to upload Company Logo</h4></label>
                 <input type = "file" id ="uploadpic"  className ="hidethis" multiple name="selectedFile" onChange={this.onChangeLogo}/>
                 </div>
+<<<<<<< HEAD
                 </div>
                 <br></br>
+=======
+>>>>>>> development
                 <button class="btn btn-primary btn-lg finishpostjob" onClick={this.PostJobHandler} type="submit" ><b>Post My Job</b></button>
             </div>
             <div className="postjobtippage3">  

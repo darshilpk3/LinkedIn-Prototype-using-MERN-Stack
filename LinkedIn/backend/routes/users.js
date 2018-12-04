@@ -508,7 +508,20 @@ router.get("/:userId", async function (req, res, next) {
         'Content-Type': 'application/json'
       })
       res.end(JSON.stringify(data))
-    } else {
+    } 
+    else if(typeof(result)=="string")
+    {
+      const data = {
+        "status": 0,
+        "msg": "Successfully fetched jobs",
+        "info": result
+      }
+      res.writeHead(200, {
+        'Content-Type': 'application/json'
+      })
+      res.end(JSON.stringify(data))
+    }
+    else {
       const data = {
         "status": 1,
         "msg": "Successfully fetched details",
