@@ -19,7 +19,6 @@ import Profile from './profile'
 import viewProfile from './viewProfile';
 import JobApplicantsList from './jobApplicantsList';
 import JobListing from './jobListing';
-
 import Graphs from './graphs.js';
 import ApplicantGraph from './applicantgraph'
 import searchResults from './searchResults'
@@ -55,7 +54,6 @@ class Main extends Component {
                 <Route exact path="/viewProfile/" component={viewProfile} />
 				<Route exact path="/job/applicants" component={JobApplicantsList}/>
                 <Route exact path="/job/list" component={JobListing} />
- />
                 <Route exact path="/user/graphs" component={Graphs} />
                 <Route exact path="/applicantgraph" component={ApplicantGraph} />
                 <Route exact path="/pdftry" component={TryPDF} />

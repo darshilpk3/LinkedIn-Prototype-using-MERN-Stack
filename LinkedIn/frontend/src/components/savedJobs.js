@@ -9,6 +9,7 @@ import Login from './Navbar'
 import { ROOT_URL } from '../constants/constants';
 import picDS from '../assets/images/PicDS.png'
 import axios from 'axios';
+import { ROOT_URL } from '../constants/constants'
 
 // import { ROOT_URL } from '../constants/constants';
 
@@ -183,7 +184,6 @@ class savedJobs extends Component {
             //  }
         }
     }
-
 
     render() {
         require('../styles/savedJobs.css');
