@@ -25,8 +25,18 @@ class Navbar extends Component {
             authFlag: false,
             errorFlag: false,
             invalidFlag: false,
-            myData: myData
+            myData: myData,
+            session_key: ""
         }
+
+        this.fieldChangeHandler = this.fieldChangeHandler.bind(this)
+    }
+
+
+    fieldChangeHandler(e) {
+        let changedVar = {}
+        changedVar[e.target.name] = e.target.value
+        this.setState(changedVar)
     }
 
     renderField(field) {
@@ -140,12 +150,24 @@ class Navbar extends Component {
             </div>
         }
 
-        // if (this.state.myData) {
-        //     redirectVar = <Redirect to="/TravelerHome" />
-        // }
+        if (!this.state.myData) {
+            redirectVar = <Redirect to="/" />
+        }
 
         const { handleSubmit } = this.props;
-
+        let posting = null
+        if (this.state.myData && this.state.myData.type == "R") {
+            posting = <li style={{ margin: "-10px 0px -10px 0px" }}>
+                <Link to="/job/post" >
+                    <i className="ion-android-apps" style={{ 'margin-right': '7px', color: "#c7d1d8", fontSize: "24px" }}></i>
+                    <div>
+                        <span className="icons_nav" style={{ color: "#c7d1d8" }}>Post a job</span>
+                    </div>
+                </Link>
+            </li>
+        } else {
+            posting = null
+        }
         return (
 
 
@@ -160,53 +182,78 @@ class Navbar extends Component {
 
                             </div>
                             <div className="navbar-header" style={{ marginLeft: "10px" }}>
-                                <input type="text" name="session_key" style={{ paddingLeft: "20px" }} className="login-email" autocapitalize="off" tabindex="1" id="login-email" placeholder="Search" autofocus="autofocus" dir="ltr"></input>
+                                <input type="text" name="session_key" onChange={this.fieldChangeHandler} style={{ paddingLeft: "20px" }} className="login-email" autocapitalize="off" tabindex="1" id="login-email" placeholder="Search" autofocus="autofocus" dir="ltr"></input>
                                 <i className="ion-ios-search" style={{ marginLeft: "-217px " }}></i>
+                                <Link to={{
+                                    pathname: "/peopleSearch",
+                                    state: {
+                                        searchedName: this.state.session_key
+                                    }
+                                }}
+                                    style={{
+                                        marginLeft: "202px",
+                                        backgroundColor: "#0077b5",
+                                        color: "white"
+                                    }}>
+                                    Search
+                                </Link>
                             </div>
 
                             <ul className="nav navbar-nav navbar-right" style={{ textAlign: "center", marginRight: "8%" }}>
-                                <li style={{ margin: "0px 15px 0px 15px" }}>
-                                <Link to="/TravelerInbox" > 
-                                <div>
+                                <li style={{ margin: "-10px 0px -10px 0px" }}>
+                                    <Link to="/newsfeed" >
+                                        <div>
 
-                                        <i className="ion-home" style={{ 'margin-right': '7px', color: "#c7d1d8", fontSize: "24px" }}></i>
-                                    </div>
-                                    <div>
-                                        <span className="icons_nav" style={{ color: "#c7d1d8" }}>Home</span>
-                                    </div>
+                                            <i className="ion-home" style={{ 'margin-right': '7px', color: "#c7d1d8", fontSize: "24px" }}></i>
+                                        </div>
+                                        <div>
+                                            <span className="icons_nav" style={{ color: "#c7d1d8" }}>Home</span>
+                                        </div>
                                     </Link>
                                 </li>
-                                <li style={{ margin: "0px 15px 0px 15px" }}>
-                                    <i className="ion-person-stalker" style={{ 'margin-right': '7px', color: "#c7d1d8", fontSize: "24px" }}></i>
-                                    <div>
-                                        <span className="icons_nav" style={{ color: "#c7d1d8" }}>My Network</span>
-                                    </div>
+                                <li style={{ margin: "-10px 0px -10px 0px" }}>
+                                    <Link to="/myNetwork" >
+                                        <i className="ion-person-stalker" style={{ 'margin-right': '7px', color: "#c7d1d8", fontSize: "24px" }}></i>
+                                        <div>
+                                            <span className="icons_nav" style={{ color: "#c7d1d8" }}>My Network</span>
+                                        </div>
+                                    </Link>
                                 </li>
-                                <li style={{ margin: "0px 15px 0px 15px" }}>
-                                    <i className="ion-ios-briefcase" style={{ 'margin-right': '7px', color: "#c7d1d8", fontSize: "24px" }}></i>
-                                    <div>
-                                        <span className="icons_nav" style={{ color: "#c7d1d8" }}>Jobs</span>
-                                    </div>
+                                <li style={{ margin: "-10px 0px -10px 0px" }}>
+                                    <Link to="/jobs/" >
+                                        <i className="ion-ios-briefcase" style={{ 'margin-right': '7px', color: "#c7d1d8", fontSize: "24px" }}></i>
+                                        <div>
+                                            <span className="icons_nav" style={{ color: "#c7d1d8" }}>Jobs</span>
+                                        </div>
+                                    </Link>
                                 </li>
-                                <li style={{ margin: "0px 15px 0px 15px" }}>
-                                    <i className="ion-android-chat" style={{ 'margin-right': '7px', color: "#c7d1d8", fontSize: "24px" }}></i>
-                                    <div>
-                                        <span className="icons_nav" style={{ color: "#c7d1d8" }}>Messaging</span>
-                                    </div>
+                                <li style={{ margin: "-10px 0px -10px 0px" }}>
+                                    <Link to="/messaging" >
+
+                                        <i className="ion-android-chat" style={{ 'margin-right': '7px', color: "#c7d1d8", fontSize: "24px" }}></i>
+                                        <div>
+                                            <span className="icons_nav" style={{ color: "#c7d1d8" }}>Messaging</span>
+                                        </div>
+                                    </Link>
                                 </li>
-                                <li style={{ margin: "0px 15px 0px 15px" }}>
-                                    <i className="ion-ios-bell" style={{ 'margin-right': '7px', color: "#c7d1d8", fontSize: "24px" }}></i>
-                                    <div>
-                                        <span className="icons_nav" style={{ color: "#c7d1d8" }}>Notifications</span>
-                                    </div>
+                                <li style={{ margin: "-10px 0px -10px 0px" }}>
+                                    <Link to="" >
+
+                                        <i className="ion-ios-bell" style={{ 'margin-right': '7px', color: "#c7d1d8", fontSize: "24px" }}></i>
+                                        <div>
+                                            <span className="icons_nav" style={{ color: "#c7d1d8" }}>Notifications</span>
+                                        </div>
+                                    </Link>
                                 </li>
-                                <li style={{ margin: "0px 15px 0px 15px" }} className="dropdown" >
+                                <li style={{ margin: "-10px 0px -10px 0px", padding: " 11px" }} className="dropdown" >
+                                    {/* <Link to="" > */}
+
                                     <img className="profileImg" src={defaultPic} />
                                     <div>
                                         <a className="icons_nav dropdown-toggle" data-toggle="dropdown" style={{ color: "#c7d1d8" }}>Me<span class="caret"></span></a>
-                                        <ul className="dropdown-menu" style={{    minWidth: "277px"}}>
+                                        <ul className="dropdown-menu" style={{ minWidth: "277px" }}>
                                             <li id="">
-                                                <a>
+                                                <a href="/profile">
                                                     <div>
                                                         <img className="profileImg_dropBox" src={defaultPic} />
                                                         <span>
@@ -214,63 +261,72 @@ class Navbar extends Component {
                                                             </span>
                                                         </span>
                                                     </div>
-                                                    <div className="info" style={{textAlign:"center", marginTop:"10px"}}>
+                                                    {/* <Link to="/profile"></Link> */}
+                                                    <div className="info" style={{ textAlign: "center", marginTop: "10px" }}>
+
                                                         <span >
                                                             view profile
-                                                        </span>
+                                                                 </span>
+
                                                     </div>
+                                                    {/* </Link> */}
                                                 </a>
                                             </li>
-                                            <li style={{padding:"10px",backgroundColor:"#f3f6f8",fontWeight:"600"}}>
+                                            <li style={{ padding: "10px", backgroundColor: "#f3f6f8", fontWeight: "600" }}>
                                                 ACCOUNT
                                             </li>
-                                            <li style={{padding:"15px",color: "#828282",fontWeight:"600"}}>
+                                            <li style={{ padding: "15px", color: "#828282", fontWeight: "600" }}>
                                                 Settings and Privacy
                                             </li>
-                                            <li style={{padding:"15px",color: "#828282",fontWeight:"600"}}>
+                                            <li style={{ padding: "15px", color: "#828282", fontWeight: "600" }}>
                                                 Help Center
                                             </li>
-                                            <li style={{padding:"15px",color: "#828282",fontWeight:"600"}}>
+                                            <li style={{ padding: "15px", color: "#828282", fontWeight: "600" }}>
                                                 Language
                                             </li>
 
-                                            <li style={{padding:"10px",backgroundColor:"#f3f6f8",fontWeight:"600"}}>
+                                            <li style={{ padding: "10px", backgroundColor: "#f3f6f8", fontWeight: "600" }}>
                                                 MANAGE
                                             </li>
-                                            <li style={{padding:"15px",color: "#828282",fontWeight:"600"}}>
+                                            <li style={{ padding: "15px", color: "#828282", fontWeight: "600" }}>
                                                 Posts and Activity
                                             </li>
-                                            <li style={{padding:"15px",color: "#828282",fontWeight:"600"}}>
+                                            {/* <li style={{ padding: "15px", color: "#828282", fontWeight: "600" }}>
                                                 Job postings
-                                            </li>
-                                            <li style={{padding:"15px",color: "#828282",fontWeight:"600"}}>
+                                            </li> */}
+                                            <li style={{ padding: "15px", color: "#828282", fontWeight: "600" }}>
                                                 Sign out
                                             </li>
                                         </ul>
                                     </div>
-
+                                    {/* </Link> */}
                                 </li>
 
 
-                                <li style={{ margin: "0px 15px 0px 15px", borderLeft: " 1px solid #5c6f7c", paddingLeft: "30px" }}>
-                                    <i className="ion-android-apps" style={{ 'margin-right': '7px', color: "#c7d1d8", fontSize: "24px" }}></i>
-                                    <div>
-                                        <span className="icons_nav" style={{ color: "#c7d1d8" }}>Work</span>
-                                    </div>
+                                <li style={{ margin: "-10px 0px -10px 0px", borderLeft: " 1px solid #5c6f7c", paddingLeft: "30px" }}>
+                                    <Link to="/jobs/" >
+                                        <i className="ion-android-apps" style={{ 'margin-right': '7px', color: "#c7d1d8", fontSize: "24px" }}></i>
+                                        <div>
+                                            <span className="icons_nav" style={{ color: "#c7d1d8" }}>Work</span>
+                                        </div>
+                                    </Link>
                                 </li>
-                                <li style={{ margin: "0px 15px 0px 15px" }}>
 
-                                    <i className="ion-android-apps" style={{ 'margin-right': '7px', color: "#c7d1d8", fontSize: "24px" }}></i>
-                                    <div>
-                                        <span className="icons_nav" style={{ color: "#c7d1d8" }}>Post a job</span>
-                                    </div>
-                                </li>
+                                {posting}
+                                {/* <li style={{ margin: "-10px 0px -10px 0px" }}>
+                                    <Link to="/job/post" >
+                                        <i className="ion-android-apps" style={{ 'margin-right': '7px', color: "#c7d1d8", fontSize: "24px" }}></i>
+                                        <div>
+                                            <span className="icons_nav" style={{ color: "#c7d1d8" }}>Post a job</span>
+                                        </div>
+                                    </Link>
+                                </li> */}
                             </ul>
                         </div>
                     </nav>
                 </div>
 
-            </div>
+            </div >
         )
     }
 }

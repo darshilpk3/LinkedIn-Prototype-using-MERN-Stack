@@ -89,17 +89,25 @@ router.post("/", async function (req, res, next) {
 
             //update redis cache here
             const key = (req.body.location + req.body.jobTitle).toLowerCase();
-            console.log("_______________key to be removed___________________________", key)
+            // console.log("_______________key to be removed___________________________", key)
             // redis.DEL(key);
-            redis.del(key, function (err, response) {
-                console.log("___________response_____________", response)
-                console.log("_____________err_____________", err)
-                if (response == 1) {
-                    console.log("Deleted Successfully!")
+            // redis.del(key, function (err, response) {
+            //     console.log("___________response_____________", response)
+            //     console.log("_____________err_____________", err)
+            //     if (response == 1) {
+            //         console.log("Deleted Successfully!")
+            //     } else {
+            //         console.log("Cannot delete")
+            //     }
+            // })
+            redis.flushdb(function (err, succeeded) {
+                if (succeeded) {
+                  console.log(succeeded); // will be true if successfull
+                  console.log("cache cleared successfull")
                 } else {
-                    console.log("Cannot delete")
+                  console.log("error in clearing the cache")
                 }
-            })
+              })
 
             res.end(JSON.stringify(data))
         }
@@ -361,15 +369,23 @@ router.put("/:jobId", async function (req, res, next) {
             const key = (req.body.location + req.body.jobTitle).toLowerCase();
             console.log("_______________key to be removed___________________________", key)
             // redis.DEL(key);
-            redis.del(key, function (err, response) {
-                console.log("___________response_____________", response)
-                console.log("_____________err_____________", err)
-                if (response == 1) {
-                    console.log("Deleted Successfully!")
+            // redis.del(key, function (err, response) {
+            //     console.log("___________response_____________", response)
+            //     console.log("_____________err_____________", err)
+            //     if (response == 1) {
+            //         console.log("Deleted Successfully!")
+            //     } else {
+            //         console.log("Cannot delete")
+            //     }
+            // })
+            redis.flushdb(function (err, succeeded) {
+                if (succeeded) {
+                  console.log(succeeded); // will be true if successfull
+                  console.log("cache cleared successfull")
                 } else {
-                    console.log("Cannot delete")
+                  console.log("error in clearing the cache")
                 }
-            })
+              })
 
 
             res.end(JSON.stringify(data))

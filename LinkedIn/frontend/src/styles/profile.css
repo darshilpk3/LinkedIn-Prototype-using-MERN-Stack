@@ -286,7 +286,7 @@ border-bottom-width: thin; */
 .popupImageStyling{
     margin-right: 0%;
     margin-left: 17%;
-    WIDTH: 150px;
-    margin-top: 0%;
-    height: 150px;
+    WIDTH: 150px !important;
+    margin-top: 0% !important;
+    height: 150px !important;
 }

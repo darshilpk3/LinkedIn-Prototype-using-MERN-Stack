@@ -1,4 +1,4 @@
-var UserInfo = require('../../models/userInfo').users
+var UserInfo = require('../../models/userInfo')
 var Application = require('../../models/application')
 var Job = require('../../models/job')
 var Message = require('../../models/message')
@@ -18,7 +18,11 @@ function handle_request(msg, callback) {
                 employmentType: msg.employment_type,
                 location: msg.job_location,
                 jobFunction: msg.job_function,
-                companyLogo: msg.company_logo
+                companyLogo: msg.company_logo,
+                postedDate: msg.postedDate,
+                required_skills: msg.required_skills,
+                companyName : msg.companyName,
+                applyMethod : msg.applyMethod,
             }
         }
     )

@@ -5,7 +5,7 @@ import cookie from 'react-cookies';
 import { Link } from 'react-router-dom';
 import _ from "lodash";
 import { Redirect } from 'react-router';
-import Login from './Navbar'
+import Navbar from './Navbar'
 
 import picDS from '../assets/images/PicDS.png'
 
@@ -131,7 +131,7 @@ class connections extends Component {
         return (
             <div>
                 
-                <Login/>
+                <Navbar/>
                 <div className="myMargin"></div>
                 <div class="row myNetworkBackground">
 

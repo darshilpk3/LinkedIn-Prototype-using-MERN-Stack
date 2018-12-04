@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
 import { Redirect } from 'react-router';
 import axios from 'axios';
-import '../styles/newsfeed.css'
+// import '../styles/newsfeed.css'
 import c1profilepic from '../assets/images/c1profilepic.jpg'
 import linkedin from '../assets/images/linkedinnewsfeed.PNG'
 import c4profilepic from '../assets/images/c4profilepic.jpg'
@@ -18,6 +18,9 @@ class Newsfeed extends Component{
     }
 
     render(){
+        
+        require('../styles/jobsearch.css')
+        require('../styles/newsfeed.css')
         return(
            <div className="page">
            <Login />
