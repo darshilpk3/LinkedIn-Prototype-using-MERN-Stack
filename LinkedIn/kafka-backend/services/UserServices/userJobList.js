@@ -8,6 +8,7 @@ function handle_request(msg, callback) {
     console.log("\n\nInside kafka backend for fetching jobs ")
     console.log("\n\n User data is: ", msg)
 
+    console.log(Job)
     Job.find({
         postedBy: msg.userId
     }).exec()

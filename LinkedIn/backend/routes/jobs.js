@@ -418,7 +418,26 @@ router.get("/:jobId/applications",async function(req,res,next){
 })
 
 
+router.get("/:jobId/applications",async function(req,res,next){
+    console.log("Getting all the applications for jobId: ",req.params.jobId)
+    
+    const data = {
+        jobId: req.params.jobId
+    }
 
+    Application.find({
+        job: data.jobId
+    })
+    //.populate('job')
+    .populate('applicant')
+    .exec()
+        .then(result => {
+            res.send(200,result)
+        })
+        .catch(err =>{
+            res.send(400,err)
+        })
+})
 
 
 module.exports = router;

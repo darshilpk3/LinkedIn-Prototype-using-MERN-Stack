@@ -5,7 +5,7 @@ import cookie from 'react-cookies';
 import { Link } from 'react-router-dom';
 import { Redirect } from 'react-router';*/
 import '../styles/peoplesearchresults.css'
-import Login from './navbar'
+import Login from './Navbar'
 import picDS from '../assets/images/PicDS.png'
 
 class PeopleSearchResults extends Component {

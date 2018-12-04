@@ -1,3 +1,22 @@
+.modalTextBox{
+    width:100%;
+    font-size: 20px;
+}
+.modalTextBoxResume{
+
+    width:100%;
+    font-size: 20px;
+}
+input[type=text] {
+    font-size: 15px;
+    padding: 2%;
+}
+.closeButton{
+    border: none;
+    background-color: rgb(250, 60, 60);
+    color:white;
+}
+
 .savedButton{
     border: none;
     margin-right: 2%;
@@ -19,6 +38,27 @@
 
 }
 
+.savedButtonModal{
+    border: none;
+    margin-right: 2%;
+    padding: 1%;
+    width: 15%;
+    font-size: 15px;
+    background-color: white;
+    border: #0084bf 1px solid;
+    color: #0084bf;
+}
+.applyButtonModal{
+    border: none;
+    margin: 2%;
+    padding: 1%;
+    width: 35%;
+    font-size: 15px;
+    background-color: #0084bf;
+    color: white;
+
+}
+
 .myNetworkBackground{
     background-color: #F5F5F5;
     height:100vh;
@@ -31,6 +71,13 @@ html{overflow: hidden;}
 }
 .messagingHeight{
     height: 30vh;
+}
+.hoverEffect{
+    background-color: whitesmoke;
+    margin-top: 10px;
+    margin-right: 0px;
+    padding: 5px;
+    box-shadow: rgba(0, 0, 255, 0.2) 7px 3px 2px 1px;
 }
 .hoverEffect:hover{
     background-color: lightgrey;
@@ -112,9 +159,16 @@ html{overflow: hidden;}
     border: 1px solid lightgrey;
     background-color: white; 
     height: 80vh;
+    margin-left: inherit;
 }
 .userInvitations{
+    text-align: left;
     padding: 2%;
+}
+
+.ModalProfileImage{
+    width: 50%;
+    height: 30%; 
 }
 
 .profileImage{

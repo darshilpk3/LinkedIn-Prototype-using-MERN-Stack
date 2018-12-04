@@ -46,7 +46,12 @@ router.post("/", async function (req, res, next) {
                                 res.writeHead(200,{
                                     'Content-Type':'application/json'
                                 })
-                                res.end(JSON.stringify(result))
+                                const data = {
+                                    "status":1,
+                                    "msg":"Sent",
+                                    "info":{}
+                                }
+                                res.end(JSON.stringify(data))
                             })
                     } else {
                         var message = new Message({
@@ -59,15 +64,40 @@ router.post("/", async function (req, res, next) {
                                 res.writeHead(200,{
                                     'Content-Type':'application/json'
                                 })
-                                res.end("Conversation Started: "+JSON.stringify(result))
+                                const data = {
+                                    "status":1,
+                                    "msg":"Sent",
+                                    "info":{}
+                                }
+                                res.end(JSON.stringify(data))
                             })
                             .catch(err => {
-                                res.send(200, "error starting conversation")
+                                res.writeHead(200,{
+                                    'Content-Type':'application/json'
+                                })
+                                const data = {
+                                    "status":0,
+                                    "msg":"Something went wrong",
+                                    "info":{
+                                        "error":err
+                                    }
+                                }
+                                res.end(JSON.stringify(data))
                             })
                     }
                 })
                 .catch(err => {
-                    res.send(400, JSON.stringify(err))
+                    res.writeHead(200,{
+                        'Content-Type':'application/json'
+                    })
+                    const data = {
+                        "status":0,
+                        "msg":"Something went wrong",
+                        "info":{
+                            "error":err
+                        }
+                    }
+                    res.end(JSON.stringify(data))
                 })
 
         })
@@ -106,7 +136,7 @@ router.put("/:messageId", async function (req, res, next) {
         })
 })
 
-router.get("/:userId", async function (req, res, next) {
+router.get("/:userId/getChats", async function (req, res, next) {
     console.log("Getting messages of user: ", req.params.userId)
 
     const data = {
@@ -127,17 +157,57 @@ router.get("/:userId", async function (req, res, next) {
                 'content-type': 'application/json'
             })
             const data = {
-                "status": 1,
-                "msg": "Job successfully posted",
-                "info": {
-                    "result": result
+                "status":1,
+                "msg":"Success",
+                "info":{
+                    "messageList":result
                 }
             }
-            res.end(JSON.stringify(result))
+            res.end(JSON.stringify(data))
         })
         .catch(err => {
-            res.send(400, JSON.stringify(err))
+            res.writeHead(200, {
+                'content-type': 'application/json'
+            })
+            const data = {
+                "status":0,
+                "msg":"Something went wrong",
+                "info":{
+                    "error":err
+                }
+            }
+            res.end(JSON.stringify(data))
         })
 })
 
+router.get("/:msgId",async function(req,res,next){
+    console.log("Getting all messages in the conversation")
+    Message.findById(req.params.msgId).exec()
+        .then(result => {
+            res.writeHead(200,{
+                'Content-Type':'application/json'
+            })
+            const data = {
+                "status":1,
+                "msg":"Success",
+                "info":{
+                    "messages" : result
+                }
+            }
+            res.end(JSON.stringify(data))
+        })
+        .catch(err => {
+            res.writeHead(200,{
+                'Content-Type':'application/json'
+            })
+            const data = {
+                "status":0,
+                "msg":"Something went wrong",
+                "info":{
+                    "error" : err
+                }
+            }
+            res.end(JSON.stringify(data))
+        })
+})
 module.exports = router;

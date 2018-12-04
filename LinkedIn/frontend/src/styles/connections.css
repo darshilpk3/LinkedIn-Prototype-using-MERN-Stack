@@ -36,11 +36,13 @@
     margin-left: 10%;
     border: 1px solid lightgrey;
     padding: 2%;
+    height: auto;
     background-color: white; 
  
 }
 .userInvitations{
     padding: 2%;
+    height: 100%
 }
 
 .profileImage{

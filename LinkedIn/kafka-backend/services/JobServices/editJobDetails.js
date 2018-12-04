@@ -37,9 +37,9 @@ function handle_request(msg, callback) {
             console.log("__________err_________________",err)
 
             callback(err,err)
-        })
-    
+        })    
 }
+
 
 
 exports.handle_request = handle_request;

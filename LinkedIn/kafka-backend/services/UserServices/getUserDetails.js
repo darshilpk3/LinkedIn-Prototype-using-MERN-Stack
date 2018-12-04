@@ -22,5 +22,4 @@ function handle_request(msg, callback) {
         })
 }
 
-
 exports.handle_request = handle_request;

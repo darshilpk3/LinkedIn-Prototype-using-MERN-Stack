@@ -7,7 +7,7 @@ import c1profilepic from '../assets/images/c1profilepic.jpg'
 import linkedin from '../assets/images/linkedinnewsfeed.PNG'
 import c4profilepic from '../assets/images/c4profilepic.jpg'
 import c4newsfeedscroll from '../assets/images/c4newsfeedscroll.jpeg'
-import Login from './navbar'
+import Login from './Navbar'
 
 class Newsfeed extends Component{
     constructor(props){
