@@ -4,7 +4,7 @@ import axios from 'axios';
 import cookie from 'react-cookies';
 import { Link } from 'react-router-dom';
 import { Redirect } from 'react-router';
-import Login from './navbar'
+import Login from './Navbar'
 
 class appliedJobs extends Component {
     constructor(props) {
