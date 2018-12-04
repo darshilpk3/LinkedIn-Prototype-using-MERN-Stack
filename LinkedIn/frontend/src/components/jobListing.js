@@ -6,8 +6,7 @@ import '../styles/jobposting.css'
 import Stepper from 'react-stepper-horizontal'
 import noJobsImage from '../assets/images/NoJobListings.PNG'
 import jobpostlogo from '../assets/images/jobpostlogo.PNG'
-import gifticon from '../assets/images/gift-icon.png'
-import jobpostlogo from '../assets/images/jobpostlogo.PNG'
+import gifticon from '../assets/images/gift-icon.png' 
 
 import {ROOT_URL} from '../constants/constants';
 

@@ -6,7 +6,9 @@ import cookie from 'react-cookies';
 import { Link } from 'react-router-dom';
 import { Redirect } from 'react-router';
 import { ROOT_URL } from '../constants/constants';
+import Navbar from './Navbar';
 import _ from "lodash";
+const userID = "5c06a1ef06b29e419cf927d9";
 
 class searchResults extends Component {
     constructor(props) {
@@ -14,9 +16,10 @@ class searchResults extends Component {
 
         this.state = {
             //search using these two on component did mount
-            job_title: "IOT",            //this.props.location.jobTitle / jobLocation
-            location: "san jose",
-
+            /* job_title: "Java Developer",           
+            location: "San Jose", */
+            job_title: this.props.location.state.jobTitle,            
+            location: this.props.location.state.jobLocation,
             jobResults: [],
             clickedAjob: false,
             filtercompanyname: "",
@@ -50,8 +53,8 @@ class searchResults extends Component {
             applyJobSponsership: "",
             applyJobDisability: "",
 
-            filteredList : []
-            
+            filteredList: []
+
         }
         this.handleClickedViewJob = this.handleClickedViewJob.bind(this);
         this.handleSavedJob = this.handleSavedJob.bind(this);
@@ -73,83 +76,83 @@ class searchResults extends Component {
         });
     }
 
-    FilterResults = (e) =>{
+    FilterResults = (e) => {
         // Filtered Company Name
-        if(this.state.filtercompanyname && !this.state.filterindustry && !this.state.filterjobtype ){
+        if (this.state.filtercompanyname && !this.state.filterindustry && !this.state.filterjobtype) {
             const oldList = this.state.jobResults
             const filcompanyName = this.state.filtercompanyname
             this.setState({
-                filteredList : _.filter(oldList, function(o) { return o.companyName.toLowerCase().includes(filcompanyName.toLowerCase()) })
+                filteredList: _.filter(oldList, function (o) { return o.companyName.toLowerCase().includes(filcompanyName.toLowerCase()) })
             })
-            console.log("Filtered List for company name: ",this.state.filteredList)
+            console.log("Filtered List for company name: ", this.state.filteredList)
         }
         // Filtered Industry
-        else if(!this.state.filtercompanyname && this.state.filterindustry && !this.state.filterjobtype ){
+        else if (!this.state.filtercompanyname && this.state.filterindustry && !this.state.filterjobtype) {
             const oldList = this.state.jobResults
             const filindustry = this.state.filterindustry
             this.setState({
-                filteredList : _.filter(oldList, function(o) { return o.industry.toLowerCase().includes(filindustry.toLowerCase())})
+                filteredList: _.filter(oldList, function (o) { return o.industry.toLowerCase().includes(filindustry.toLowerCase()) })
             })
-            console.log("Filtered List for industry: ",this.state.filteredList)
+            console.log("Filtered List for industry: ", this.state.filteredList)
         }
         // Filtered JobType
-        else if(!this.state.filtercompanyname && !this.state.filterindustry && this.state.filterjobtype ){
+        else if (!this.state.filtercompanyname && !this.state.filterindustry && this.state.filterjobtype) {
             const oldList = this.state.jobResults
             const filjobtype = this.state.filterjobtype
             console.log(oldList)
             this.setState({
-                filteredList : _.filter(oldList, function(o) { return o.employmentType.toLowerCase().includes(filjobtype.toLowerCase())})
+                filteredList: _.filter(oldList, function (o) { return o.employmentType.toLowerCase().includes(filjobtype.toLowerCase()) })
             })
-            console.log("Filtered List for Employment Type: ",this.state.filteredList)
+            console.log("Filtered List for Employment Type: ", this.state.filteredList)
         }
         // Filtered company Name and industry
-        else if(this.state.filtercompanyname && this.state.filterindustry && !this.state.filterjobtype ){
+        else if (this.state.filtercompanyname && this.state.filterindustry && !this.state.filterjobtype) {
             const oldList = this.state.jobResults
             const filcompanyName = this.state.filtercompanyname
             const filindustry = this.state.filterindustry
-            var filteredList =  _.filter(oldList, function(o) { return o.companyName.toLowerCase().includes(filcompanyName.toLowerCase())})
-            filteredList =  _.filter(filteredList, function(o) { return o.industry.toLowerCase().includes(filindustry.toLowerCase())})
+            var filteredList = _.filter(oldList, function (o) { return o.companyName.toLowerCase().includes(filcompanyName.toLowerCase()) })
+            filteredList = _.filter(filteredList, function (o) { return o.industry.toLowerCase().includes(filindustry.toLowerCase()) })
             this.setState({
-                filteredList : filteredList
+                filteredList: filteredList
             })
-            console.log("Filtered List for company name and industry: ",this.state.filteredList)
+            console.log("Filtered List for company name and industry: ", this.state.filteredList)
         }
         // Filtered according to company name and job type
-        else if(this.state.filtercompanyname && !this.state.filterindustry && this.state.filterjobtype ){
+        else if (this.state.filtercompanyname && !this.state.filterindustry && this.state.filterjobtype) {
             const oldList = this.state.jobResults
             const filcompanyName = this.state.filtercompanyname
             const filjobtype = this.state.filterjobtype
-            var filteredList =  _.filter(oldList, function(o) { return o.companyName.toLowerCase().includes(filcompanyName.toLowerCase())})
-            filteredList =  _.filter(filteredList, function(o) { return o.employmentType.toLowerCase().includes(filjobtype.toLowerCase())})
+            var filteredList = _.filter(oldList, function (o) { return o.companyName.toLowerCase().includes(filcompanyName.toLowerCase()) })
+            filteredList = _.filter(filteredList, function (o) { return o.employmentType.toLowerCase().includes(filjobtype.toLowerCase()) })
             this.setState({
-                filteredList : filteredList
+                filteredList: filteredList
             })
-            console.log("Filtered List for company name and job type: ",this.state.filteredList)
+            console.log("Filtered List for company name and job type: ", this.state.filteredList)
         }
         // Filtered according to industry and job type
-        else if(!this.state.filtercompanyname && this.state.filterindustry && this.state.filterjobtype ){
+        else if (!this.state.filtercompanyname && this.state.filterindustry && this.state.filterjobtype) {
             const oldList = this.state.jobResults
             const filindustry = this.state.filterindustry
             const filjobtype = this.state.filterjobtype
-            var filteredList =  _.filter(oldList, function(o) { return o.industry.toLowerCase().includes(filindustry.toLowerCase())})
-            filteredList =  _.filter(filteredList, function(o) { return o.employmentType.toLowerCase().includes(filjobtype.toLowerCase())})
+            var filteredList = _.filter(oldList, function (o) { return o.industry.toLowerCase().includes(filindustry.toLowerCase()) })
+            filteredList = _.filter(filteredList, function (o) { return o.employmentType.toLowerCase().includes(filjobtype.toLowerCase()) })
             this.setState({
-                filteredList : filteredList
+                filteredList: filteredList
             })
-            console.log("Filtered List for industry and job type: ",this.state.filteredList)
+            console.log("Filtered List for industry and job type: ", this.state.filteredList)
         }
-        console.log("Filtered List finally : ",this.state.filteredList)
+        console.log("Filtered List finally : ", this.state.filteredList)
     }
 
-    clearFilter = (e) =>{
+    clearFilter = (e) => {
         const oldList = this.state.jobResults
         this.setState({
-            filtercompanyname :"",
-            filterindustry : "",
-            filterjobtype : "",
-            filteredList : oldList
+            filtercompanyname: "",
+            filterindustry: "",
+            filterjobtype: "",
+            filteredList: oldList
         })
-        console.log("Filtered List: ",this.state.filteredList)
+        console.log("Filtered List: ", this.state.filteredList)
     }
 
     handleDiversity = (e) => {
@@ -160,33 +163,33 @@ class searchResults extends Component {
     }
 
     handleSponsership = (e) => {
-         
+
         this.setState({
             applyJobSponsership: e.target.value
-        }) 
+        })
 
     }
     handleDisability = (e) => {
         this.setState({
             applyJobDisability: e.target.value
-        }) 
+        })
     }
 
-    handleApplicationSubmit = (e) =>{
-         
-        const userID = "5c0313af1e6ee47530f590cb"; //localStorage.getItem(userId);
-        const isDisable=false;
-        if(this.state.applyJobDisability=="Yes"){
-            isDisable=true;
+    handleApplicationSubmit = (e) => {
+
+        //const userID = "5c06a1ef06b29e419cf927d9"; //localStorage.getItem(userId);
+        const isDisable = false;
+        if (this.state.applyJobDisability == "Yes") {
+            isDisable = true;
         }
         axios.defaults.withCredentials = true;
         const data = {
             jobId: this.state.clickedJobId,
-            howDidyouHear:this.state.applyJobHowDidYouHear,
-            isDisabled:isDisable,
+            howDidyouHear: this.state.applyJobHowDidYouHear,
+            isDisabled: isDisable,
             resume: this.state.applyJobResume,
-            ethnicity: this.state.applyJobDiversity ,
-            sponsership:this.state.applyJobSponsership
+            ethnicity: this.state.applyJobDiversity,
+            sponsership: this.state.applyJobSponsership
         }
         axios.post(`${ROOT_URL}/user/${userID}/apply`, data)
 
@@ -194,7 +197,7 @@ class searchResults extends Component {
 
                 console.log("------on load-------", res.data.length);
                 console.log("------on load-------", res.data);
-
+                alert("Applied successfully");
                 /*this.setState({
                     jobResults: res.data
                 });*/
@@ -212,7 +215,7 @@ class searchResults extends Component {
     }
 
     componentWillMount() {
-        
+
         this.setState({
             filtercompanyname: "",
             filterindustry: "",
@@ -221,14 +224,14 @@ class searchResults extends Component {
     }
 
     componentDidMount() {
-        
+
         window.scrollTo(0, 0);
         axios.defaults.withCredentials = true;
         const data = {
             job_title: this.state.job_title,
             location: this.state.location
         }
-       axios.post(`${ROOT_URL}/job/search/`, data)
+        axios.post(`${ROOT_URL}/job/search/`, data)
 
             .then(res => {
                 console.log("------on load-------", res.data.info.result);
@@ -237,10 +240,10 @@ class searchResults extends Component {
                     filteredList: this.state.filteredList.concat(res.data.info.result),
                     jobResults: this.state.jobResults.concat(res.data.info.result)
                 });
-                console.log("The filtered list is : "+JSON.stringify(this.state.filteredList));
+                console.log("The filtered list is : " + JSON.stringify(this.state.filteredList));
             })
             .catch(err => {
-                console.log("Error in job search get"+err);
+                console.log("Error in job search get" + err);
             });
     }
 
@@ -278,7 +281,7 @@ class searchResults extends Component {
 
     handleSavedJob = () => {
 
-        const userID = "5c0313af1e6ee47530f590cb"; //localStorage.getItem(userId);
+       // const userID = "5c06a1ef06b29e419cf927d9"; //localStorage.getItem(userId);
         const data = {
             jobId: this.state.clickedJobId
         }
@@ -303,10 +306,20 @@ class searchResults extends Component {
 
     handleAppliedJob = () => {
 
-        const userID = "5c0313af1e6ee47530f590cb"; //localStorage.getItem(userId);
+        //const userID = "5c06a1ef06b29e419cf927d9"; //localStorage.getItem(userId);
 
+        //  /:jobId/start_application
         axios.get(`${ROOT_URL}/user/${userID}`)
             .then(res => {
+                console.log("new one---------------");
+                axios.put(`${ROOT_URL}/user/${this.state.clickedJobId}/start_application`)
+                    .then(res => {
+                        console.log("------on getting user data for easy apply-------", res.data.info);
+                    })
+                    .catch(err => {
+                        console.log("Error in put start application.");
+                    });
+
                 console.log("------on getting user data for easy apply-------", res.data.info);
                 if (this.state.clickedApplyMethod == "Easy Apply") {
                     this.setState({
@@ -321,6 +334,7 @@ class searchResults extends Component {
                         applyJobResume: res.data.info.resume
                     });
                 }
+                
             })
             .catch(err => {
                 console.log("Error in getting user details.");
@@ -330,7 +344,7 @@ class searchResults extends Component {
 
     render() {
         require('../styles/searchResults.css');
-         
+
         let redirect = null;
 
         let DisplayJobList = null;
@@ -340,9 +354,9 @@ class searchResults extends Component {
         let clickedModal = null;
 
         DisplayJobList = (
-            
-            <div class="row userInvitations "> 
-             
+
+            <div class="row userInvitations ">
+
                 {/* {this.state.jobResults.map((jobResults, index) => ( */}
                 {this.state.filteredList.map((jobResults, index) => (
 
@@ -385,7 +399,7 @@ class searchResults extends Component {
             <div>
                 <div className="row">
                     <div className="col-sm-3 col-md-3 col-lg-3">
-                        <img src={this.state.testProfileImage} className="img-circle ModalProfileImage" />
+                        <img src={this.state.clickedCompanyLogo} className="img-circle ModalProfileImage" />
                     </div>
                     <div className="col-sm-9 col-md-9 col-lg-9" style={{ "textAlign": "left" }}>
                         {/* <h4>{localStorage.getItem("")} {localStorage.getItem("")}</h4> */}
@@ -488,7 +502,7 @@ class searchResults extends Component {
 
                         <div className="row">
                             <div className="col-sm-3 col-md-3 col-lg-3">
-                                <img src={this.state.clickedProfileImage} className=" profileImage" />
+                                <img src={this.state.clickedPostedBy.profileImage} className=" profileImage" />
                             </div>
                             <div className="col-sm-9 col-md-9 col-lg-9">
                                 <h6>Posted By:</h6>
@@ -513,14 +527,14 @@ class searchResults extends Component {
 
         return (
             <div>
-                <nav className="navbar navbar-expand-sm" style={{ 'border-bottom-color': '', 'padding': ' 0%', 'backgroundColor': 'darkblue', "border-radius": "0px", marginBottom: "0px" }}>
-                    hi
-                </nav>
+
+                <Navbar />
+
                 <nav className="navbar navbar-expand-sm" style={{ 'border-bottom-color': 'black', 'padding': ' 0%', 'backgroundColor': 'white', "border-radius": "0px", marginBottom: "0px" }}>
                     <h4 style={{ marginBottom: "-2%", marginLeft: '5%' }}>Search with Filters:</h4>
-                    <input type="text" name="filtercompany" placeholder="Enter Company Name" onChange={this.handleChange} style={{ "border-radius": "4px", width: "205px", height: "5px", marginLeft: "20%", marginTop: "-200px" }}></input>
-                    <input type="text" name="filterjobtype" placeholder="Enter Job Type" onChange={this.handleChange} style={{ "border-radius": "4px", width: "200px", height: "5px", marginLeft: "3%" }}></input>
-                    <input type="text" name="filterindustry" placeholder="Enter Industry" onChange={this.handleChange} style={{ "border-radius": "4px", width: "200px", height: "5px", marginLeft: "3%" }}></input>
+                    <input type="text" name="filtercompany" placeholder="Enter Company Name" onChange={this.handleChange} style={{ "border-radius": "4px", width: "205px", height: "2px", marginLeft: "20%", marginTop: "-200px" }}></input>
+                    <input type="text" name="filterjobtype" placeholder="Enter Job Type" onChange={this.handleChange} style={{ "border-radius": "4px", width: "200px", height: "2px", marginLeft: "3%" }}></input>
+                    <input type="text" name="filterindustry" placeholder="Enter Industry" onChange={this.handleChange} style={{ "border-radius": "4px", width: "200px", height: "2px", marginLeft: "3%" }}></input>
                     <button className="btn btn-default" onClick={this.FilterResults} style={{ marginLeft: "2%", height: "35px", width: "120px", "border-radius": "4px", "border": "0px", fontSize: "17px" }}>Filter </button>
                     <button className="btn btn-default" onClick={this.clearFilter} style={{ marginLeft: "0%", height: "35px", width: "120px", "border-radius": "4px", "border": "0px", fontSize: "17px" }}>Clear</button>
                 </nav>
