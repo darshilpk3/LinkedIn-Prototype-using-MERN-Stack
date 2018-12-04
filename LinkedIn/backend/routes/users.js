@@ -1091,7 +1091,24 @@ router.post("/:userId/person", async function (req, res, next) {
           isConnected: "true"
         }
         connections.push(connectionInfo)
-      } else if (result.pending_sent.indexOf(searched_id) != -1) {
+      }else if (result.pending_receive.indexOf(result.userId) != -1) {
+          const connectionInfo = {
+            _id: result._id,
+            name: result.fname + " " + result.lname,
+            headline: result.headline,
+            email: result.email,
+            noOfViews: result.noOfViews,
+            headline: result.headline,
+            experience: result.experience,
+            education: result.education,
+            skills: result.skills,
+            noOfConnections: result.connections.length,
+            profileImage: result.profileImage,
+            profile_summary: result.profile_summary,
+            isConnected: "Accept"
+        }
+        connections.push(connectionInfo)} 
+      else if (result.pending_sent.indexOf(searched_id) != -1) {
         const connectionInfo = {
           _id: result._id,
           name: result.fname + " " + result.lname,
