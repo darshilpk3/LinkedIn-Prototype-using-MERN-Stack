@@ -5,7 +5,7 @@ import connections from './connections';
 import savedJobs from './savedJobs';
 import appliedJobs from './appliedJobs';
 import Messaging from './messaging';
-import navbar from './navbar';
+import Navbar from './navbar';
 import homepage from './homepage';
 import Profilelocation from './profilelocation';
 import Newsfeed from './newsfeed';
@@ -31,7 +31,7 @@ class Main extends Component {
                 <Route exact path="/savedJobs" component={savedJobs} /> 
                 <Route exact path="/appliedJobs" component={appliedJobs} /> 
                 <Route exact path="/messaging" component={Messaging} />                 
-				<Route exact path="/navbar" component={navbar} />
+				<Route exact path="/navbar" component={Navbar} />
                 <Route exact path="/" component={homepage} />
                 <Route exact path="/profilelocation" component={Profilelocation} />
                 <Route exact path="/newsfeed" component={Newsfeed} />

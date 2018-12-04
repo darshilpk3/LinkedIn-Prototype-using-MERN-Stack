@@ -7,6 +7,7 @@ import Stepper from 'react-stepper-horizontal'
 import noJobsImage from '../assets/images/NoJobListings.PNG'
 import gifticon from '../assets/images/gift-icon.png'
 import {ROOT_URL} from '../constants/constants';
+import jobpostlogo from '../assets/images/jobpostlogo.PNG'
 
 class JobListing extends Component{
     constructor(props){
