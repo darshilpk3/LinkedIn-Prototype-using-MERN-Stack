@@ -5,7 +5,7 @@ import cookie from 'react-cookies';
 import { Link } from 'react-router-dom';
 import { Redirect } from 'react-router';
 import Login from './Navbar'
-import {ROOT_URL} from '../constants/constants'
+import {ROOT_URL} from '../constants/constants';
 
 class appliedJobs extends Component {
     constructor(props) {

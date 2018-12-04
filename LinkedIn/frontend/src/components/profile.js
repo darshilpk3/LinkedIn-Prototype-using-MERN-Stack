@@ -20,8 +20,10 @@ class profile extends Component {
     constructor(props) {
         super(props);
         let myData = JSON.parse(localStorage.getItem('myData'));
+        let uid = localStorage.getItem('userId');
         this.state = {
             myData: myData,
+            uid: uid,
             userConnections: "205",    //number of connections user have
             userInvitations: "20",
             fname: "Alex White",
@@ -45,7 +47,7 @@ class profile extends Component {
             addEnd_date: "",
             addDescription: "",
             tempEdit: [],
-
+            selectedFilePdf: "",
             Education: [],
             addCollege_name: "",
             addDegree: "",
@@ -85,7 +87,8 @@ class profile extends Component {
         this.saveImage = this.saveImage.bind(this)
         this.saveProfile = this.saveProfile.bind(this)
         this.fieldLocation = this.fieldLocation.bind(this)
-
+        this.selectPdf = this.selectPdf.bind(this)
+        this.savePDF = this.savePDF.bind(this)
     }
 
     saveProfile() {
@@ -102,32 +105,23 @@ class profile extends Component {
                     current_position: this.state.current_position,
                     country: this.state.country,
                     summary: this.state.profile_summary,
-                    zip: this.state.zip,
-                    location: this.state.location,
+                    zipcode: this.state.zip,
+                    state: this.state.location,
                     summary: this.state.summary,
 
-                    zip: this.state.zipcode
-                    // Experience: data.experience,
-                    // tempEdit: data.experience,
-                    // Education: data.education,
-                    // tempEdu: data.education,
-                    // skill: data.skills,
-                    // tempSkill: data.skills,
 
-
-                    // connections: data.connections.length,
-                    // contactInfo: data.email,
-
-
-                    // currentInfo: temp,
 
                 }
 
                 axios.defaults.withCredentials = true;
-                axios.post(`${ROOT_URL}/user/${this.state.myData.uid}`, data1)
+                axios.put(`${ROOT_URL}/user/${this.state.uid}`, data1)
                     .then((response) => {
 
                         console.log(response.data);
+
+                        this.setState({
+                            currentInfo: this.state.current_position
+                        })
                         // if (response.data.status == 1) {
                         //     let data = response.data.info;
                         //     let temp = "";
@@ -190,7 +184,7 @@ class profile extends Component {
 
     componentDidMount() {
         axios.defaults.withCredentials = true;
-        axios.get(`${ROOT_URL}/user/${this.state.myData.uid}`)
+        axios.get(`${ROOT_URL}/user/${this.state.uid}`)
             .then((response) => {
 
                 console.log(response.data);
@@ -201,7 +195,16 @@ class profile extends Component {
                         if (data && data.type == "R") {
                             temp = data.current_position
                         } else {
-                            temp = data.education[data.education.length - 1].college_name
+                            if (data.education && data.education.length > 0) {
+                                temp = data.education[data.education.length - 1].college_name
+
+                            } else {
+                                temp = [];
+                            }
+                        }
+                        let image = defaultPic;
+                        if (data.profileImage) {
+                            image = ROOT_URL + "/" + data.profileImage
                         }
                         this.setState({
                             fname: data.fname,
@@ -215,10 +218,12 @@ class profile extends Component {
                             tempEdu: data.education,
                             skill: data.skills,
                             tempSkill: data.skills,
-                            connections: data.connections.length,
+                            connections: data.connections && data.connections.length,
                             contactInfo: data.email,
                             currentInfo: temp,
-
+                            ProfilePic: image,
+                            current_position: temp,
+                            zip: data.zipcode
                         })
                         localStorage.setItem('profile', JSON.stringify({
                             fname: data.fname,
@@ -226,9 +231,10 @@ class profile extends Component {
                             headline: data.headline,
                             country: data.country,
                             summary: data.profile_summary,
-                            connections: data.connections.length,
+                            connections: data.connections && data.connections.length,
                             contactInfo: data.email,
-                            currentInfo: temp
+                            currentInfo: temp,
+                            ProfilePic: image
                         }));
                         localStorage.setItem('education', JSON.stringify(data.education));
                         localStorage.setItem('experience', JSON.stringify(data.experience));
@@ -304,6 +310,18 @@ class profile extends Component {
 
     }
 
+    selectPdf = (e) => {
+        if (e.target.files[0] && e.target.files.length > 0) {
+            this.setState({
+                selectedFilePdf: e.target.files[0],
+                // tempImage: URL.createObjectURL(e.target.files[0]),
+                // viewImagePreview: true,
+
+            })
+        }
+
+    }
+
     saveImage() {
 
         let formData = new FormData();
@@ -314,7 +332,7 @@ class profile extends Component {
         // formData.set("token", this.state.myData.token)
         axios.defaults.withCredentials = true;
 
-        axios.post(`${ROOT_URL}/${this.state.myData.uid}/upload`, formData).then((resp) => {
+        axios.post(`${ROOT_URL}/${this.state.uid}/upload`, formData).then((resp) => {
             console.log(resp)
             if (resp.status == 200) {
                 if (resp.data.status == 1) {
@@ -322,6 +340,30 @@ class profile extends Component {
                         ProfilePic: ROOT_URL + "/" + resp.data.info.path,
                         viewImagePreview: false
                     })
+                    console.log(this.state.ProfilePic)
+                }
+
+            }
+
+        })
+    }
+
+
+    savePDF() {
+
+        let formData = new FormData();
+
+        formData.append('selectedFile', this.state.selectedFilePdf);
+        axios.defaults.withCredentials = true;
+
+        axios.post(`${ROOT_URL}/${this.state.uid}/resumeUpload`, formData).then((resp) => {
+            console.log(resp)
+            if (resp.status == 200) {
+                if (resp.data.status == 1) {
+                    // this.setState({
+                    //     ProfilePic: ROOT_URL + "/" + resp.data.info.path,
+                    //     viewImagePreview: false
+                    // })
                     console.log(this.state.ProfilePic)
                 }
 
@@ -408,7 +450,7 @@ class profile extends Component {
         temp.push(data)
         console.log(temp)
         //this.state.myData.uid
-        axios.put(`${ROOT_URL}/user/${this.state.myData.uid}/experience`, temp, { withCredentials: true })
+        axios.put(`${ROOT_URL}/user/${this.state.uid}/experience`, temp, { withCredentials: true })
             .then(response => {
                 console.log(response.data);
                 if (response.data.status == 1) {
@@ -439,7 +481,7 @@ class profile extends Component {
         temp.push(data)
         console.log(temp)
         //this.state.myData.uid
-        axios.put(`${ROOT_URL}/user/${this.state.myData.uid}/education`, temp, { withCredentials: true })
+        axios.put(`${ROOT_URL}/user/${this.state.uid}/education`, temp, { withCredentials: true })
             .then(response => {
                 console.log(response.data);
                 if (response.data.status == 1) {
@@ -463,7 +505,7 @@ class profile extends Component {
         temp.push(this.state.addSkill)
         console.log(temp)
         //this.state.myData.uid
-        axios.put(`${ROOT_URL}/user/${this.state.myData.uid}/skill`, temp, { withCredentials: true })
+        axios.put(`${ROOT_URL}/user/${this.state.uid}/skills`, temp, { withCredentials: true })
             .then(response => {
                 console.log(response.data);
                 if (response.data.status == 1) {
@@ -488,7 +530,7 @@ class profile extends Component {
         console.log(data)
         console.log(this.state.Experience === this.state.tempEdit)
 
-        axios.put(`${ROOT_URL}/user/${this.state.myData.uid}/experience`, data, { withCredentials: true })
+        axios.put(`${ROOT_URL}/user/${this.state.uid}/experience`, data, { withCredentials: true })
             .then(response => {
                 console.log(response.data);
                 if (response.data.status == 1) {
@@ -515,7 +557,7 @@ class profile extends Component {
         });
         console.log(data)
 
-        axios.put(`${ROOT_URL}/user/${this.state.myData.uid}/education`, data, { withCredentials: true })
+        axios.put(`${ROOT_URL}/user/${this.state.uid}/education`, data, { withCredentials: true })
             .then(response => {
                 console.log(response.data);
                 if (response.data.status == 1) {
@@ -539,7 +581,7 @@ class profile extends Component {
         console.log(data)
         console.log(this.state.Experience === this.state.tempEdit)
 
-        axios.put(`${ROOT_URL}/user/${this.state.myData.uid}/skills`, data, { withCredentials: true })
+        axios.put(`${ROOT_URL}/user/${this.state.uid}/skills`, data, { withCredentials: true })
             .then(response => {
                 console.log(response.data);
                 if (response.data.status == 1) {
@@ -1198,7 +1240,7 @@ class profile extends Component {
                                                                 <span>Summary *</span>
                                                             </div>
                                                             <div>
-                                                                <textarea style={{ marginLeft: "0px", height: "85px" }} value={this.state.summary} name="summary" className="input_styling" placeholder="" />
+                                                                <textarea style={{ marginLeft: "0px", height: "85px" }} onChange={this.fieldChangeHandler} value={this.state.summary} name="summary" className="input_styling" placeholder="" />
                                                             </div>
                                                         </td>
                                                     </tr>
@@ -1209,13 +1251,13 @@ class profile extends Component {
                                                                 <span>Summary *</span>
                                                             </div>
                                                             <div>
-                                                                <input name="file1" onChange={this.selectPdf} type="file" accept="application/pdf"/>
+                                                                <input name="file1" onChange={this.selectPdf} type="file" accept="application/pdf" />
                                                             </div>
                                                         </td>
                                                     </tr>
 
 
-                                                        {/* <tr style={{ marginTop: "20px" }}>
+                                                    {/* <tr style={{ marginTop: "20px" }}>
                                                         <td colspan="2" style={{ paddingTop: "20px" }}>
                                                             <div onClick={this.addEdu} classname="under" style={{ "color": "#0073b1", fontWeight: "600", cursor: "pointer" }}>
                                                                 + Add new education
@@ -1223,93 +1265,93 @@ class profile extends Component {
                                                         </td>
                                                     </tr> */}
 
-                                                        {/* <tr style={{ marginTop: "20px" }}>
+                                                    {/* <tr style={{ marginTop: "20px" }}>
                                                         <td colspan="2" style={{ paddingTop: "20px" }}>
                                                             <div classname="under" style={{ "color": "#0073b1", fontWeight: "600", cursor: "pointer" }}>
                                                                 + Add Experience
                                                             </div>
                                                         </td>
                                                     </tr> */}
-                                                        <tr style={{ marginTop: "20px" }}>
-                                                            <td colspan="2" style={{ paddingTop: "20px" }}>
-                                                                <div>
-                                                                    <span>Media </span>
-                                                                </div>
+                                                    <tr style={{ marginTop: "20px" }}>
+                                                        <td colspan="2" style={{ paddingTop: "20px" }}>
+                                                            <div>
+                                                                <span>Media </span>
+                                                            </div>
 
-                                                            </td>
-                                                        </tr>
-                                                        <tr style={{ marginTop: "20px" }}>
-                                                            <td colspan="2" style={{ paddingTop: "20px" }}>
-                                                                <div style={{ "marginTop": "15px" }}>
-                                                                    <span><button className="button-style_1" style={{ borderColor: "#0073b1", marginLeft: "0px", "border-style": "solid", color: "#0073b1", padding: "8px 20px", borderWidth: "thin", boxShadow: "none" }} >Upload</button></span>
-                                                                    <span><button className="button-style_1" style={{ marginLeft: "5px", "border-style": "initial", padding: "8px 20px" }} >Link</button></span>
-                                                                </div>
+                                                        </td>
+                                                    </tr>
+                                                    <tr style={{ marginTop: "20px" }}>
+                                                        <td colspan="2" style={{ paddingTop: "20px" }}>
+                                                            <div style={{ "marginTop": "15px" }}>
+                                                                <span><button className="button-style_1" onClick={this.savePDF} style={{ borderColor: "#0073b1", marginLeft: "0px", "border-style": "solid", color: "#0073b1", padding: "8px 20px", borderWidth: "thin", boxShadow: "none" }} >Upload</button></span>
+                                                                <span><button className="button-style_1" style={{ marginLeft: "5px", "border-style": "initial", padding: "8px 20px" }} >Link</button></span>
+                                                            </div>
 
-                                                            </td>
-                                                        </tr>
+                                                        </td>
+                                                    </tr>
 
                                                 </table>
 
                                             </div>
-                                                {/* <div className="graphics">
+                                            {/* <div className="graphics">
                                                 <i style={{ color: "#0073b1", fontSize: "22px", cursor: "pointer" }} className="ion-edit" data-toggle="modal" data-target="#myModal"></i>
                                             </div>                                          */}
-                                            </div>
-                                        </div>
-                                        <div class="modal-footer">
-                                            <button type="button" class="btn btn-primary" onClick={this.saveProfile}>Save</button>
-                                            <button type="button" class="btn btn-primary" data-dismiss="modal" onClick={this.resetSection}>Cancel</button>
-                                            <button type="button" id="hide" class="btn btn-primary" style={{ display: "none" }} data-dismiss="modal" ></button>
-
                                         </div>
                                     </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-primary" onClick={this.saveProfile}>Save</button>
+                                        <button type="button" class="btn btn-primary" data-dismiss="modal" onClick={this.resetSection}>Cancel</button>
+                                        <button type="button" id="hide" class="btn btn-primary" style={{ display: "none" }} data-dismiss="modal" ></button>
 
+                                    </div>
                                 </div>
+
                             </div>
+                        </div>
 
 
 
-                            <div id="addEductaion" class="modal fade" role="dialog">
-                                <div class="modal-dialog" style={{ width: "57%" }}>
+                        <div id="addEductaion" class="modal fade" role="dialog">
+                            <div class="modal-dialog" style={{ width: "57%" }}>
 
-                                    <div class="modal-content">
-                                        <div class="modal-header">
-                                            <button type="button" class="close" data-dismiss="modal">&times;</button>
-                                            <h4 class="modal-title">Add Education</h4>
-                                        </div>
-                                        <div class="modal-body">
-                                            <table style={{ width: "100%" }}>
-                                                <tr style={{ marginTop: "20px" }}>
-                                                    <td colspan="2" style={{ paddingTop: "20px" }}>
-                                                        <div>
-                                                            <span>School *</span>
-                                                        </div>
-                                                        <div>
-                                                            <input style={{ marginLeft: "0px" }} name="addCollege_name" onChange={this.fieldChangeHandler} className="input_styling" placeholder="College Name" />
-                                                        </div>
-                                                    </td>
-                                                </tr>
-                                                <tr style={{ marginTop: "20px" }}>
-                                                    <td colspan="2" style={{ paddingTop: "20px" }}>
-                                                        <div>
-                                                            <span>Degree *</span>
-                                                        </div>
-                                                        <div>
-                                                            <input style={{ marginLeft: "0px" }} name="addDegree" onChange={this.fieldChangeHandler} className="input_styling" placeholder="Degree" />
-                                                        </div>
-                                                    </td>
-                                                </tr>
-                                                <tr style={{ marginTop: "20px" }}>
-                                                    <td colspan="2" style={{ paddingTop: "20px" }}>
-                                                        <div>
-                                                            <span>Field of study *</span>
-                                                        </div>
-                                                        <div>
-                                                            <input style={{ marginLeft: "0px" }} name="addField_of_study" onChange={this.fieldChangeHandler} className="input_styling" placeholder="Student" />
-                                                        </div>
-                                                    </td>
-                                                </tr>
-                                                {/* <tr style={{ marginTop: "20px" }}>
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                        <h4 class="modal-title">Add Education</h4>
+                                    </div>
+                                    <div class="modal-body">
+                                        <table style={{ width: "100%" }}>
+                                            <tr style={{ marginTop: "20px" }}>
+                                                <td colspan="2" style={{ paddingTop: "20px" }}>
+                                                    <div>
+                                                        <span>School *</span>
+                                                    </div>
+                                                    <div>
+                                                        <input style={{ marginLeft: "0px" }} name="addCollege_name" onChange={this.fieldChangeHandler} className="input_styling" placeholder="College Name" />
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                            <tr style={{ marginTop: "20px" }}>
+                                                <td colspan="2" style={{ paddingTop: "20px" }}>
+                                                    <div>
+                                                        <span>Degree *</span>
+                                                    </div>
+                                                    <div>
+                                                        <input style={{ marginLeft: "0px" }} name="addDegree" onChange={this.fieldChangeHandler} className="input_styling" placeholder="Degree" />
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                            <tr style={{ marginTop: "20px" }}>
+                                                <td colspan="2" style={{ paddingTop: "20px" }}>
+                                                    <div>
+                                                        <span>Field of study *</span>
+                                                    </div>
+                                                    <div>
+                                                        <input style={{ marginLeft: "0px" }} name="addField_of_study" onChange={this.fieldChangeHandler} className="input_styling" placeholder="Student" />
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                            {/* <tr style={{ marginTop: "20px" }}>
                                                 <td colspan="2" style={{ paddingTop: "20px" }}>
                                                     <div>
                                                         <span>Grade *</span>
@@ -1319,263 +1361,263 @@ class profile extends Component {
                                                     </div>
                                                 </td>
                                             </tr> */}
-                                                <tr style={{ marginTop: "10px" }}>
-                                                    <td style={{ paddingTop: "10px" }}>
-                                                        <div>
-                                                            <span>From Year *</span>
-                                                        </div>
-                                                        <div>
-                                                            <input type="date" name="addStart_date" onChange={this.fieldChangeHandler} className="input_styling" placeholder="Sjsu" />
-                                                        </div>
-                                                    </td>
-                                                    <td style={{ paddingTop: "10px" }}>
-                                                        <div>
-                                                            <span style={{ marginLeft: "10px" }}>To year(or expected) *</span>
-                                                        </div>
-                                                        <div>
-                                                            <input type="date" name="addEnd_date" onChange={this.fieldChangeHandler} style={{ marginLeft: "10px", width: "97.5%" }} className="input_styling" placeholder="Student" />
-                                                        </div>
-                                                    </td>
-                                                </tr>
-                                                <tr style={{ marginTop: "20px" }}>
-                                                    <td colspan="2" style={{ paddingTop: "20px" }}>
-                                                        <div>
-                                                            <span>Description *</span>
-                                                        </div>
-                                                        <div>
+                                            <tr style={{ marginTop: "10px" }}>
+                                                <td style={{ paddingTop: "10px" }}>
+                                                    <div>
+                                                        <span>From Year *</span>
+                                                    </div>
+                                                    <div>
+                                                        <input type="date" name="addStart_date" onChange={this.fieldChangeHandler} className="input_styling" placeholder="Sjsu" />
+                                                    </div>
+                                                </td>
+                                                <td style={{ paddingTop: "10px" }}>
+                                                    <div>
+                                                        <span style={{ marginLeft: "10px" }}>To year(or expected) *</span>
+                                                    </div>
+                                                    <div>
+                                                        <input type="date" name="addEnd_date" onChange={this.fieldChangeHandler} style={{ marginLeft: "10px", width: "97.5%" }} className="input_styling" placeholder="Student" />
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                            <tr style={{ marginTop: "20px" }}>
+                                                <td colspan="2" style={{ paddingTop: "20px" }}>
+                                                    <div>
+                                                        <span>Description *</span>
+                                                    </div>
+                                                    <div>
 
-                                                            <textarea name="addDescription" onChange={this.fieldChangeHandler} style={{ marginLeft: "0px", height: "85px" }} className="input_styling" placeholder="Student" />
-                                                        </div>
-                                                    </td>
-                                                </tr>
-                                            </table>
-                                        </div>
-                                        <div class="modal-footer">
-                                            <button type="button" class="btn btn-default" data-dismiss="modal" onClick={this.addNewEducation}>Save</button>
-                                            <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
-                                        </div>
+                                                        <textarea name="addDescription" onChange={this.fieldChangeHandler} style={{ marginLeft: "0px", height: "85px" }} className="input_styling" placeholder="Student" />
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        </table>
                                     </div>
-
-                                </div>
-                            </div>
-
-                            <div id="experienceModalAdd" class="modal fade" role="dialog">
-                                <div class="modal-dialog" style={{ width: "57%" }}>
-
-                                    <div class="modal-content">
-                                        <div class="modal-header">
-                                            <button type="button" class="close" data-dismiss="modal">&times;</button>
-                                            <h4 class="modal-title">Add Experience</h4>
-                                        </div>
-                                        <div class="modal-body">
-                                            <table style={{ width: "100%" }}>
-                                                <tr style={{ marginTop: "20px" }}>
-                                                    <td colspan="2" style={{ paddingTop: "20px" }}>
-                                                        <div>
-                                                            <span>Title *</span>
-                                                        </div>
-                                                        <div>
-                                                            <input style={{ marginLeft: "0px", width: "97.5%" }} name="addTitle" onChange={this.fieldChangeHandler} className="input_styling" placeholder="Title" />
-
-                                                        </div>
-                                                    </td>
-                                                </tr>
-                                                <tr style={{ marginTop: "20px" }}>
-                                                    <td colspan="2" style={{ paddingTop: "20px" }}>
-                                                        <div>
-                                                            <span>Company *</span>
-                                                        </div>
-                                                        <div>
-                                                            <input style={{ marginLeft: "0px", width: "93.5%" }} name="addCompany" onChange={this.fieldChangeHandler} className="input_styling" placeholder="Company" />
-
-                                                        </div>
-                                                    </td>
-                                                </tr>
-                                                <tr style={{ marginTop: "10px" }}>
-                                                    <td style={{ paddingTop: "10px" }}>
-                                                        <div>
-                                                            <span>From Year *</span>
-                                                        </div>
-                                                        <div>
-
-                                                            <input type="date" name="addStart_date" className="input_styling" onChange={this.fieldChangeHandler} placeholder="" />
-                                                        </div>
-                                                    </td>
-                                                    <td style={{ paddingTop: "10px" }}>
-                                                        <div>
-                                                            <span style={{ marginLeft: "10px" }}>To year(or expected) *</span>
-                                                        </div>
-                                                        <div>
-                                                            <input type="date" name="addEnd_date" style={{ marginLeft: "10px", width: "97.5%" }} onChange={this.fieldChangeHandler} className="input_styling" placeholder="Student" />
-                                                        </div>
-                                                    </td>
-                                                </tr>
-
-                                                <tr style={{ marginTop: "20px" }}>
-                                                    <td colspan="2" style={{ paddingTop: "20px" }}>
-                                                        <div>
-                                                            <span>Description *</span>
-                                                        </div>
-                                                        <div>
-                                                            <input style={{ marginLeft: "0px", width: "97.5%" }} className="input_styling" name="addDescription" onChange={this.fieldChangeHandler} placeholder="Description" />
-
-                                                        </div>
-                                                    </td>
-                                                </tr>
-                                            </table>
-                                        </div>
-                                        <div class="modal-footer">
-                                            <button type="button" class="btn btn-default" data-dismiss="modal" onClick={this.addNewExperience}>Save</button>
-                                            <button type="button" class="btn btn-default" data-dismiss="modal" >Cancel</button>
-                                        </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-default" data-dismiss="modal" onClick={this.addNewEducation}>Save</button>
+                                        <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
                                     </div>
-
                                 </div>
+
                             </div>
-
-                            <div id="experienceModalEdit" class="modal fade" role="dialog">
-                                <div class="modal-dialog" style={{ width: "57%" }}>
-
-                                    <div class="modal-content">
-                                        <div class="modal-header">
-                                            <button type="button" class="close" onClick={this.resetSection} data-dismiss="modal">&times;</button>
-                                            <h4 class="modal-title">Edit Experience</h4>
-                                        </div>
-                                        <div class="modal-body">
-                                            {experEdit}
-                                        </div>
-                                        <div class="modal-footer">
-                                            <button type="button" class="btn btn-default" onClick={this.updateExperience} data-dismiss="modal">Save</button>
-                                            <button type="button" class="btn btn-default" onClick={this.resetSection} data-dismiss="modal">Cancel</button>
-                                        </div>
-                                    </div>
-
-                                </div>
-                            </div>
-
-
-                            <div id="editEducation" class="modal fade" role="dialog">
-                                <div class="modal-dialog" style={{ width: "57%" }}>
-
-                                    <div class="modal-content">
-                                        <div class="modal-header">
-                                            <button type="button" class="close" data-dismiss="modal">&times;</button>
-                                            <h4 class="modal-title">Edit Education</h4>
-                                        </div>
-                                        <div class="modal-body">
-                                            {educationEdit}
-                                        </div>
-                                        <div class="modal-footer">
-                                            <button type="button" class="btn btn-default" data-dismiss="modal" onClick={this.updateEducation}>Save</button>
-                                            <button type="button" class="btn btn-default" data-dismiss="modal" onClick={this.resetSection}>Cancel</button>
-                                        </div>
-                                    </div>
-
-                                </div>
-                            </div>
-
-                            <div id="editSkils" class="modal fade" role="dialog">
-                                <div class="modal-dialog" style={{ width: "57%" }}>
-
-                                    <div class="modal-content">
-                                        <div class="modal-header">
-                                            <button type="button" class="close" data-dismiss="modal">&times;</button>
-                                            <h4 class="modal-title">Edit Education</h4>
-                                        </div>
-                                        <div class="modal-body">
-                                            {skillEdit}
-                                        </div>
-                                        <div class="modal-footer">
-                                            <button type="button" class="btn btn-default" data-dismiss="modal" onClick={this.updateSkill}>Save</button>
-                                            <button type="button" class="btn btn-default" onClick={this.resetSection} data-dismiss="modal">Cancel</button>
-                                        </div>
-                                    </div>
-
-                                </div>
-                            </div>
-
-                            <div id="addSkills" class="modal fade" role="dialog">
-                                <div class="modal-dialog" style={{ width: "57%" }}>
-
-                                    <div class="modal-content">
-                                        <div class="modal-header">
-                                            <button type="button" class="close" data-dismiss="modal">&times;</button>
-                                            <h4 class="modal-title">Add Skill</h4>
-                                        </div>
-                                        <div class="modal-body">
-                                            <table style={{ width: "100%" }}>
-                                                <tr style={{ marginTop: "20px" }}>
-                                                    <td colspan="2" style={{ paddingTop: "20px" }}>
-                                                        <div>
-                                                            <span>Skill*</span>
-                                                        </div>
-                                                        <div>
-                                                            <input style={{ marginLeft: "0px", width: "97.5%" }} name="addSkill" onChange={this.changeHandler} className="input_styling" placeholder="Your Skill" />
-                                                        </div>
-                                                    </td>
-                                                </tr>
-
-                                            </table>
-                                        </div>
-                                        <div class="modal-footer">
-                                            <button type="button" class="btn btn-default" onClick={this.addNewSkill} data-dismiss="modal">Save</button>
-                                            <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
-                                        </div>
-                                    </div>
-
-                                </div>
-                            </div>
-
-                            <div id="imageModal" class="modal fade" role="dialog">
-                                <div class="modal-dialog">
-
-                                    <div class="modal-content">
-                                        <div class="modal-header">
-                                            {/* <button type="button" class="close" data-dismiss="modal">&times;</button> */}
-                                            <h4 class="modal-title">Profile Image</h4>
-                                        </div>
-                                        <div class="modal-body" style={{ backgroundColor: "black" }}>
-                                            <div style={{ "margin-bottom": "0%" }}>
-                                                <div className="displayImage">
-                                                    <img style={{ width: "75%%", height: "300px" }} className="imageStyles" src={this.state.tempImage}></img>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="modal-footer">
-
-                                            <button type="button" onClick={this.saveImage} class="btn btn-default" data-dismiss="modal">Save</button>
-                                            <button type="button" onClick={() => {
-                                                this.setState({
-                                                    viewImagePreview: false
-                                                })
-                                            }} class="btn btn-default" data-dismiss="modal">Close</button>
-                                        </div>
-                                    </div>
-
-                                </div>
-                            </div>
-
-                            <br />
-                            <br />
-                            <br /><br />
-                            <br />
-                            <br /><br />
-                            <br />
-                            <br /><br />
-                            <br />
-                            <br /><br />
-                            <br />
-                            <br />
                         </div>
 
+                        <div id="experienceModalAdd" class="modal fade" role="dialog">
+                            <div class="modal-dialog" style={{ width: "57%" }}>
+
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                        <h4 class="modal-title">Add Experience</h4>
+                                    </div>
+                                    <div class="modal-body">
+                                        <table style={{ width: "100%" }}>
+                                            <tr style={{ marginTop: "20px" }}>
+                                                <td colspan="2" style={{ paddingTop: "20px" }}>
+                                                    <div>
+                                                        <span>Title *</span>
+                                                    </div>
+                                                    <div>
+                                                        <input style={{ marginLeft: "0px", width: "97.5%" }} name="addTitle" onChange={this.fieldChangeHandler} className="input_styling" placeholder="Title" />
+
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                            <tr style={{ marginTop: "20px" }}>
+                                                <td colspan="2" style={{ paddingTop: "20px" }}>
+                                                    <div>
+                                                        <span>Company *</span>
+                                                    </div>
+                                                    <div>
+                                                        <input style={{ marginLeft: "0px", width: "93.5%" }} name="addCompany" onChange={this.fieldChangeHandler} className="input_styling" placeholder="Company" />
+
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                            <tr style={{ marginTop: "10px" }}>
+                                                <td style={{ paddingTop: "10px" }}>
+                                                    <div>
+                                                        <span>From Year *</span>
+                                                    </div>
+                                                    <div>
+
+                                                        <input type="date" name="addStart_date" className="input_styling" onChange={this.fieldChangeHandler} placeholder="" />
+                                                    </div>
+                                                </td>
+                                                <td style={{ paddingTop: "10px" }}>
+                                                    <div>
+                                                        <span style={{ marginLeft: "10px" }}>To year(or expected) *</span>
+                                                    </div>
+                                                    <div>
+                                                        <input type="date" name="addEnd_date" style={{ marginLeft: "10px", width: "97.5%" }} onChange={this.fieldChangeHandler} className="input_styling" placeholder="Student" />
+                                                    </div>
+                                                </td>
+                                            </tr>
+
+                                            <tr style={{ marginTop: "20px" }}>
+                                                <td colspan="2" style={{ paddingTop: "20px" }}>
+                                                    <div>
+                                                        <span>Description *</span>
+                                                    </div>
+                                                    <div>
+                                                        <input style={{ marginLeft: "0px", width: "97.5%" }} className="input_styling" name="addDescription" onChange={this.fieldChangeHandler} placeholder="Description" />
+
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-default" data-dismiss="modal" onClick={this.addNewExperience}>Save</button>
+                                        <button type="button" class="btn btn-default" data-dismiss="modal" >Cancel</button>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+
+                        <div id="experienceModalEdit" class="modal fade" role="dialog">
+                            <div class="modal-dialog" style={{ width: "57%" }}>
+
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <button type="button" class="close" onClick={this.resetSection} data-dismiss="modal">&times;</button>
+                                        <h4 class="modal-title">Edit Experience</h4>
+                                    </div>
+                                    <div class="modal-body">
+                                        {experEdit}
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-default" onClick={this.updateExperience} data-dismiss="modal">Save</button>
+                                        <button type="button" class="btn btn-default" onClick={this.resetSection} data-dismiss="modal">Cancel</button>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+
+
+                        <div id="editEducation" class="modal fade" role="dialog">
+                            <div class="modal-dialog" style={{ width: "57%" }}>
+
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                        <h4 class="modal-title">Edit Education</h4>
+                                    </div>
+                                    <div class="modal-body">
+                                        {educationEdit}
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-default" data-dismiss="modal" onClick={this.updateEducation}>Save</button>
+                                        <button type="button" class="btn btn-default" data-dismiss="modal" onClick={this.resetSection}>Cancel</button>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+
+                        <div id="editSkils" class="modal fade" role="dialog">
+                            <div class="modal-dialog" style={{ width: "57%" }}>
+
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                        <h4 class="modal-title">Edit Education</h4>
+                                    </div>
+                                    <div class="modal-body">
+                                        {skillEdit}
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-default" data-dismiss="modal" onClick={this.updateSkill}>Save</button>
+                                        <button type="button" class="btn btn-default" onClick={this.resetSection} data-dismiss="modal">Cancel</button>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+
+                        <div id="addSkills" class="modal fade" role="dialog">
+                            <div class="modal-dialog" style={{ width: "57%" }}>
+
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                        <h4 class="modal-title">Add Skill</h4>
+                                    </div>
+                                    <div class="modal-body">
+                                        <table style={{ width: "100%" }}>
+                                            <tr style={{ marginTop: "20px" }}>
+                                                <td colspan="2" style={{ paddingTop: "20px" }}>
+                                                    <div>
+                                                        <span>Skill*</span>
+                                                    </div>
+                                                    <div>
+                                                        <input style={{ marginLeft: "0px", width: "97.5%" }} name="addSkill" onChange={this.fieldChangeHandler} className="input_styling" placeholder="Your Skill" />
+                                                    </div>
+                                                </td>
+                                            </tr>
+
+                                        </table>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-default" onClick={this.addNewSkill} data-dismiss="modal">Save</button>
+                                        <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+
+                        <div id="imageModal" class="modal fade" role="dialog">
+                            <div class="modal-dialog">
+
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        {/* <button type="button" class="close" data-dismiss="modal">&times;</button> */}
+                                        <h4 class="modal-title">Profile Image</h4>
+                                    </div>
+                                    <div class="modal-body" style={{ backgroundColor: "black" }}>
+                                        <div style={{ "margin-bottom": "0%" }}>
+                                            <div className="displayImage">
+                                                <img style={{ width: "75%%", height: "300px" }} className="imageStyles" src={this.state.tempImage}></img>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="modal-footer">
+
+                                        <button type="button" onClick={this.saveImage} class="btn btn-default" data-dismiss="modal">Save</button>
+                                        <button type="button" onClick={() => {
+                                            this.setState({
+                                                viewImagePreview: false
+                                            })
+                                        }} class="btn btn-default" data-dismiss="modal">Close</button>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+
+                        <br />
+                        <br />
+                        <br /><br />
+                        <br />
+                        <br /><br />
+                        <br />
+                        <br /><br />
+                        <br />
+                        <br /><br />
+                        <br />
+                        <br />
                     </div>
 
-
                 </div>
-                )
-            }
-        }
-        
-        
-        
+
+
+            </div>
+        )
+    }
+}
+
+
+
 export default profile;

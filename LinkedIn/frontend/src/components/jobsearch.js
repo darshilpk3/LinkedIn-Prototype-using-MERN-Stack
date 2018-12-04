@@ -61,8 +61,8 @@ class JobSearch extends Component {
                                     
                             <div className="jobs-landing-bar-container ">
                               <div className= "links-to-savedandapplied">
-                                    <span className="pad-1-pc">5 Saved Jobs &nbsp;&nbsp; | &nbsp;&nbsp;</span>
-                                    <span className="pad-2-pc">10 Applied Jobs &nbsp;&nbsp; | &nbsp;&nbsp;</span>
+                                   <Link to = "/savedJobs"> <span className="pad-1-pc">My Saved Jobs &nbsp;&nbsp; | &nbsp;&nbsp;</span> </Link>
+                                  <Link to ="/appliedJobs">  <span className="pad-2-pc">My Applied Jobs &nbsp;&nbsp; | &nbsp;&nbsp;</span></Link>
                                     <span className="pad-3-pc">Career Interests</span>
                                     <span className="pad-6-pc">LinkedIn Salary  &nbsp;&nbsp; | &nbsp;&nbsp;</span>
                                     <span className="pad-8-pc">Looking for talent? &nbsp;&nbsp;</span>

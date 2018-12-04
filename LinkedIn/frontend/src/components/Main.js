@@ -7,7 +7,6 @@ import appliedJobs from './appliedJobs';
 
 import Navbar from './Navbar';
 import Messaging from './messaging';
-
 import homepage from './homepage';
 import Profilelocation from './profilelocation';
 import profileType from './profileType';
@@ -22,6 +21,8 @@ import JobApplicantsList from './jobApplicantsList';
 import JobListing from './jobListing';
 import Graphs from './graphs.js';
 import ApplicantGraph from './applicantgraph'
+import searchResults from './searchResults'
+
 
 // import TryPDF from './pdfTrial';
 import TryPDF from './PDF'
@@ -57,6 +58,8 @@ class Main extends Component {
                 <Route exact path="/applicantgraph" component={ApplicantGraph} />
                 <Route exact path="/pdftry" component={TryPDF} />
                 <Route exact path="/profile/view" component={ProfileView} />
+                <Route exact path="/searchResults" component={searchResults} />
+
                 {/* <Route path="/TravelerLogin" component={Login} /> */}
 
             </div>

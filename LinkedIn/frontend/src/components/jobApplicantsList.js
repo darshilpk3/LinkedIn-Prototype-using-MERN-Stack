@@ -84,7 +84,7 @@ class JobApplicantsList extends Component{
         const pageNumber = this.state.pageNumber;
         const numPages = this.state.numPages;
 
-        const fileURL = "http://localhost:3001/uploads/cmpe_255.pdf";
+        // const fileURL = `${ROOT_URL}/uploads/cmpe_255.pdf`;
 
         console.log(" ---- Printing this.state.information ----");
         console.log(this.state.information);
@@ -138,10 +138,11 @@ class JobApplicantsList extends Component{
             }
             
             ApplicantsDisplay = this.state.information.map(applist => {
+                const fileURL = `${ROOT_URL}/`+ applist.applicant[0].resume
                 return(
                     <div>
                         <div class="job-listing">
-                            <Link class = "joblisttitle" to={{ pathname: '/', state: { applicant_id: applist.applicant._id} }}>{applist.applicant[0].fname} {applist.applicant[0].lname}</Link>
+                            <Link class = "joblisttitle" to={{ pathname: '/viewProfile', state: { applicant_id: applist.applicant._id} }}>{applist.applicant[0].fname} {applist.applicant[0].lname}</Link>
                             <p class="paragraph1">Email id : {applist.applicant[0].email}</p>
                             <p class="paragraph">Ethnicity : {applist.ethnicity}</p>
                             <p class="paragraph">Disabled : {applist.isDisabled.toString()}</p>
