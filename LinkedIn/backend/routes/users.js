@@ -1115,7 +1115,7 @@ router.post("/:userId/person", async function (req, res, next) {
           education:result.education,
           skills:result.skills,
           noOfConnections:result.connections.length,
-          // img:result.img,
+          // profileImage:result.profileImage,
           profile_summary:result.profile_summary,
           isConnected: "true"
         }
@@ -1132,7 +1132,7 @@ router.post("/:userId/person", async function (req, res, next) {
           education:result.education,
           skills:result.skills,
           noOfConnections:result.connections.length,
-          // img:result.img,
+          // profileImage:result.profileImage,
           profile_summary:result.profile_summary,
           isConnected: "pending"
         }
@@ -1149,7 +1149,7 @@ router.post("/:userId/person", async function (req, res, next) {
           education:result.education,
           skills:result.skills,
           noOfConnections:result.connections.length,
-          // img:result.img,
+          // profileImage:result.profileImage,
           profile_summary:result.profile_summary,
 
           isConnected: "false"
@@ -1241,11 +1241,105 @@ router.get("/:userId/daily_views", async function (req, res, next) {
  
 })
 
+/**
+ * user clicks on the apply button to fill the appli so update the noOfViews_applied count
+ */
 
 
+router.put("/:jobId/start_application", async function (req, res, next) {
 
+  const job_id = req.params.jobId
+  console.log("__________user_id____________--", job_id)
 
+  Job.findOneAndUpdate(
+    { "_id": job_id },
+    { $inc: { "noOfViews_applied": 1 } }
+  )
+    .exec()
+    .then(result => {
+      console.log("~~~~~~~~~~~~~~~result~~~~~~~~~~~~~~~~~", result);
+      const data = {
+        "status": "1",
+        "msg": "Successfully updates the application started counter",
+        "info": result
+      }
+      res.writeHead(200, {
+        'Content-Type': 'application/json'
+      })
+      res.end(JSON.stringify(data))
+    
+    })
+    .catch(err => {
+      console.log("_____________err______________", err)
+      res.send(400, err)
+      res.writeHead(400, {
+        'Content-Type': 'application/json'
+      })
+      const data = {
+        "status": 0,
+        "msg": "Backend Error",
+        "info": {
+          "error": err
+        }
+      }
+      res.end(JSON.stringify(data))
+      // callback(err, err)
+    })
 
+})
+
+/**
+ * tracing the user no of users who have viewed, applied and submitted the application for the job
+ */
+router.get("/:jobId/tracing_the_activity", async function (req, res, next) {
+
+  console.log("Request to get details of no of users who have viewed, applied and submitted the application for the job", req.params.jobId)
+
+  const id1 = mongoose1.Types.ObjectId(req.params.userId)
+
+  console.log(typeof id1)
+  Job.findById(req.params.jobId, { jobTitle: 1, noOfViews: 1 ,noOfViews_applied:1,noOfViews_submitted:1})
+   
+    .exec()
+    .then(result => {
+      res.writeHead(200, {
+        'Content-Type': 'application/json'
+      })
+      console.log("______result___________",result)
+
+      const result_data={
+        "_id":result._id,
+        "Job_Title":result.jobTitle,
+        "Application_Read":result.noOfViews,
+        "Half_Filled_Application":result.noOfViews_applied-result.noOfViews_submitted,
+        "Complete_Application":result.noOfViews_submitted
+      }
+      const data = {
+        "status": 1,
+        "msg": "successfully found least 5 applied jobs",
+        "info": {
+          "result": result_data
+        }
+      }
+      // console.log("____________data_________________", data)
+      res.end(JSON.stringify(data))
+
+    })
+    .catch(err => {
+      // callback(err,err)
+      const data = {
+        "status": 0,
+        "msg": "Failed fetching the details of jobs applied",
+        "info": err
+      }
+      res.writeHead(200, {
+        'Content-Type': 'application/json'
+      })
+      res.end(JSON.stringify(data))
+      console.log("______err__________", err)
+    })
+ 
+})
 
 
 

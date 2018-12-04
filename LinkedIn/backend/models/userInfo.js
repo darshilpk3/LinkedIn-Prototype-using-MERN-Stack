@@ -58,8 +58,8 @@ var users= mongoose.Schema({
     resume : {
         type : String
     },
-    img : {
-        type : String
+    profileImage:{
+        type:String
     },
     jobs_applied : [
         {

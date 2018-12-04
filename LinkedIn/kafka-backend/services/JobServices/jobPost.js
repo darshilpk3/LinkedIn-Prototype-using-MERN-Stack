@@ -20,11 +20,13 @@ function handle_request(msg, callback) {
         location: msg.location,
         jobFunction: msg.jobFunction,
         required_skills: msg.required_skills,
-        noOfViews:0
+        noOfViews:0,
+        noOfViews_submitted:0,
+        noOfViews_applied:0
 
     })
 
-    // console.log("__________new Job is_______________",newJob)
+  
 
     newJob.save()
         .then((jobResult, err) => {
