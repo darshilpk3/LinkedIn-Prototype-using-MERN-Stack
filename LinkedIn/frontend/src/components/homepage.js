@@ -160,13 +160,15 @@ class Login extends Component {
 
         }
 
+        
+
         const { handleSubmit } = this.props;
 
         return (
 
 
             <div style={{ backgroundColor: "#f4f4f4" }}>
-                <Navbar />
+                {/* <Navbar /> */}
                 {redirectVar}
                 <div id="">
                     <nav className="navbar navbar-expand-sm" style={{ 'border-bottom-color': '', 'padding': ' 0%', 'backgroundColor': '#283e4a', "border-radius": "0px", marginBottom: "0px" }}>

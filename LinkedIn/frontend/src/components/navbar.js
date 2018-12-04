@@ -25,8 +25,18 @@ class Navbar extends Component {
             authFlag: false,
             errorFlag: false,
             invalidFlag: false,
-            myData: myData
+            myData: myData,
+            session_key: ""
         }
+
+        this.fieldChangeHandler = this.fieldChangeHandler.bind(this)
+    }
+
+
+    fieldChangeHandler(e) {
+        let changedVar = {}
+        changedVar[e.target.name] = e.target.value
+        this.setState(changedVar)
     }
 
     renderField(field) {
@@ -140,13 +150,13 @@ class Navbar extends Component {
             </div>
         }
 
-        // if (this.state.myData) {
-        //     redirectVar = <Redirect to="/TravelerHome" />
-        // }
+        if (!this.state.myData) {
+            redirectVar = <Redirect to="/" />
+        }
 
         const { handleSubmit } = this.props;
         let posting = null
-        if (this.state.myData.type == "R") {
+        if (this.state.myData && this.state.myData.type == "R") {
             posting = <li style={{ margin: "-10px 0px -10px 0px" }}>
                 <Link to="/job/post" >
                     <i className="ion-android-apps" style={{ 'margin-right': '7px', color: "#c7d1d8", fontSize: "24px" }}></i>
@@ -172,8 +182,21 @@ class Navbar extends Component {
 
                             </div>
                             <div className="navbar-header" style={{ marginLeft: "10px" }}>
-                                <input type="text" name="session_key" style={{ paddingLeft: "20px" }} className="login-email" autocapitalize="off" tabindex="1" id="login-email" placeholder="Search" autofocus="autofocus" dir="ltr"></input>
+                                <input type="text" name="session_key" onChange={this.fieldChangeHandler} style={{ paddingLeft: "20px" }} className="login-email" autocapitalize="off" tabindex="1" id="login-email" placeholder="Search" autofocus="autofocus" dir="ltr"></input>
                                 <i className="ion-ios-search" style={{ marginLeft: "-217px " }}></i>
+                                <Link to={{
+                                    pathname: "/peopleSearch",
+                                    state: {
+                                        searchedName: this.state.session_key
+                                    }
+                                }}
+                                    style={{
+                                        marginLeft: "202px",
+                                        backgroundColor: "#0077b5",
+                                        color: "white"
+                                    }}>
+                                    Search
+                                </Link>
                             </div>
 
                             <ul className="nav navbar-nav navbar-right" style={{ textAlign: "center", marginRight: "8%" }}>
@@ -303,7 +326,7 @@ class Navbar extends Component {
                     </nav>
                 </div>
 
-            </div>
+            </div >
         )
     }
 }
