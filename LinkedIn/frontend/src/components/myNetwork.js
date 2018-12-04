@@ -8,6 +8,7 @@ import Login from './Navbar'
 import linkedIn from '../assets/images/linkedIn.png'
 import Axios from 'axios';
 import { throws } from 'assert';
+import { ROOT_URL } from '../constants/constants';
 var swal = require('sweetalert')
 
 class myNetwork extends Component {
@@ -34,7 +35,7 @@ class myNetwork extends Component {
             var header = new Headers()
             axios.defaults.withCredentials = true;
 
-            axios.get(`http://localhost:3001/connection/${id}/getPendingConnections`)
+            axios.get(`${ROOT_URL}/connection/${id}/getPendingConnections`)
                 .then(response => {
                     if (response.status === 200) {
                         console.log("Result is: ", response.data.info.pendingConnections)
@@ -48,7 +49,7 @@ class myNetwork extends Component {
                     }
                 })
 
-            axios.get(`http://localhost:3001/connection/${id}/getConnections`)
+            axios.get(`${ROOT_URL}/connection/${id}/getConnections`)
                 .then(response => {
                     if (response.status === 200) {
                         console.log("Total connections are: ",)
@@ -72,7 +73,7 @@ class myNetwork extends Component {
         var headers = new Headers()
         axios.defaults.withCredentials = true;
 
-        axios.put(`http://localhost:3001/connection/${id}/accept`,data)
+        axios.put(`${ROOT_URL}/connection/${id}/accept`,data)
             .then(response => {
                 if(response.status === 200){
                     if(response.data.status){

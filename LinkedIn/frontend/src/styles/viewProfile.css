@@ -80,7 +80,8 @@
 }
 
 .profileImg{
-    width: 19%;
+    width: 175px !important;
+    height: 175px !important;
     margin-right: 74%;
     /* border: thin; */
     /* border-style: groove; */

@@ -41,7 +41,7 @@ class Graphs extends Component{
             NoOfApplications1:[],
             chartData1:{},
             jobTitle2: "",
-            jobtitlecity : "React Frontend",
+            jobtitlecity : this.props.location.state.jobTitlefromrd,
             //jobtitlecity : this.props.location.state.jobtitle,
             city:[],
             NoOfApplications2:[],
