@@ -337,8 +337,18 @@ router.post("/:userID/apply", async function (req, res, next) {
         "msg": "Successfully applied to a job",
         "info": result
       }
+
       res.writeHead(200, {
         'Content-Type': 'application/json'
+      })
+
+      redis1.flushdb(function (err, succeeded) {
+        if (succeeded) {
+          console.log(succeeded); // will be true if successfull
+          console.log("cache cleared successfull")
+        } else {
+          console.log("error in clearing the cache")
+        }
       })
       res.end(JSON.stringify(data))
     }
@@ -347,12 +357,12 @@ router.post("/:userID/apply", async function (req, res, next) {
 })
 
 
+
 /*
 * saving a job
 */
 router.post("/:userID/save", async function (req, res, next) {
   console.log("Inside post of job save.")
-
   const data = {
     jobId: req.body.jobId,
     userId: req.params.userID
@@ -391,6 +401,15 @@ router.post("/:userID/save", async function (req, res, next) {
       res.writeHead(200, {
         'Content-Type': 'application/json'
       })
+      redis1.flushdb(function (err, succeeded) {
+        if (succeeded) {
+          console.log(succeeded); // will be true if successfull
+          console.log("cache cleared successfull")
+        } else {
+          console.log("error in clearing the cache")
+        }
+
+      });
       res.end(JSON.stringify(data))
     }
   })
@@ -1146,10 +1165,10 @@ router.post("/:userId/person", async function (req, res, next) {
 router.get("/:userId/daily_views", async function (req, res, next) {
 
   console.log("Request to get no of profile views of the user: ", req.params.userId)
-  
+
 
   const id1 = mongoose1.Types.ObjectId(req.params.userId)
- 
+
   console.log(typeof id1)
   UserInfo.findById(req.params.userId, { fname: 1, lname: 1, noOfViews: 1 })
     .exec()
@@ -1170,7 +1189,7 @@ router.get("/:userId/daily_views", async function (req, res, next) {
 
     })
     .catch(err => {
-      
+
       const data = {
         "status": 0,
         "msg": "Failed fetching the no of views of the user",
