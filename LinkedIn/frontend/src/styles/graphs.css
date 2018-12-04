@@ -1,0 +1,39 @@
+.canvas.chartjs-render-monitor{
+    width:960px;
+}
+
+.chart1{
+    width:1200px;
+    margin-left: 10%;
+    margin-top: 5%; 
+}
+
+.chart2{
+    width:700px;
+    margin-top: 10%;
+    margin-left: 10%; 
+}
+
+.chart3{
+    width:1200px;
+    margin-top: 10%;
+    margin-left: 10%; 
+}
+
+.chart4{
+    width:1200px;
+    margin-top: 10%;
+    margin-left:10%; 
+}
+
+.chart5{
+    width:1400px;
+    margin-top: 10%;
+    margin-left: 5%; 
+}
+
+.chart6{
+    width:1200px;
+    margin-top: 10%;
+    margin-left: 20%; 
+}

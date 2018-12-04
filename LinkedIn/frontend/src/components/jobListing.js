@@ -60,14 +60,20 @@ class JobListing extends Component{
             )
         }
         else if(this.state.information.length>0){
+            
             JobDisplay = this.state.information.map(joblist => {
                 return(
                     <div>
                         <div class="job-listing">
-                            <a href="#" class="joblisttitle">{joblist.jobTitle}</a>
-                            <a href="#" class="btn btn-primary edit-button">
+                            <Link class = "joblisttitle" to={{ pathname: '/job/applicants', state: { job_id: joblist._id} }}>{joblist.jobTitle}</Link>
+
+                            <Link class = "btn btn-primary graph-button" to={{ pathname: '/user/graphs', state: { job_id: joblist._id} }}>
+                                <span class="edit-button-text">View graphs</span>
+                            </Link>
+
+                            <Link class = "btn btn-primary edit-button" to={{ pathname: '/job/post', state: { job_id: joblist._id} }}>
                                 <span class="edit-button-text">Edit</span>
-                            </a>
+                            </Link>
                             <h4>{joblist.location}</h4>
                             <p class="paragraph">{joblist.description}</p>
                             <p class="paragraph">Employment type : {joblist.employmentType}</p>
@@ -77,7 +83,6 @@ class JobListing extends Component{
                 )
             })
         }
-
 
         return(
             <div>

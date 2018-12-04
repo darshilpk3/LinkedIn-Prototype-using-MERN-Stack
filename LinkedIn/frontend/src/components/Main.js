@@ -14,6 +14,8 @@ import JobPosting from './jobposting';
 import JobSearch from './jobsearch';
 import JobListing from './jobListing';
 import PeopleSearchResults from './peoplesearchresults.js';
+import Graphs from './graphs.js';
+import ApplicantGraph from './applicantgraph'
 
 class Main extends Component {
     render() {
@@ -34,6 +36,8 @@ class Main extends Component {
                 <Route exact path="/jobs/" component={JobSearch} />
                 <Route exact path="/job/list" component={JobListing} />
                 <Route exact path="/users/results" component={PeopleSearchResults} />
+                <Route exact path="/user/graphs" component={Graphs} />
+                <Route exact path="/applicantgraph" component={ApplicantGraph} />
                 {/* <Route path="/TravelerLogin" component={Login} /> */}
 
             </div>

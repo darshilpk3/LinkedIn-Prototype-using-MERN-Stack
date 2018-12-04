@@ -98,6 +98,9 @@ var users= mongoose.Schema({
     }],
     noOfViews:{
         type:Number
+    },
+    profilepicture:{
+        type:String
     }  
 })
  

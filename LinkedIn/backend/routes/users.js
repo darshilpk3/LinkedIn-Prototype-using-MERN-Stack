@@ -628,4 +628,32 @@ router.get("/:userId/appliedJobs",async function(req,res,next){
     }
   })
 })
+
+
+
+
+
+
+
+
+// router.post('/download/:file(*)', (req, res) => {
+//   console.log("Inside download file");
+//   var file = req.params.file;
+//   var fileLocation = path.join(__dirname + '/uploads', file);
+//   var img = fs.readFileSync(fileLocation);
+//   var base64img = new Buffer(img).toString('base64');
+//   res.writeHead(200, {
+//     'Content-Type': 'image/jpg'
+//   });
+//   res.end(base64img);
+// });
+
+
+
+
+
+
+
+
+
 module.exports = router;

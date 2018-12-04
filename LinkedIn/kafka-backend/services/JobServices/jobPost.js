@@ -21,6 +21,7 @@ function handle_request(msg, callback) {
         companyLogo : msg.companyLogo,
         companyName : msg.companyName,
         applyMethod : msg.applyMethod,
+        noOfViews : msg.noOfViews
     })
 
     newJob.save()
