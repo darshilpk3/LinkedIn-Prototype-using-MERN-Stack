@@ -27,7 +27,7 @@ class ProfileLocation extends Component {
             zip: "",
             invalid: false,
             redirectNow: false,
-
+            zipError: false
         }
 
         this.fieldChangeHandler = this.fieldChangeHandler.bind(this)
@@ -41,13 +41,24 @@ class ProfileLocation extends Component {
 
     next() {
         if (this.state.country && this.state.zip) {
-            this.state.signupData.country = this.state.country;
+            this.setState({
+                invalid: false
+            })
+
+            if (/(^\d{5}$)|(^\d{5}-\d{4}$)/g.test(this.state.zip)) {
+                this.state.signupData.country = this.state.country;
                 this.state.signupData.zip = this.state.zip
 
-            this.props.onSubmitHandle(this.state.signupData)
-            this.setState({
-                redirectNow: true
-            })
+                this.props.onSubmitHandle(this.state.signupData)
+                this.setState({
+                    redirectNow: true
+                })
+            } else {
+                this.setState({
+                    zipError: true
+                })
+            }
+
         } else {
             this.setState({
                 invalid: true
@@ -63,7 +74,7 @@ class ProfileLocation extends Component {
 
 
     render() {
-        let redirectVar, error;
+        let redirectVar, error, zipError;
         if (!this.state.signupData) {
             redirectVar = <Redirect to="/" />
         }
@@ -72,6 +83,13 @@ class ProfileLocation extends Component {
         }
         if (this.state.invalid) {
             error = <div style={{ textAlign: "center", fontSize: "20px", color: "red" }}>All the fields are required</div>
+        } else {
+            error = null;
+        }
+        if (this.state.zipError) {
+
+            zipError = <div style={{ textAlign: "center", fontSize: "15px", color: "red" }}>Incorrect Zip format</div>
+
         }
         return (
             <div>
@@ -118,6 +136,7 @@ class ProfileLocation extends Component {
                 <label for="welcomezipcode"><h5 className="welcomelocationlabels">Postal code</h5></label>
                 <div>
                     <input type="text" onChange={this.fieldChangeHandler} name="zip" className="welcomezipcode" placeholder="" />
+                    {zipError}
                 </div>
                 <div className="profilelocationbutton">
                     <button className="btn btn-primary" onClick={this.next} name="profilelocationbutton" >Next</button>
