@@ -8,7 +8,9 @@ import { Redirect } from 'react-router';
 import { ROOT_URL } from '../constants/constants';
 import Navbar from './Navbar';
 import _ from "lodash";
-const userID = "5c06a1ef06b29e419cf927d9";
+const userID = localStorage.getItem("userId")
+
+//const userID = "5c06b8010732546084383d17";//localStorage.getItem("userId")
 
 class searchResults extends Component {
     constructor(props) {
@@ -18,7 +20,7 @@ class searchResults extends Component {
             //search using these two on component did mount
             /* job_title: "Java Developer",           
             location: "San Jose", */
-            job_title: this.props.location.state.jobTitle,            
+            job_title: this.props.location.state.jobTitle,
             location: this.props.location.state.jobLocation,
             jobResults: [],
             clickedAjob: false,
@@ -52,6 +54,7 @@ class searchResults extends Component {
             applyJobDiversity: "",
             applyJobSponsership: "",
             applyJobDisability: "",
+            alreadyApplied: false,
 
             filteredList: []
 
@@ -281,7 +284,7 @@ class searchResults extends Component {
 
     handleSavedJob = () => {
 
-       // const userID = "5c06a1ef06b29e419cf927d9"; //localStorage.getItem(userId);
+        // const userID = "5c06a1ef06b29e419cf927d9"; //localStorage.getItem(userId);
         const data = {
             jobId: this.state.clickedJobId
         }
@@ -309,32 +312,55 @@ class searchResults extends Component {
         //const userID = "5c06a1ef06b29e419cf927d9"; //localStorage.getItem(userId);
 
         //  /:jobId/start_application
+
         axios.get(`${ROOT_URL}/user/${userID}`)
             .then(res => {
-                console.log("new one---------------");
-                axios.put(`${ROOT_URL}/user/${this.state.clickedJobId}/start_application`)
-                    .then(res => {
-                        console.log("------on getting user data for easy apply-------", res.data.info);
-                    })
-                    .catch(err => {
-                        console.log("Error in put start application.");
-                    });
 
                 console.log("------on getting user data for easy apply-------", res.data.info);
-                if (this.state.clickedApplyMethod == "Easy Apply") {
+
+                /*console.log("userid---------------" + userID);
+                console.log("clickedJobId---------------" + this.state.clickedJobId);
+                console.log("clickedJobId---------------" + res.data.info.jobs_saved);
+
+                var saved = JSON.stringify(res.data.info.jobs_saved[0].jobSaved);
+                console.log("see if saved---------------" + saved);
+                if (saved.indexOf(userID) > -1) {
+                    //In the array!
+                    alert("You have already applied for this job!")
+                    console.log("its already applied")
                     this.setState({
-                        applyJobfname: res.data.info.fname,
-                        applyJoblname: res.data.info.lname,
-                        applyJobEmail: res.data.info.email,
-                        applyJobAddress: res.data.info.address,
-                        applyJobResume: res.data.info.resume
+                        alreadyApplied: true
                     });
-                } else if (this.state.clickedApplyMethod == "Custom Apply") {
-                    this.setState({
-                        applyJobResume: res.data.info.resume
-                    });
-                }
+                } else {
+                    //Not in the array
+                    console.log("its not already applied");
+                }*/
+                    axios.put(`${ROOT_URL}/user/${this.state.clickedJobId}/start_application`)
+                        .then(res => {
+                            console.log("------Updated counter-------");
+                        })
+                        .catch(err => {
+                            console.log("Error in put start application.");
+                        });
+
+                    if (this.state.clickedApplyMethod == "Easy Apply") {
+                        console.log("--------------------------",res.data.info);
+
+                        this.setState({
+                            applyJobfname: res.data.info.fname,
+                            applyJoblname: res.data.info.lname,
+                            applyJobEmail: res.data.info.email,
+                            applyJobAddress: res.data.info.address,
+                            applyJobResume: res.data.info.resume
+                        });
+                        console.log("--------------------------",this.state.applyJobfname);
+                    } else if (this.state.clickedApplyMethod == "Custom Apply") {
+                        this.setState({
+                            applyJobResume: res.data.info.resume
+                        });
+                    }
                 
+
             })
             .catch(err => {
                 console.log("Error in getting user details.");
@@ -395,6 +421,7 @@ class searchResults extends Component {
             </div>
         )
 
+        let myData=JSON.parse(localStorage.getItem('myData'));
         clickedModal = (
             <div>
                 <div className="row">
@@ -402,8 +429,8 @@ class searchResults extends Component {
                         <img src={this.state.clickedCompanyLogo} className="img-circle ModalProfileImage" />
                     </div>
                     <div className="col-sm-9 col-md-9 col-lg-9" style={{ "textAlign": "left" }}>
-                        {/* <h4>{localStorage.getItem("")} {localStorage.getItem("")}</h4> */}
-                        <h4>User name comes here</h4>
+                         <h4>{myData.firstname} {myData.lastname}</h4> 
+                        
 
                     </div>
                 </div><br></br>
@@ -456,25 +483,27 @@ class searchResults extends Component {
             </div>
         )
 
-        appliedModal = (
-            <div class="modal-dialog" role="document">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h4 style={{ "float": "left" }}>Apply to {this.state.clickedJobTitle}</h4>
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close" style={{ "float": "right" }}>
-                            <span aria-hidden="true">&times;</span>
-                        </button>
-                    </div>
-                    <div class="modal-body" style={{ "textAlign": "center" }}>
-                        <h5>{clickedModal}</h5>
-                    </div>
-                    <div class="modal-footer">
-                        <button className="savedButtonModal" data-dismiss="modal">Cancel</button>
-                        <button className="applyButtonModal" onClick={this.handleApplicationSubmit}>Submit Application</button>
+        if (!this.state.alreadyApplied) {
+            appliedModal = (
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h4 style={{ "float": "left" }}>Apply to {this.state.clickedJobTitle}</h4>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close" style={{ "float": "right" }}>
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body" style={{ "textAlign": "center" }}>
+                            <h5>{clickedModal}</h5>
+                        </div>
+                        <div class="modal-footer">
+                            <button className="savedButtonModal" data-dismiss="modal">Cancel</button>
+                            <button className="applyButtonModal" onClick={this.handleApplicationSubmit}>Submit Application</button>
+                        </div>
                     </div>
                 </div>
-            </div>
-        )
+            )
+        }
 
         if (this.state.clickedAjob) {
             clickedJobInfo = (
