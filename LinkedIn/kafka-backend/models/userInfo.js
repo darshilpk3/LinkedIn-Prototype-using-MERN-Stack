@@ -101,6 +101,9 @@ var users= mongoose.Schema({
     }],
     noOfViews:{
         type:Number
+    },
+    profileImage:{
+        type:String
     }  
 })
  

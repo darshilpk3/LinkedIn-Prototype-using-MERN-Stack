@@ -5,7 +5,7 @@ import cookie from 'react-cookies';
 import { Link } from 'react-router-dom';
 import { Redirect } from 'react-router';*/
 import '../styles/peoplesearchresults.css'
-
+import Login from './navbar'
 import picDS from '../assets/images/PicDS.png'
 
 class PeopleSearchResults extends Component {
@@ -53,9 +53,7 @@ class PeopleSearchResults extends Component {
         return (    
             <div>
                 
-                <nav className="navbar navbar-expand-sm" style={{ 'border-bottom-color': '', 'padding': ' 0%', 'backgroundColor': 'darkblue', "border-radius": "0px", marginBottom: "0px" }}>
-                       hi
-                </nav>
+                <Login/>
                 <div className="myMargin"></div>
                     <div class="row myNetworkBackground">
                         

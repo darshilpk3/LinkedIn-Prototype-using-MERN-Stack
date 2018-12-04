@@ -2,7 +2,9 @@ import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
 import { Redirect } from 'react-router';
 import axios from 'axios';
-import '../styles/userdelete.css'
+import '../styles/userdelete.css';
+import Login from './navbar';
+var swal = require('sweetalert');
 
 class UserDelete extends Component{
     constructor(props){
@@ -10,12 +12,29 @@ class UserDelete extends Component{
         this.state={
             userName : "Alex White",
             userProfileImage: "https://image.freepik.com/free-vector/abstract-dark-blue-polygonal-background_1035-9700.jpg",
+            userId : localStorage.getItem("userId"),
+            userDeleted : false
         }
+        this.deleteuserHandler = this.deleteuserHandler.bind(this)
+    }
+
+    deleteuserHandler = (e) => {
+        axios.delete("http://localhost:3001/user/" + this.state.userId)
+        .then((response) => {
+            if(response.status === 200){
+            this.setState({
+                userDeleted : true
+            })
+            swal("User Deleted", "Success!", "success")
+            }
+        })
     }
 
     render(){
+
         return(
             <div className="page">
+            <Login/>
             <div className="userdelete">
                 <h2 className="userdeleteh2">
                 <br></br>
@@ -57,11 +76,9 @@ class UserDelete extends Component{
                 <span class="checkmark"></span>
                 </label>
                 </div>
-                <p className="userdeletepandb">Your feedback matters. Is there anything else you'd like us to know?</p>
-                <input type ="textarea" className="userdeletefeedback"></input>
                 <div>
-                <Link to = "/" className="btn btn-default backuserdelete"><b>Back to Settings</b></Link>
-                <button className="btn btn-primary userdeletebutton"><b>Delete</b></button>                
+                <Link to = "/newsfeed" className="btn btn-default backuserdelete"><b>Back </b></Link>
+                <button className="btn btn-primary userdeletebutton" onClick={this.deleteuserHandler}><b>Delete</b></button>                
                 </div>
                 </div>
            </div>

@@ -9,26 +9,29 @@ import jobpostlogo from '../assets/images/jobpostlogo.PNG'
 var swal = require('sweetalert')
 var redirectVar = null;
 var formData = "";
+import {ROOT_URL} from '../constants/constants';
 
-class JobPosting extends Component{
-    constructor(props){
+
+class JobPosting extends Component {
+    constructor(props) {
         super(props);
-        this.state={
-           jobTitle: "",
-           jobDescription : "",
-           jobIndustry : "",
-           jobEmploymentType : "",
-           jobPostedDate : "",
-           jobLocation : "",
-           jobFunction : "",
-           jobSkills : "",
-           companyLogo : "",
-           jobPostedBy : "",
-           companyName : "",
-           jobPosted : false,
-           applyMethod : "",
-           jobId : "",
-           jobDetails : ""
+        this.state = {
+            jobTitle: "",
+            jobDescription: "",
+            jobIndustry: "",
+            jobEmploymentType: "",
+            jobPostedDate: "",
+            jobLocation: "",
+            jobFunction: "",
+            jobSkills: "",
+            companyLogo: "",
+            jobPostedBy: "",
+            companyName: "",
+            jobPosted: false,
+            applyMethod: "",
+            jobId: "",
+            jobDetails: "",
+            companyLogoFile: null
         }
         this.PostJobHandler = this.PostJobHandler.bind(this);
         this.EmploymentTypeHandler = this.EmploymentTypeHandler.bind(this);
@@ -37,45 +40,51 @@ class JobPosting extends Component{
         this.onChangeLogo = this.onChangeLogo.bind(this);
     }
 
-    onChange(e){
-        this.setState({[e.target.name]:e.target.value})
-    } 
+    onChange(e) {
+        this.setState({
+            [e.target.name]: e.target.value
+        })
+    }
 
-    onChangeLogo = (e) =>
-    {
-        for(let size=0; size < e.target.files.length; size++){
-            console.log('Selected file:', e.target.files[size]);
-            let file = e.target.files[size];
- 
-            console.log("uploading screenshot file for:", this.props.useremail)
-            formData = new FormData();
-            formData.append('selectedFile', file);
-            this.setState({
-                companyLogo : e.target.files[size].name
-            })
-            axios.post(`http://localhost:3001/companylogo`, formData)
-            .then((result) => {
-              // access results...
-            });
-        }
-   }
+    onChangeLogo = (e) => {
+        this.setState({
+            companyLogoFile: e.target.files[0],
+            companyLogo: e.target.files[0].name
+        })
+        // for(let size=0; size < e.target.files.length; size++){
+        //     console.log('Selected file:', e.target.files[size]);
+        //     let file = e.target.files[0];
+
+        //     console.log("uploading screenshot file for:", this.props.useremail)
+        //     formData = new FormData();
+        //     formData.append('selectedFile', file);
+        //     this.setState({
+        //         companyLogo : e.target.files[size].name
+        //     })
+        //     axios.post(`http://localhost:3001/companylogo`, formData)
+        //     .then((result) => {
+        //       // access results...
+        //     });
+        // }
+    }
 
     applyMethodHandler = (e) => {
         this.setState({
-            applyMethod : this.state.applyMethod
+            applyMethod: this.state.applyMethod
         })
     }
 
     EmploymentTypeHandler = (e) => {
         this.setState({
-            jobEmploymentType : this.state.jobEmploymentType
+            jobEmploymentType: this.state.jobEmploymentType
         })
     }
 
     PostJobHandler = (e) => {
         e.preventDefault();
         const data = {
-            postedBy: localStorage.getItem("userId"),
+            // postedBy: localStorage.getItem("userId"),
+            postedBy: "5c0313af1e6ee47530f590cb",
             jobTitle: this.state.jobTitle,
             description: this.state.jobDescription,
             industry: this.state.jobIndustry,
@@ -84,72 +93,66 @@ class JobPosting extends Component{
             location: this.state.jobLocation,
             jobFunction: this.state.jobFunction,
             required_skills: this.state.jobSkills,
-            companyLogo : this.state.companyLogo,
-            companyName : this.state.companyName,
-            applyMethod : this.state.applyMethod,
+            companyLogo: this.state.companyLogo,
+            companyName: this.state.companyName,
+            applyMethod: this.state.applyMethod,
         }
 
         console.log("Data for posting Job : ", data)
 
-        axios.post("http://localhost:3001/job", data)
-        .then((response) => {
-            if(response.status === 200){
-            this.setState({
-                jobPosted : true
+        axios.post(`${ROOT_URL}/job`, data)
+            .then((response) => {
+                if (response.status === 200) {
+                    if (response.data.status) {
+
+
+                        formData = new FormData();
+                        formData.append('selectedFile', this.state.companyLogoFile);
+                        
+                        axios.post(`${ROOT_URL}/${response.data.info.result._id}/companylogo`, formData)
+                            .then((result) => {
+                                // access results...
+                            });
+                        this.setState({
+                            jobPosted: true
+                        })
+                        swal("Job Posted!", "Congratulations", "success")
+
+                    }
+
+                }
             })
-            swal("Job Posted!", "Congratulations", "success")
-            }
-        })
-        
+
     }
 
-    componentDidMount(){
-
+    componentDidMount() {
         console.log("\n Printing the job id obtained from another place");
-        console.log(this.props.location.state.job_id);
+        //console.log(this.props.location.state.job_id);
 
-        axios.get("http://localhost:3001/job/"+this.state.jobId)
-        .then((response) => {
-            if(response.status === 200){
-                this.setState({
-                    jobDetails : response.data
-                })
-            }
-        })
-    }
+        axios.get(`${ROOT_URL}/job/` + this.state.jobId)
+            .then((response) => {
+                console.log("response.data of job get", response.data.info.result)
+                console.log("Response status of job get", response.data.status)
+                if (response.data.status === 1) {
+                    this.setState({
+                        jobDetails: response.data.info.result,
+                        jobPostedBy: localStorage.getItem("userId"),
+                        jobTitle: response.data.info.result.jobTitle,
+                        jobDescription: response.data.info.result.description,
+                        jobIndustry: response.data.info.result.industry,
+                        jobEmploymentType: response.data.info.result.employmentType,
+                        jobPostedDate: Date(),
+                        jobLocation: response.data.info.result.location,
+                        jobFunction: response.data.info.result.jobFunction,
+                        jobSkills: response.data.info.result.required_skills,
+                        companyLogo: response.data.info.result.companyLogo,
+                        companyName: response.data.info.result.companyName,
+                        applyMethod: response.data.info.result.applyMethod
 
-    PostJobHandler = (e) => {
-        e.preventDefault();
-        const data = {
-            jobTitle: this.state.jobTitle,
-           jobIndustry : this.state.jobIndustry,
-           jobEmploymentType : this.state.jobEmploymentType,
-           jobPostedDate : Date(),
-           jobLocation : this.state.jobLocation,
-           jobFunction : this.state.jobFunction,
-           jobSkills : this.state.jobSkills,
-        //    companyLogo : 
-        //    jobPostedBy : 
-           companyName : this.state.companyName,
-        }
-
-        console.log("Data for posting Job : ", data)
-
-        axios.post("http://localhost:3001/job/", data)
-        .then((response) => {
-            if(response.status === 200){
-            this.setState({
-                jobPosted : true
+                    })
+                }
             })
-            swal("Job Posted!", "Congratulations", "success")
-            }
-        })
-        
     }
-
-    onChange(e){
-        this.setState({[e.target.name]:e.target.value})
-    } 
 
     render(){
         return(
@@ -168,7 +171,7 @@ class JobPosting extends Component{
     </div>
 </div>
 <form onSubmit={this.onSubmit}>
-    <div class="row setup-content" id="step-2">
+    <div class="row setup-content" id="step-1">
     <div className="page1background">
             <div className="JobPostHeader">
             <nav class="navbar navbar-expand-lg navbar-light bg-light">
@@ -206,7 +209,7 @@ class JobPosting extends Component{
         </div>
         </div>
     </div>
-    <div class="row setup-content" id="step-1">
+    <div class="row setup-content" id="step-2">
     <div className="page2background">
         <div class="col-xs-12">
             <div class="col-md-12">
@@ -250,13 +253,13 @@ class JobPosting extends Component{
                         <p className="control-label jobpostrow1label">Apply Method *</p>
                         <select className="form-control form-control-lg applymethodjobpost" id="exampleFormControlSelect1" selected={this.state.applyMethod} defaultValue={this.state.applyMethod} onChange={this.applyMethodHandler} required>
                             <option value="">Choose One...</option>
-                            <option value="Part-Time">Easy Apply</option>
-                            <option value="Full-Time">Direct Application</option>
+                            <option value="Easy Apply" selected={this.state.applyMethod="Easy Apply"}>Easy Apply </option>
+                            <option value="Custom Apply" selected={this.state.applyMethod="Custom Apply"}>Custom Apply</option>
                         </select>
                         <br></br><br></br>
                         <div className ="form-group">
                             <p className="control-label jobpostrow1label">How did you hear about us?</p>
-                            <input type="text" placeholder="Through a Friend/Advertisement/etc.."  className ="form-control jobpostfunction" required/>
+                            <input type="text" placeholder="Through a Friend/Advertisement/etc.."  className ="form-control jobpostfunction" />
                         </div>
                     </div>
                     <button class="btn btn-primary nextBtn btn-lg" type="button" >Continue</button>
@@ -285,18 +288,18 @@ class JobPosting extends Component{
                     <br></br>
                     <div className ="form-group">
                         <p className="control-label jobpostrow1label">How many years of relevant experience are you looking for? *</p>
-                        <input type="text" name="jobpostexperience" placeholder="1, 2, 3 .. years of experience." className ="form-control jobpostfunction" required/>
+                        <input type="text" name="jobpostexperience" placeholder="1, 2, 3 .. years of experience." className ="form-control jobpostfunction"/>
                     </div>
                    <br></br>
                     <br></br>
                     <div className ="form-group">
-                        <p className="control-label jobpostrow1label">What level of education are you looking for? *</p>
-                        <input type="text" name="companyindustry" placeholder="Add company industry" className ="form-control jobpostfunction" required/>
+                        <p className="control-label jobpostrow1label">What level of education are you looking for? </p>
+                        <input type="text" name="companyindustry" placeholder="High School / Diploma" className ="form-control jobpostfunction"/>
                     </div>
                     <br></br>
                     <br></br>
                     <div className ="form-group">
-                        <p className="control-label jobpostrow1label">Daily Budget? *</p>
+                        <p className="control-label jobpostrow1label">Daily Budget? </p>
                         <input type="text" name="postjobbudget" placeholder="0 $" className ="form-control jobpostfunction"/>
                     </div>
                     <br></br>

@@ -4,7 +4,7 @@ var path = require('path');
 var cookieParser = require('cookie-parser');
 var session = require('express-session');
 var bodyParser = require('body-parser');
-
+var Job = require('./models/job')
 var logger = require('morgan');
 var cors = require('cors')
 var indexRouter = require('./routes/index');
@@ -12,10 +12,9 @@ var usersRouter = require('./routes/users');
 var jobsRouter = require('./routes/jobs');
 var messageRouter = require('./routes/message')
 var connectionRouter = require('./routes/connections')
-
 var mongo = require('./connections/mongo');
 var mongoose = require('mongoose');
-
+const multer = require('multer')
 var app = express();
 
 // view engine setup
@@ -68,14 +67,45 @@ app.use(function (req, res, next) {
 });
 
 // error handler
-app.use(function (err, req, res, next) {
-  // set locals, only providing error in development
-  res.locals.message = err.message;
-  res.locals.error = req.app.get('env') === 'development' ? err : {};
+// app.use(function (err, req, res, next) {
+//   // set locals, only providing error in development
+//   res.locals.message = err.message;
+//   res.locals.error = req.app.get('env') === 'development' ? err : {};
 
-  // render the error page
-  res.status(err.status || 500);
-  res.render('error');
+//   // render the error page
+//   res.status(err.status || 500);
+//   res.render('error');
+// });
+
+const storage = multer.diskStorage({
+    destination: (req, file, cb) => {
+    cb(null, './uploads');
+    },
+    filename: (req, file, cb) => {
+    
+    const newFilename = `${file.originalname}`;
+    cb(null,  newFilename);
+    },
+});
+
+    const upload = multer({ storage });
+    
+    app.post('/companylogo', upload.single('selectedFile'), (req, res) => {
+      //console.log("Req : ",req);
+      //console.log("Res : ",res.file);
+      console.log("Printing filename",res.req.file.filename)
+      photostore=res.req.file.filename
+      console.log("Inside photos Post for company logo");
+      })
+
+app.post('/download/:file(*)',(req, res) => {
+  console.log("Inside download file");
+  var file = req.params.file;
+  var fileLocation = path.join(__dirname + '/uploads',file);
+  var img = fs.readFileSync(fileLocation);
+  var base64img = new Buffer(img).toString('base64');
+  res.writeHead(200, {'Content-Type': 'image/jpg' });
+  res.end(base64img);
 });
 
 module.exports = app;
