@@ -1225,51 +1225,15 @@ router.get("/:userId/daily_views", async function (req, res, next) {
       res.end(JSON.stringify(data))
       console.log("______err__________", err)
     })
-  // User.aggregate([
-  //   { $match: { postedBy: id1, _id: j_id } },
-  //   {
-  //     $project: {
-  //       jobTitle: 1, noOfViews: 1,
-  //       // month: { $month: new Date("$postedDate") }
-  //       // month:{ "$substr": [ "$postedDate", 5, 2 ] }
-  //     }
-  //   },
-
-  // ])
-
-  //   .then(result => {
-  //     // callback(null,result)
-  //     console.log("_____________result__________", result)
-
-
-  //     res.writeHead(200, {
-  //       'Content-Type': 'application/json'
-  //     })
-  //     const data = {
-  //       "status": 1,
-  //       "msg": "successfully found least 5 applied jobs",
-  //       "info": {
-  //         "result": result
-  //       }
-  //     }
-  //     // console.log("____________data_________________", data)
-  //     res.end(JSON.stringify(data))
-  //   })
-  //   .catch(err => {
-  //     // callback(err,err)
-  //     const data = {
-  //       "status": 0,
-  //       "msg": "Failed fetching the details of jobs applied",
-  //       "info": err
-  //     }
-  //     res.writeHead(200, {
-  //       'Content-Type': 'application/json'
-  //     })
-  //     res.end(JSON.stringify(data))
-  //     console.log("______err__________", err)
-  //   })
-
-
+ 
 })
+
+
+
+
+
+
+
+
 
 module.exports = router;
