@@ -10,7 +10,7 @@ import { ROOT_URL } from '../constants/constants';
 import Navbar from './Navbar'
 
 import picDS from '../assets/images/PicDS.png'
-import { ROOT_URL } from '../constants/constants';
+// import { ROOT_URL } from '../constants/constants';
 
 // pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.js`;
 

@@ -5,7 +5,7 @@ import cookie from 'react-cookies';
 import { Link } from 'react-router-dom';
 import { Redirect } from 'react-router';*/
 
-import navbar from './Navbar';
+import Navbar from './Navbar';
 import defaultPic from '../assets/images/default-profile-pic.png'
 import linkedIn from '../assets/images/linkedIn.png'
 
@@ -58,7 +58,7 @@ class profileView extends Component {
                        hi
                 </nav> */}
                 {/* {navbar} */}
-                <navbar />
+                <Navbar />
                 <div className="myMargin"></div>
                 <div class="row myNetworkBackground">
                     <div class="col-sm-8 col-md-8 col-lg-8" >

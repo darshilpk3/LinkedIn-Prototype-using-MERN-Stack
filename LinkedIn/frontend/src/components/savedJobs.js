@@ -10,7 +10,7 @@ import { ROOT_URL } from '../constants/constants';
 import picDS from '../assets/images/PicDS.png'
 import axios from 'axios';
 
-import {ROOT_URL} from '../constants/constants';
+// import { ROOT_URL } from '../constants/constants';
 
 
 const userID = localStorage.getItem("userId")
@@ -20,7 +20,7 @@ class savedJobs extends Component {
         this.state = {
             savedJobs: 0,    //number of connections user have
             savedJobsDetails: null,
- 
+
             jobResults: [],
             clickedAjob: false,
             filtercompanyname: "",
@@ -55,13 +55,13 @@ class savedJobs extends Component {
             filteredList: []
         }
 
-        this.handleAppliedJob = this.handleAppliedJob.bind(this); 
+        this.handleAppliedJob = this.handleAppliedJob.bind(this);
         this.handleApplicationSubmit = this.handleApplicationSubmit.bind(this);
     }
 
     handleAppliedJob = (e) => {
-        
-        console.log("the JOB ID IS : "+e)
+
+        console.log("the JOB ID IS : " + e)
         this.setState({
             clickedJobId: e
         });
@@ -92,31 +92,31 @@ class savedJobs extends Component {
                     //Not in the array
                     console.log("its not already applied");
                 }*/
-                    axios.put(`${ROOT_URL}/user/${this.state.clickedJobId}/start_application`)
-                        .then(res => {
-                            console.log("------Updated counter-------");
-                        })
-                        .catch(err => {
-                            console.log("Error in put start application.");
-                        });
+                axios.put(`${ROOT_URL}/user/${this.state.clickedJobId}/start_application`)
+                    .then(res => {
+                        console.log("------Updated counter-------");
+                    })
+                    .catch(err => {
+                        console.log("Error in put start application.");
+                    });
 
-                    //if (this.state.clickedApplyMethod == "Easy Apply") {
-                        console.log("----------------this one----------",res.data.info);
+                //if (this.state.clickedApplyMethod == "Easy Apply") {
+                console.log("----------------this one----------", res.data.info);
 
-                        this.setState({
-                            applyJobfname: res.data.info.fname,
-                            applyJoblname: res.data.info.lname,
-                            applyJobEmail: res.data.info.email,
-                            applyJobAddress: res.data.info.address,
-                            applyJobResume: res.data.info.resume
-                        });
-                        console.log("--------------------------",this.state.applyJobfname);
-                   /* } else if (this.state.clickedApplyMethod == "Custom Apply") {
-                        this.setState({
-                            applyJobResume: res.data.info.resume
-                        });
-                    }*/
-                
+                this.setState({
+                    applyJobfname: res.data.info.fname,
+                    applyJoblname: res.data.info.lname,
+                    applyJobEmail: res.data.info.email,
+                    applyJobAddress: res.data.info.address,
+                    applyJobResume: res.data.info.resume
+                });
+                console.log("--------------------------", this.state.applyJobfname);
+                /* } else if (this.state.clickedApplyMethod == "Custom Apply") {
+                     this.setState({
+                         applyJobResume: res.data.info.resume
+                     });
+                 }*/
+
 
             })
             .catch(err => {
@@ -180,7 +180,8 @@ class savedJobs extends Component {
                 .catch(err => {
                     console.log("Error in job search get" + err);
                 });
-      //  }
+            //  }
+        }
     }
 
 
@@ -188,10 +189,10 @@ class savedJobs extends Component {
         require('../styles/savedJobs.css');
         let redirect = null;
         let appliedModal = null;
-        let clickedModal=null;
+        let clickedModal = null;
 
 
-        let myData=JSON.parse(localStorage.getItem('myData'));
+        let myData = JSON.parse(localStorage.getItem('myData'));
         clickedModal = (
             <div>
                 <div className="row">
@@ -199,7 +200,7 @@ class savedJobs extends Component {
                         <img src={this.state.clickedCompanyLogo} className="img-circle ModalProfileImage" />
                     </div>
                     <div className="col-sm-9 col-md-9 col-lg-9" style={{ "textAlign": "left" }}>
-                        <h4>{myData.firstname} {myData.lastname}</h4> 
+                        <h4>{myData.firstname} {myData.lastname}</h4>
                     </div>
                 </div><br></br>
                 <div style={{ "textAlign": "left", "padding": "5%" }}>
@@ -271,7 +272,7 @@ class savedJobs extends Component {
             </div>
         )
 
-        
+
         if (this.state.savedJobsDetails) {
             var displaySavedJobs = this.state.savedJobsDetails.map(job => {
                 return (
@@ -286,10 +287,10 @@ class savedJobs extends Component {
                         </div>
 
                         <div className="col-sm-4 col-md-4 col-lg-4" >
-                            <button class="btn btn-primary myConnectionButton" 
+                            <button class="btn btn-primary myConnectionButton"
                                 style={{ 'float': 'right', 'width': '50%' }} id={job._id} onClick={() => this.handleAppliedJob(job._id)} data-toggle="modal" data-target="#exampleModalApply">Apply</button>
-                                    <div class="modal fade" id="exampleModalApply" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-                                    {appliedModal} 
+                            <div class="modal fade" id="exampleModalApply" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                {appliedModal}
                             </div>
 
                         </div>
