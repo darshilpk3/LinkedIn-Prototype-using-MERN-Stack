@@ -25,7 +25,7 @@ class PDF extends Component {
         <Document
           // file= "https://user-images-linkedin2.s3.us-east-2.amazonaws.com/Design%20Thinking.pdf"
           // file = {myPDF}
-          file = "http://localhost:3001/uploads/HonestyPledge.pdf"
+          // file = `${ROOT_URL}/uploads/HonestyPledge.pdf`
           onLoadSuccess={this.onDocumentLoadSuccess}
         >
           <Page pageNumber={pageNumber} />

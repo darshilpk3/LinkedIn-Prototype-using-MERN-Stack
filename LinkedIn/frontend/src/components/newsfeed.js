@@ -17,6 +17,68 @@ class Newsfeed extends Component{
         }
     }
 
+    // axios.defaults.withCredentials = true;
+    //     axios.get(`${ROOT_URL}/user/${this.state.uid}`)
+    //         .then((response) => {
+
+    //             console.log(response.data);
+    //             if (response.data.status == 1) {
+    //                 let data = response.data.info;
+    //                 let temp = "";
+    //                 if (data) {
+    //                     if (data && data.type == "R") {
+    //                         temp = data.current_position
+    //                     } else {
+    //                         if (data.education && data.education.length > 0) {
+    //                             temp = data.education[data.education.length - 1].college_name
+
+    //                         } else {
+    //                             temp = [];
+    //                         }
+    //                     }
+    //                     let image = defaultPic;
+    //                     if (data.profileImage) {
+    //                         image = ROOT_URL + "/" + data.profileImage
+    //                     }
+    //                     this.setState({
+    //                         fname: data.fname,
+    //                         lname: data.lname,
+    //                         headline: data.headline,
+    //                         country: data.country,
+    //                         summary: data.profile_summary || "",
+    //                         Experience: data.experience,
+    //                         tempEdit: data.experience,
+    //                         Education: data.education,
+    //                         tempEdu: data.education,
+    //                         skill: data.skills,
+    //                         tempSkill: data.skills,
+    //                         connections: data.connections && data.connections.length,
+    //                         contactInfo: data.email,
+    //                         currentInfo: temp,
+    //                         ProfilePic: image,
+    //                         current_position: temp,
+    //                         zip: data.zipcode
+    //                     })
+    //                     localStorage.setItem('profile', JSON.stringify({
+    //                         fname: data.fname,
+    //                         lname: data.lname,
+    //                         headline: data.headline,
+    //                         country: data.country,
+    //                         summary: data.profile_summary,
+    //                         connections: data.connections && data.connections.length,
+    //                         contactInfo: data.email,
+    //                         currentInfo: temp,
+    //                         ProfilePic: image
+    //                     }));
+    //                     localStorage.setItem('education', JSON.stringify(data.education));
+    //                     localStorage.setItem('experience', JSON.stringify(data.experience));
+    //                     localStorage.setItem('skill', JSON.stringify(data.skills));
+    //                 }
+
+
+    //             }
+
+    //         });
     render(){
         
         require('../styles/jobsearch.css')

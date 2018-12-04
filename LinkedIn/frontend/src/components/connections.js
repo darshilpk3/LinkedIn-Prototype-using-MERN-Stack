@@ -8,6 +8,7 @@ import { Redirect } from 'react-router';
 import Navbar from './Navbar'
 
 import picDS from '../assets/images/PicDS.png'
+import { ROOT_URL } from '../constants/constants';
 
 // pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.js`;
 
@@ -36,7 +37,7 @@ class connections extends Component {
 
         if (localStorage.getItem('userId')) {
             const id = localStorage.getItem('userId')
-            axios.get(`http://localhost:3001/connection/${id}/getConnections`)
+            axios.get(`${ROOT_URL}/connection/${id}/getConnections`)
                 .then(response => {
                     if (response.status === 200) {
                         console.log("Connections results: ", response.data)

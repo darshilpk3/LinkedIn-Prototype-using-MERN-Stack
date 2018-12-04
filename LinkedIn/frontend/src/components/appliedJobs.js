@@ -36,7 +36,7 @@ class appliedJobs extends Component {
 
         if (localStorage.getItem("userId")) {
             const id = localStorage.getItem("userId")
-            axios.get(`http://localhost:3001/user/${id}/appliedJobs`)
+            axios.get(`${ROOT_URL}/user/${id}/appliedJobs`)
                 .then(response => {
                     if (response.status === 200) {
                         this.setState({

@@ -84,7 +84,7 @@ class JobApplicantsList extends Component{
         const pageNumber = this.state.pageNumber;
         const numPages = this.state.numPages;
 
-        const fileURL = "http://localhost:3001/uploads/cmpe_255.pdf";
+        const fileURL = `${ROOT_URL}/uploads/cmpe_255.pdf`;
 
         console.log(" ---- Printing this.state.information ----");
         console.log(this.state.information);

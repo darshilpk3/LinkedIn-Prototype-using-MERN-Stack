@@ -30,7 +30,7 @@ class Messaging extends Component {
             var header = new Headers()
             axios.defaults.withCredentials = true
 
-            axios.get(`http://localhost:3001/message/${id}/getChats`)
+            axios.get(`${ROOT_URL}/message/${id}/getChats`)
                 .then(result => {
                     if (result.status === 200) {
                         if (result.data.status) {
@@ -43,7 +43,7 @@ class Messaging extends Component {
                 })
         
 
-        axios.get(`http://localhost:3001/user/${id}`)
+        axios.get(`${ROOT_URL}/user/${id}`)
             .then(response => {
                 console.log("Response for get user is: ",response.data)
             })
@@ -55,7 +55,7 @@ class Messaging extends Component {
         const id = e.target.id
         axios.defaults.withCredentials = true;
 
-        axios.get(`http://localhost:3001/message/${id}`)
+        axios.get(`${ROOT_URL}/message/${id}`)
             .then(response => {
                 if (response.status === 200) {
                     if (response.data.status) {
@@ -87,7 +87,7 @@ class Messaging extends Component {
         }
         console.log(data)
         axios.defaults.withCredentials = true
-        axios.post("http://localhost:3001/message", data)
+        axios.post(`${ROOT_URL}/message`, data)
             .then(response => {
                 if (response.status === 200) {
                     if (response.data.status) {

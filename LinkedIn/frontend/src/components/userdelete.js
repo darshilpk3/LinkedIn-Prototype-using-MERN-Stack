@@ -19,7 +19,7 @@ class UserDelete extends Component{
     }
 
     deleteuserHandler = (e) => {
-        axios.delete("http://localhost:3001/user/" + this.state.userId)
+        axios.delete(`${ROOT_URL}/user/` + this.state.userId)
         .then((response) => {
             if(response.status === 200){
             this.setState({
