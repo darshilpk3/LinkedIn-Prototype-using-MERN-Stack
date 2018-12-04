@@ -3,11 +3,9 @@ import React, { Component } from 'react';
 import axios from 'axios';
 import cookie from 'react-cookies';
 import { Link } from 'react-router-dom';
-import { Document, Page } from 'react-pdf';
-import { pdfjs } from 'react-pdf';
-
-import { Redirect } from 'react-router';
 import _ from "lodash";
+import { Redirect } from 'react-router';
+import Login from './navbar'
 
 import picDS from '../assets/images/PicDS.png'
 
@@ -132,10 +130,8 @@ class connections extends Component {
 
         return (
             <div>
-
-                <nav className="navbar navbar-expand-sm" style={{ 'border-bottom-color': '', 'padding': ' 0%', 'backgroundColor': 'darkblue', "border-radius": "0px", marginBottom: "0px" }}>
-                    hi
-                </nav>
+                
+                <Login/>
                 <div className="myMargin"></div>
                 <div class="row myNetworkBackground">
 
@@ -156,11 +152,22 @@ class connections extends Component {
                                         <div class="dropdown">
                                             <button class="btn btn-default dropdown-toggle" type="button" data-toggle="dropdown">Recently added
                                                 <span class="caret"></span></button>
-                                            <ul class="dropdown-menu">
-                                                <li class="dropdown-header">Recently Added</li>
-                                                <li><a href="#">First name</a></li>
-                                                <li><a href="#">Last Name</a></li>
-                                            </ul>
+                                                <ul class="dropdown-menu">
+                                                    <li class="dropdown-header">Recently Added</li>
+                                                    <li><a href="#">First name</a></li>
+                                                    <li><a href="#">Last Name</a></li>
+                                                </ul>
+                                            </div>
+                                            
+                                        </div>
+                                    
+                                        <div class="col-sm-4 col-md-4 col-lg-4" style={{'textAlign':'right', 'height':'100%','marginTop':'0.5%'}}>
+                                            <input type="text" placeholder="Search.." name="search"/>
+                                            <button type="submit" className="submitbutton"><i class="fa fa-search"></i></button> 
+                                        </div>
+                                        
+                                        <div class="col-sm-3 col-md-3 col-lg-3">
+                                        <a><h5>Clear Search</h5></a>
                                         </div>
 
                                     </div>
@@ -223,7 +230,6 @@ class connections extends Component {
                     </div>
 
                 </div>
-            </div>
         )
     }
 }

@@ -33,14 +33,26 @@ var job= mongoose.Schema({
     companyLogo:{
         type:String
     },
+    companyName:{
+        type:String
+    },
     applications:[
         {
             type:mongoose.Schema.Types.ObjectId,
             ref:'Application'
         }
     ],
+    noOfViews_applied:{
+        type:Number
+    },
+    noOfViews_submitted:{
+        type:Number
+    },
     noOfViews:{
         type:Number
+    },
+    applyMethod:{
+        type:String
     },
     postedDate:{
         type:String,

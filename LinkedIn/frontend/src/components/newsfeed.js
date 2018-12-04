@@ -7,6 +7,7 @@ import c1profilepic from '../assets/images/c1profilepic.jpg'
 import linkedin from '../assets/images/linkedinnewsfeed.PNG'
 import c4profilepic from '../assets/images/c4profilepic.jpg'
 import c4newsfeedscroll from '../assets/images/c4newsfeedscroll.jpeg'
+import Login from './navbar'
 
 class Newsfeed extends Component{
     constructor(props){
@@ -19,6 +20,7 @@ class Newsfeed extends Component{
     render(){
         return(
            <div className="page">
+           <Login />
                 <div className="container-1"> 
                     <img src={c1profilepic} className="c1profilepic"/>
                     <h2 className="c1Name">Sanjna Dhamejani</h2> 

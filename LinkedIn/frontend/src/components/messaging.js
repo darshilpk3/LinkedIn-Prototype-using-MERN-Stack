@@ -4,12 +4,13 @@ import axios from 'axios';
 import cookie from 'react-cookies';
 import { Link } from 'react-router-dom';
 import { Redirect } from 'react-router';
+import Login from './navbar'
 import ad from '../assets/images/Ad_TDK.png'
 import Navbar from './Navbar'
 
 var swal = require('sweetalert')
 
-class myNetwork extends Component {
+class Messaging extends Component {
     constructor(props) {
         super(props);
         this.state = {
@@ -156,7 +157,7 @@ class myNetwork extends Component {
 
         return (
             <div>
-                <Navbar />
+                <Login/>
                 <div className="myMargin"></div>
                 <div class="row myNetworkBackground">
                     {/*column 1- This is the code for msg list */}
@@ -217,4 +218,4 @@ class myNetwork extends Component {
 
 
 
-export default myNetwork;
+export default Messaging;

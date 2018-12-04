@@ -3,7 +3,9 @@ var mongoose =require('mongoose');
 var experience_schema = require('./experienceInfo').experience
 var education_scheme = require('./educationInfo').education
 
-var users= mongoose.model('Users',{
+ //var users= mongoose.model('Users',{
+
+var users= mongoose.Schema({
     email : {
         type : String,
         required: true,
@@ -56,6 +58,9 @@ var users= mongoose.model('Users',{
     resume : {
         type : String
     },
+    profileImage:{
+        type:String
+    },
     jobs_applied : [
         {
             type: mongoose.Schema.Types.ObjectId,
@@ -101,7 +106,19 @@ var users= mongoose.model('Users',{
         type:String
     }  
 })
+ 
+users.pre('remove', { document: true }, function() {
+    console.log('-----------------------------------Removing doc!');
+  });
+/*
+users.pre('remove', function(next) {
+    // Remove all the assignment docs that reference the removed person.
+    console.log('------------------------------------------------Removing doc!');
+    //this.model('Job').remove({ postedBy: this._id }, next);
+    next();
+    
+}); */
 
-// mongoose.model('Users',users);
+//module.exports = {users};
 
-module.exports = {users};
+module.exports = mongoose.model('Users',users);

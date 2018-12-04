@@ -4,7 +4,7 @@ import axios from 'axios';
 import cookie from 'react-cookies';
 import { Link } from 'react-router-dom';
 import { Redirect } from 'react-router';
-
+import Login from './navbar'
 import linkedIn from '../assets/images/linkedIn.png'
 import Axios from 'axios';
 import { throws } from 'assert';
@@ -141,10 +141,8 @@ class myNetwork extends Component {
 
         return (
             <div>
-
-                <nav className="navbar navbar-expand-sm" style={{ 'border-bottom-color': '', 'padding': ' 0%', 'backgroundColor': 'darkblue', "border-radius": "0px", marginBottom: "0px" }}>
-                    hi
-                </nav>
+                
+                <Login/>
                 <div className="myMargin"></div>
                 <div class="row myNetworkBackground">
                     {/*column 1- This is the code for user connections */}

@@ -1,4 +1,4 @@
-var UserInfo = require('../../models/userInfo').users
+var UserInfo = require('../../models/userInfo')
 var Application = require('../../models/application')
 var Job = require('../../models/job')
 var Message = require('../../models/message')
@@ -21,6 +21,5 @@ function handle_request(msg, callback) {
             callback(err,err)
         })
 }
-
 
 exports.handle_request = handle_request;
