@@ -7,8 +7,9 @@ import { Redirect } from 'react-router';
 import _ from "lodash";
 import picDS from '../assets/images/PicDS.png'
 import { ROOT_URL } from '../constants/constants';
+import Navbar from './Navbar';
 
-import {ROOT_URL} from '../constants/constants';
+// import {ROOT_URL} from '../constants/constants';
 
 var swal = require('sweetalert')
 
@@ -194,10 +195,10 @@ class peopleSearch extends Component {
 
         return (
             <div>
-
-                <nav className="navbar navbar-expand-sm" style={{ 'border-bottom-color': '', 'padding': ' 0%', 'backgroundColor': 'darkblue', "border-radius": "0px", marginBottom: "0px" }}>
+            <Navbar/>
+                {/* <nav className="navbar navbar-expand-sm" style={{ 'border-bottom-color': '', 'padding': ' 0%', 'backgroundColor': 'darkblue', "border-radius": "0px", marginBottom: "0px" }}>
                     hi
-                </nav>
+                </nav> */}
                 <div className="myMargin"></div>
                 <div class="row myNetworkBackground">
 

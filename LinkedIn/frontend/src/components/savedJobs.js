@@ -11,7 +11,7 @@ import picDS from '../assets/images/PicDS.png'
 import axios from 'axios';
 import { ROOT_URL } from '../constants/constants'
 
-import { ROOT_URL } from '../constants/constants';
+// import { ROOT_URL } from '../constants/constants';
 
 
 const userID = localStorage.getItem("userId")

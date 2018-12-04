@@ -141,6 +141,7 @@ class profile extends Component {
                     if (data.profile_summary) {
                         tempSumm = data.profile_summary
                     }
+                    console.log(data)
                     this.setState({
                         fname: data.name && data.name,
                         // lname: data.lname && data.lname,
@@ -830,17 +831,17 @@ class profile extends Component {
         }
         let dynoButton = null
 
-        if (this.state.isConnected === true) {
-            dynoButton = <span><button onClick={this.sendMessage} className="button-style" >Message </button></span>
+        if (this.state.isConnected === "true") {
+            dynoButton = <span><button onClick={this.sendMessage} id={this.state.oppUser} className="button-style" >Message </button></span>
         }
-        if (this.state.isConnected === false) {
-            dynoButton = <span><button onClick={this.requestConnection} className="button-style" >Connect </button></span>
+        if (this.state.isConnected === "false") {
+            dynoButton = <span><button onClick={this.requestConnection} id={this.state.oppUser} className="button-style" >Connect </button></span>
         }
         if (this.state.isConnected === "pending") {
-            dynoButton = <span><button className="button-style" >Pending </button></span>
+            dynoButton = <span><button className="button-style"  >Pending </button></span>
         }
         if (this.state.isConnected === "accept") {
-            dynoButton = <span><button onClick={this.acceptConnection} className="button-style" >Accept </button></span>
+            dynoButton = <span><button onClick={this.acceptConnection} id={this.state.oppUser} className="button-style" >Accept </button></span>
         }
 
 

@@ -28,6 +28,7 @@ class Navbar extends Component {
             myData: myData,
             session_key: ""
         }
+        
 
         this.fieldChangeHandler = this.fieldChangeHandler.bind(this)
         this.logout = this.logout.bind(this)
@@ -267,14 +268,14 @@ class Navbar extends Component {
                                 <li style={{ margin: "-10px 0px -10px 0px", padding: " 11px" }} className="dropdown" >
                                     {/* <Link to="" > */}
 
-                                    <img className="profileImg1" src={defaultPic} />
+                                    <img className="profileImg1" src={ROOT_URL+"/"+this.state.myData.profileImage} />
                                     <div>
                                         <a className="icons_nav dropdown-toggle" data-toggle="dropdown" style={{ color: "#c7d1d8" }}>Me<span class="caret"></span></a>
                                         <ul className="dropdown-menu" style={{ minWidth: "277px" }}>
                                             <li id="">
                                                 <a href="/profile">
                                                     <div>
-                                                        <img className="profileImg_dropBox" src={defaultPic} />
+                                                        <img className="profileImg_dropBox"  src={ROOT_URL+"/"+this.state.myData.profileImage} />
                                                         <span>
                                                             <span style={{ marginLeft: "14px" }} className="dropdown_head">SJSU STUDENT
                                                             </span>

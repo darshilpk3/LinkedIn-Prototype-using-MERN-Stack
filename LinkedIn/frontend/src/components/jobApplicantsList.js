@@ -142,7 +142,7 @@ class JobApplicantsList extends Component{
                 return(
                     <div>
                         <div class="job-listing">
-                            <Link class = "joblisttitle" to={{ pathname: '/viewProfile', state: { applicant_id: applist.applicant._id} }}>{applist.applicant[0].fname} {applist.applicant[0].lname}</Link>
+                            <Link class = "joblisttitle" to={{ pathname: '/viewProfile', state: { applicant_id: applist.applicant[0]._id} }}>{applist.applicant[0].fname} {applist.applicant[0].lname}</Link>
                             <p class="paragraph1">Email id : {applist.applicant[0].email}</p>
                             <p class="paragraph">Ethnicity : {applist.ethnicity}</p>
                             <p class="paragraph">Disabled : {applist.isDisabled.toString()}</p>
