@@ -2,7 +2,7 @@ var express = require('express');
 var router = express.Router();
 var multer = require('multer')
 var mongoose = require('mongoose');
-var UserInfo = require('../models/userInfo').users
+var UserInfo = require('../models/userInfo')
 var path = require('path');
 var Job = require('../models/job')
 
