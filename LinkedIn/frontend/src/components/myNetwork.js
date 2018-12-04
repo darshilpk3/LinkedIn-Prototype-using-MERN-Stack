@@ -4,7 +4,7 @@ import axios from 'axios';
 import cookie from 'react-cookies';
 import { Link } from 'react-router-dom';
 import { Redirect } from 'react-router';
-import Login from './navbar'
+import Login from './Navbar'
 import linkedIn from '../assets/images/linkedIn.png'
 import Axios from 'axios';
 import { throws } from 'assert';

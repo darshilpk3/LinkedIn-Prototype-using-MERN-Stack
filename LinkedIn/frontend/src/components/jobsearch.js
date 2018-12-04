@@ -3,8 +3,8 @@ import { Link } from "react-router-dom";
 import axios from "axios";
 import {connect} from 'react-redux';
 import {Redirect} from 'react-router';
-import "../styles/jobsearch.css";
-import Login from './navbar'
+// import "../styles/jobsearch.css";
+import Login from './Navbar'
 import job1 from '../assets/images/job1.png'
 import job2 from '../assets/images/job2.png'
 import job3 from '../assets/images/job3.png'
@@ -38,6 +38,7 @@ class JobSearch extends Component {
     }
 
     render(){
+      require('../styles/jobsearch.css')
         return(
             <div>
                 <Login/>

@@ -4,6 +4,7 @@ import { Redirect } from 'react-router';
 import axios from 'axios';
 import { ROOT_URL } from '../constants/constants';
 
+
 import defaultPic from '../assets/images/default-profile-pic.png'
 // import React, { Component } from "react";
 import { Field, reduxForm } from "redux-form";
@@ -139,9 +140,9 @@ class Navbar extends Component {
             </div>
         }
 
-        if (this.state.myData) {
-            redirectVar = <Redirect to="/TravelerHome" />
-        }
+        // if (this.state.myData) {
+        //     redirectVar = <Redirect to="/TravelerHome" />
+        // }
 
         const { handleSubmit } = this.props;
 
@@ -165,14 +166,15 @@ class Navbar extends Component {
 
                             <ul className="nav navbar-nav navbar-right" style={{ textAlign: "center", marginRight: "8%" }}>
                                 <li style={{ margin: "0px 15px 0px 15px" }}>
-                                    <div>
+                                <Link to="/TravelerInbox" > 
+                                <div>
 
-                                        {/* <i className="ion-ios-home-outline" style={{ 'margin-right': '7px', color: "#c7d1d8", fontSize:"24px" }}></i> */}
                                         <i className="ion-home" style={{ 'margin-right': '7px', color: "#c7d1d8", fontSize: "24px" }}></i>
                                     </div>
                                     <div>
                                         <span className="icons_nav" style={{ color: "#c7d1d8" }}>Home</span>
                                     </div>
+                                    </Link>
                                 </li>
                                 <li style={{ margin: "0px 15px 0px 15px" }}>
                                     <i className="ion-person-stalker" style={{ 'margin-right': '7px', color: "#c7d1d8", fontSize: "24px" }}></i>

@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
 import { Redirect } from 'react-router';
 import axios from 'axios';
-import '../styles/profilelocation.css'
 import Stepper from 'react-stepper-horizontal'
 import { connect } from "react-redux";
 
@@ -27,7 +26,7 @@ class ProfileLocation extends Component {
             zip: "",
             invalid: false,
             redirectNow: false,
-
+            zipError: false
         }
 
         this.fieldChangeHandler = this.fieldChangeHandler.bind(this)
@@ -41,13 +40,24 @@ class ProfileLocation extends Component {
 
     next() {
         if (this.state.country && this.state.zip) {
-            this.state.signupData.country = this.state.country;
+            this.setState({
+                invalid: false
+            })
+
+            if (/(^\d{5}$)|(^\d{5}-\d{4}$)/g.test(this.state.zip)) {
+                this.state.signupData.country = this.state.country;
                 this.state.signupData.zip = this.state.zip
 
-            this.props.onSubmitHandle(this.state.signupData)
-            this.setState({
-                redirectNow: true
-            })
+                this.props.onSubmitHandle(this.state.signupData)
+                this.setState({
+                    redirectNow: true
+                })
+            } else {
+                this.setState({
+                    zipError: true
+                })
+            }
+
         } else {
             this.setState({
                 invalid: true
@@ -63,7 +73,9 @@ class ProfileLocation extends Component {
 
 
     render() {
-        let redirectVar, error;
+        require('../styles/profilelocation.css');
+
+        let redirectVar, error, zipError;
         if (!this.state.signupData) {
             redirectVar = <Redirect to="/" />
         }
@@ -72,12 +84,19 @@ class ProfileLocation extends Component {
         }
         if (this.state.invalid) {
             error = <div style={{ textAlign: "center", fontSize: "20px", color: "red" }}>All the fields are required</div>
+        } else {
+            error = null;
+        }
+        if (this.state.zipError) {
+
+            zipError = <div style={{ textAlign: "center", fontSize: "15px", color: "red" }}>Incorrect Zip format</div>
+
         }
         return (
-            <div>
-                {redirectVar}
-                <div className="profilelocationstepper">
-                    {/* <Stepper steps={[{ title: <h5>Profile</h5> }, { title: 'Community' }, { title: 'Interests' }]}
+            < div >
+            { redirectVar }
+            < div className = "profilelocationstepper" >
+                {/* <Stepper steps={[{ title: <h5>Profile</h5> }, { title: 'Community' }, { title: 'Interests' }]}
                         activeStep={0}
                         lineMarginOffset={30}
                         defaultTitleColor={"#595959"}
@@ -92,21 +111,21 @@ class ProfileLocation extends Component {
                         defaultBorderStyle={"solid"}
                         completeBorderStyle={"solid"}
                         activeBorderStyle={"solid"} /> */}
-                </div>
+                </div >
 
-                <p className="plWelcome">
-                    Welcome, {this.state.signupData.firstname}!
+            <p className="plWelcome">
+                Welcome, {this.state.signupData.firstname}!
             </p>
 
-                <h5 className="welcomedescript">
-                    Let's start your profile, connect to people you know, and engage with them on topics you care about.
+            <h5 className="welcomedescript">
+                Let's start your profile, connect to people you know, and engage with them on topics you care about.
             </h5>
-                {error}
-                <label for="welcomelocation"><h5 className="welcomelocationlabels">Country/Region</h5></label>
-                <div>
-                    <input type="text" onChange={this.fieldChangeHandler} name="country" className="welcomezipcode" placeholder="  " />
+                { error }
+        <label for="welcomelocation"><h5 className="welcomelocationlabels">Country/Region</h5></label>
+            <div>
+                <input type="text" onChange={this.fieldChangeHandler} name="country" className="welcomezipcode" placeholder="  " />
 
-                    {/* <select name="welcomelocation" className="welcomelocation">
+                {/* <select name="welcomelocation" className="welcomelocation">
                         <option value="United States">United States</option>
                         <option value="Canada">Canada</option>
                         <option value="India">India</option>
@@ -114,15 +133,16 @@ class ProfileLocation extends Component {
                         <option value="Egypt">Egypt</option>
                         <option value="Germany">Germany</option>
                     </select> */}
-                </div>
-                <label for="welcomezipcode"><h5 className="welcomelocationlabels">Postal code</h5></label>
-                <div>
-                    <input type="text" onChange={this.fieldChangeHandler} name="zip" className="welcomezipcode" placeholder="" />
-                </div>
-                <div className="profilelocationbutton">
-                    <button className="btn btn-primary" onClick={this.next} name="profilelocationbutton" >Next</button>
-                </div>
             </div>
+            <label for="welcomezipcode"><h5 className="welcomelocationlabels">Postal code</h5></label>
+            <div>
+                <input type="text" onChange={this.fieldChangeHandler} name="zip" className="welcomezipcode" placeholder="" />
+                {zipError}
+            </div>
+            <div className="profilelocationbutton">
+                <button className="btn btn-primary" onClick={this.next} name="profilelocationbutton" >Next</button>
+            </div>
+            </div >
         )
     }
 }

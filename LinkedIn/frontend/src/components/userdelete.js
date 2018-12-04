@@ -2,8 +2,8 @@ import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
 import { Redirect } from 'react-router';
 import axios from 'axios';
-import '../styles/userdelete.css';
-import Login from './navbar';
+// import '../styles/userdelete.css';
+import Login from './Navbar';
 var swal = require('sweetalert');
 
 class UserDelete extends Component{
@@ -31,6 +31,7 @@ class UserDelete extends Component{
     }
 
     render(){
+        require('../styles/userdelete.css');
 
         return(
             <div className="page">

@@ -2,10 +2,12 @@ import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
 import { Redirect } from 'react-router';
 import axios from 'axios';
-import '../styles/jobposting.css'
+// import '../styles/jobposting.css'
 import Stepper from 'react-stepper-horizontal'
 import noJobsImage from '../assets/images/NoJobListings.PNG'
 import gifticon from '../assets/images/gift-icon.png'
+import jobpostlogo from '../assets/images/jobpostlogo.PNG'
+
 import {ROOT_URL} from '../constants/constants';
 
 class JobListing extends Component{
@@ -42,6 +44,7 @@ class JobListing extends Component{
     }
 
     render(){
+        require('../styles/jobposting.css')
         require('../styles/jobListing.css');
 
         let noJobsDisplay = null;

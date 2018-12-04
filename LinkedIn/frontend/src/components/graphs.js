@@ -2,8 +2,8 @@ import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
 import { Redirect } from 'react-router';
 import axios from 'axios';
-import '../styles/graphs.css';
-import Login from './navbar'
+// import '../styles/graphs.css';
+import Login from './Navbar'
 import {Bar, Line, Pie} from 'react-chartjs-2';
 import {ROOT_URL} from '../constants/constants';
 //  var recruiterId = localStorage.getItem("userId")
@@ -413,6 +413,7 @@ class Graphs extends Component{
     
 
     render(){
+      require('../styles/graphs.css')
         return(
             <div>
             <Login/>

@@ -10,7 +10,7 @@ import PlacesAutocomplete, {
     getLatLng,
 } from 'react-places-autocomplete';
 
-import navbar from './Navbar';
+import Navbar from './Navbar';
 import defaultPic from '../assets/images/default-profile-pic.png'
 
 
@@ -19,7 +19,9 @@ import linkedIn from '../assets/images/linkedIn.png'
 class profile extends Component {
     constructor(props) {
         super(props);
+        let myData = JSON.parse(localStorage.getItem('myData'));
         this.state = {
+            myData:myData,
             userConnections: "205",    //number of connections user have
             userInvitations: "20",
             fname: "Alex White",
@@ -113,7 +115,7 @@ class profile extends Component {
     componentDidMount() {
         axios.defaults.withCredentials = true;
         // axios.get(`${ROOT_URL}/userId/5c0508c1b328b5105c67b9a9` , { headers: { Authorization: this.state.myData.token } })
-        axios.get(`${ROOT_URL}/user/5c0313af1e6ee47530f590cb`)
+        axios.get(`${ROOT_URL}/user/${this.state.myData.uid}`)
             .then((response) => {
 
                 console.log(response.data);
@@ -130,7 +132,7 @@ class profile extends Component {
                         lname: data.lname,
                         headline: data.headline,
                         country: data.country,
-                        summary: data.profile_summary,
+                        summary: data.profile_summary || "",
                         Experience: data.experience,
                         tempEdit: data.experience,
                         Education: data.education,
@@ -233,7 +235,7 @@ class profile extends Component {
         // formData.set("token", this.state.myData.token)
         axios.defaults.withCredentials = true;
 
-        axios.post(`${ROOT_URL}/5c0313af1e6ee47530f590cb/upload`, formData).then((resp) => {
+        axios.post(`${ROOT_URL}/${this.state.myData.uid}/upload`, formData).then((resp) => {
             console.log(resp)
             if (resp.status == 200) {
                 if (resp.data.status == 1) {
@@ -327,7 +329,7 @@ class profile extends Component {
         temp.push(data)
         console.log(temp)
         //this.state.myData.uid
-        axios.put(`${ROOT_URL}/user/5c0313af1e6ee47530f590cb/experience`, temp, { withCredentials: true })
+        axios.put(`${ROOT_URL}/user/${this.state.myData.uid}/experience`, temp, { withCredentials: true })
             .then(response => {
                 console.log(response.data);
                 if (response.data.status == 1) {
@@ -358,7 +360,7 @@ class profile extends Component {
         temp.push(data)
         console.log(temp)
         //this.state.myData.uid
-        axios.put(`${ROOT_URL}/user/5c0313af1e6ee47530f590cb/education`, temp, { withCredentials: true })
+        axios.put(`${ROOT_URL}/user/${this.state.myData.uid}/education`, temp, { withCredentials: true })
             .then(response => {
                 console.log(response.data);
                 if (response.data.status == 1) {
@@ -382,7 +384,7 @@ class profile extends Component {
         temp.push(this.state.addSkill)
         console.log(temp)
         //this.state.myData.uid
-        axios.put(`${ROOT_URL}/user/5c0313af1e6ee47530f590cb/skill`, temp, { withCredentials: true })
+        axios.put(`${ROOT_URL}/user/${this.state.myData.uid}/skill`, temp, { withCredentials: true })
             .then(response => {
                 console.log(response.data);
                 if (response.data.status == 1) {
@@ -407,7 +409,7 @@ class profile extends Component {
         console.log(data)
         console.log(this.state.Experience === this.state.tempEdit)
 
-        axios.put(`${ROOT_URL}/user/5c0313af1e6ee47530f590cb/experience`, data, { withCredentials: true })
+        axios.put(`${ROOT_URL}/user/${this.state.myData.uid}/experience`, data, { withCredentials: true })
             .then(response => {
                 console.log(response.data);
                 if (response.data.status == 1) {
@@ -428,9 +430,13 @@ class profile extends Component {
 
     updateEducation() {
         let data = this.state.tempEdu;
+        data.forEach(element => {
+            delete element._id;
+
+        });
         console.log(data)
 
-        axios.put(`${ROOT_URL}/user/5c0313af1e6ee47530f590cb/education`, data, { withCredentials: true })
+        axios.put(`${ROOT_URL}/user/${this.state.myData.uid}/education`, data, { withCredentials: true })
             .then(response => {
                 console.log(response.data);
                 if (response.data.status == 1) {
@@ -454,7 +460,7 @@ class profile extends Component {
         console.log(data)
         console.log(this.state.Experience === this.state.tempEdit)
 
-        axios.put(`${ROOT_URL}/user/5c0313af1e6ee47530f590cb/skills`, data, { withCredentials: true })
+        axios.put(`${ROOT_URL}/user/${this.state.myData.uid}/skills`, data, { withCredentials: true })
             .then(response => {
                 console.log(response.data);
                 if (response.data.status == 1) {
@@ -857,9 +863,9 @@ class profile extends Component {
 
                             <div className="summary">
                                 <p>
-                                    {this.state.summary.slice(0, 50)} </p>
+                                    {this.state.summary}                                     </p>
                                 <p id="demo" className="collapse">
-                                    {this.state.summary.slice(51)}
+                                    {this.state.summary}
                                 </p>
 
                             </div>
