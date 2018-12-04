@@ -18,7 +18,11 @@ function handle_request(msg, callback) {
                 employmentType: msg.employment_type,
                 location: msg.job_location,
                 jobFunction: msg.job_function,
-                companyLogo: msg.company_logo
+                companyLogo: msg.company_logo,
+                postedDate: msg.postedDate,
+                required_skills: msg.required_skills,
+                companyName : msg.companyName,
+                applyMethod : msg.applyMethod,
             }
         }
     )

@@ -27,8 +27,8 @@ function handle_request(msg, callback) {
 
 
 
-    const jobId = msg.jobId
-    // const jobId = mongoose1.Types.ObjectId(msg.jobId)
+    // const jobId = msg.jobId
+    const jobId = mongoose1.Types.ObjectId(msg.jobId)
     console.log("___________jobid_________", jobId, "\n_______________________type", typeof jobId)
    
     Job.findOneAndUpdate(
