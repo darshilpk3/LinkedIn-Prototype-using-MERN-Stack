@@ -4,8 +4,10 @@ import myNetwork from './myNetwork';
 import connections from './connections';
 import savedJobs from './savedJobs';
 import appliedJobs from './appliedJobs';
-import messaging from './messaging';
+
 import Navbar from './Navbar';
+import Messaging from './messaging';
+
 import homepage from './homepage';
 import Profilelocation from './profilelocation';
 import profileType from './profileType';
@@ -15,7 +17,15 @@ import JobPosting from './jobposting';
 import JobSearch from './jobsearch';
 import profile from './profile';
 import viewProfile from './viewProfile';
+import JobApplicantsList from './jobApplicantsList';
+import JobListing from './jobListing';
+import PeopleSearchResults from './peoplesearchresults.js';
+import Graphs from './graphs.js';
+import ApplicantGraph from './applicantgraph'
 
+// import TryPDF from './pdfTrial';
+import TryPDF from './PDF'
+import ProfileView from './profileView';
 class Main extends Component {
     render() {
         return (
@@ -27,6 +37,8 @@ class Main extends Component {
                 <Route exact path="/appliedJobs" component={appliedJobs} />
                 <Route exact path="/messaging" component={messaging} />
                 <Route exact path="/Navbar" component={Navbar} />
+
+                <Route exact path="/messaging" component={Messaging} />    
                 <Route exact path="/" component={homepage} />
                 <Route exact path="/profilelocation" component={Profilelocation} />
                 <Route exact path="/newsfeed" component={Newsfeed} />
@@ -36,6 +48,15 @@ class Main extends Component {
                 <Route exact path="/profile/" component={profile} />
                 <Route exact path="/profileType/" component={profileType} />
                 <Route exact path="/viewProfile/" component={viewProfile} />
+				<Route exact path="/job/applicants" component={JobApplicantsList}/>
+                <Route exact path="/job/list" component={JobListing} />
+                <Route exact path="/users/results" component={PeopleSearchResults} />
+                <Route exact path="/user/graphs" component={Graphs} />
+                <Route exact path="/applicantgraph" component={ApplicantGraph} />
+                <Route exact path="/pdftry" component={TryPDF} />
+                <Route exact path="/profile/view" component={ProfileView} />
+                {/* <Route path="/TravelerLogin" component={Login} /> */}
+
             </div>
         )
     }

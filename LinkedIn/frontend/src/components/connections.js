@@ -4,7 +4,7 @@ import React, { Component } from 'react';
 import cookie from 'react-cookies';
 import { Link } from 'react-router-dom';
 import { Redirect } from 'react-router';*/
-
+import Login from './navbar'
 
 import picDS from '../assets/images/PicDS.png'
 
@@ -53,9 +53,7 @@ class connections extends Component {
         return (    
             <div>
                 
-                <nav className="navbar navbar-expand-sm" style={{ 'border-bottom-color': '', 'padding': ' 0%', 'backgroundColor': 'darkblue', "border-radius": "0px", marginBottom: "0px" }}>
-                       hi
-                </nav>
+                <Login/>
                 <div className="myMargin"></div>
                     <div class="row myNetworkBackground">
                         
@@ -91,7 +89,7 @@ class connections extends Component {
                                         </div>
                                         
                                         <div class="col-sm-3 col-md-3 col-lg-3">
-                                        <a><h5>Search with filters</h5></a>
+                                        <a><h5>Clear Search</h5></a>
                                         </div>
                                         
                                     </div>
