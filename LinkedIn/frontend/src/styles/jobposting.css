@@ -36,7 +36,7 @@
 .jobpostingcontainerlast{
     background-color: #fff;
     width:63%;
-    height:800px;
+    height:950px;
     margin-left: 2.5%;
     margin-top: 24%;
     box-shadow: 0 0 90px 0 rgba(0,0,0,.2);
@@ -45,7 +45,7 @@
 .finishpostjob{
     height:60px;
     width: 40%;
-    margin: 3% 0% 2.5% 3.5%;
+    margin: 3% 0% 2.5% 55%;
     border-radius: 2px;
     background-color: rgb(17, 66, 129)
 }
@@ -196,11 +196,22 @@
 } */
 
 .jobpostemployment{
-    width:38%;
-    height:90px;
+    width:29%;
+    border:1.5px solid;
+    height:60px;
     margin: -8.5% 0% 3% 67%;
 }
 
+.hidethis{
+    visibility: hidden;
+}
+
+.applymethodjobpost{
+    width:28%;
+    height:60px;
+    margin: -2% 0% 3% 3%;
+    border:1.5px solid;   
+}
 
 .page1jobpostbutton{
     margin-top: 1%;

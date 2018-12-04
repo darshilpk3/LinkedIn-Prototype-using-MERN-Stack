@@ -4,32 +4,26 @@ import axios from "axios";
 import {connect} from 'react-redux';
 import {Redirect} from 'react-router';
 import "../styles/jobsearch.css";
+import Login from './navbar'
+import job1 from '../assets/images/job1.png'
+import job2 from '../assets/images/job2.png'
+import job3 from '../assets/images/job3.png'
+import job4 from '../assets/images/job4.jpg'
+import job5 from '../assets/images/job5.png'
+import job6 from '../assets/images/job6.png'
+import job7 from '../assets/images/job7.png'
+import job8 from '../assets/images/job8.jpg'
 
 class JobSearch extends Component {
   constructor(props) {
     super(props);
-    console.log(props);
-    this.searchResultsHandler = this.searchResultsHandler.bind(this);
+    this.state={
+      jobTitle:"",
+      location:""
+    }
     this.handleJobTitle = this.handleJobTitle.bind(this);
     this.handleLocation = this.handleLocation.bind(this);
-    this.state = {
-        redirectToJobResultsPage: false
-    }
   }
-
-  searchResultsHandler = (e) => {
-    var data = {
-        jobTitle : this.state.jobTitle,
-        location : this.state.location
-    }
-    console.log("Inside search results")
-
-    this.props.saveSearchFieldToStore(data);
-    this.setState({
-        redirectToJobResultsPage : true
-      });
-       
-}
 
     handleJobTitle = (e) => {
         this.setState({
@@ -44,24 +38,17 @@ class JobSearch extends Component {
     }
 
     render(){
-        var redirectVar = null;
-        console.log(this.state.redirectToJobResultsPage)
-        if(this.state.redirectToJobResultsPage == true){
-          redirectVar = <Redirect to="/jobs/results"/>
-        }
         return(
             <div>
-                {redirectVar}
+                <Login/>
                       <div className="jobs-landing-header-container pad-top-1-pc">
                        <form>
-                            <input type = "text" onChange = {this.handleJobTitle} className = "jobs" placeholder = "Search Jobs"></input>
+                            <input type = "text" onChange = {this.handleJobTitle} className = "jobs" placeholder = " Search Jobs" required></input>
                             &nbsp;&nbsp;
                             
-                            <input type = "text" onChange = {this.handleLocation} className = "location" placeholder = "Search Location"></input>
+                            <input type = "text" onChange = {this.handleLocation} className = "location" placeholder = " Search Location" required></input>
                             &nbsp;&nbsp;
-                            <button onClick={this.searchResultsHandler} className="btn btn-outline-default white-outline btn-md searchbox-submit" type="button">
-                            Search
-                            </button>
+                            <Link to ={{pathname: '/searchResults', state:{jobTitle:this.state.jobTitle, jobLocation : this.state.location}}} className="btn btn-outline-default white-outline btn-md searchbox-submit" type="button"><b>Search</b></Link>
                       </form>
                    </div>
 
@@ -94,9 +81,9 @@ class JobSearch extends Component {
         <div class="row jobsearchrow">
         <div class="col-md-3">
             <div className="card mb-3 shadow-sm pad-3-pc">
-              <center><img class="card-img-top" src="https://media.licdn.com/dms/image/C560BAQEVpdy_-U0fSQ/company-logo_100_100/0?e=1550102400&v=beta&t=SvuPc-kCSrsuSLjz6Lb8NvXqT9YghI8I4RV5uG7jT0U" alt="Card image cap"/></center>
+              <center><img class="card-img-top" src={job1} alt="Card image cap"/></center>
               <div class="card-body center-content">
-              <p><b>Data Scientist Summer Intern</b></p>
+              <p><b>Data Scientist Intern</b></p>
               <p>WeWork</p>
               <p>New York, NY, US</p> 
                 <div class="d-flex justify-content-between align-items-center">
@@ -106,8 +93,8 @@ class JobSearch extends Component {
             </div>
           </div>
           <div class="col-md-3">
-            <div className="card mb-3 shadow-sm pad-3-pc">
-              <center><img class="card-img-top" src="https://media.licdn.com/dms/image/C560BAQEVpdy_-U0fSQ/company-logo_100_100/0?e=1550102400&v=beta&t=SvuPc-kCSrsuSLjz6Lb8NvXqT9YghI8I4RV5uG7jT0U" alt="Card image cap"/></center>
+            <div className="card mb-3 shadow-sm pad-3-pc jobpostcard">
+              <center><img class="card-img-top" src={job2} alt="Card image cap"/></center>
               <div class="card-body center-content">
               <p><b>Data Engineer</b></p>
               <p>Amazon Lab126</p>
@@ -120,9 +107,9 @@ class JobSearch extends Component {
           </div>
           <div class="col-md-3">
             <div className="card mb-3 shadow-sm pad-3-pc">
-              <center><img class="card-img-top" src="https://media.licdn.com/dms/image/C560BAQEVpdy_-U0fSQ/company-logo_100_100/0?e=1550102400&v=beta&t=SvuPc-kCSrsuSLjz6Lb8NvXqT9YghI8I4RV5uG7jT0U" alt="Card image cap"/></center>
+              <center><img class="card-img-top" src={job3} alt="Card image cap"/></center>
               <div class="card-body center-content">
-              <p><b>Machine Learning Scientist Intern</b></p>
+              <p><b>ML Scientist Intern</b></p>
               <p>Adobe</p>
               <p>San Francisco, CA, US</p> 
                 <div class="d-flex justify-content-between align-items-center">
@@ -134,7 +121,7 @@ class JobSearch extends Component {
           
           <div class="col-md-3" style={{'margin-bottom':'4%'}}>
             <div className="card mb-3 shadow-sm pad-3-pc">
-              <center><img class="card-img-top" src="https://media.licdn.com/dms/image/C560BAQEVpdy_-U0fSQ/company-logo_100_100/0?e=1550102400&v=beta&t=SvuPc-kCSrsuSLjz6Lb8NvXqT9YghI8I4RV5uG7jT0U" alt="Card image cap"/></center>
+              <center><img class="card-img-top" src={job4} alt="Card image cap"/></center>
               <div class="card-body center-content">
               <p><b>Data Modeler</b></p>
               <p>Nisum</p>
@@ -149,10 +136,10 @@ class JobSearch extends Component {
           <p style={{'margin-bottom':'4%'}}>Any job title • Any location • Any industry • 0 to 10,000+ employees ... Update Career interests</p>
           <div class="col-md-3">
             <div className="card mb-3 shadow-sm pad-3-pc">
-              <center><img class="card-img-top" src="https://media.licdn.com/dms/image/C560BAQEVpdy_-U0fSQ/company-logo_100_100/0?e=1550102400&v=beta&t=SvuPc-kCSrsuSLjz6Lb8NvXqT9YghI8I4RV5uG7jT0U" alt="Card image cap"/></center>
+              <center><img class="card-img-top" src={job5} alt="Card image cap"/></center>
               <div class="card-body center-content">
               <p><b>Data Quality Analyst</b></p>
-              <p>Butch Works</p>
+              <p>Oracle</p>
               <p>Redwood City, CA, USA</p> 
                 <div class="d-flex justify-content-between align-items-center">
                   <small class="text-muted">1 week ago</small>
@@ -162,7 +149,7 @@ class JobSearch extends Component {
           </div>
           <div class="col-md-3">
             <div className="card mb-3 shadow-sm pad-3-pc">
-              <center><img class="card-img-top" src="https://media.licdn.com/dms/image/C560BAQEVpdy_-U0fSQ/company-logo_100_100/0?e=1550102400&v=beta&t=SvuPc-kCSrsuSLjz6Lb8NvXqT9YghI8I4RV5uG7jT0U" alt="Card image cap"/></center>
+              <center><img class="card-img-top" src={job6} alt="Card image cap"/></center>
               <div class="card-body center-content">
               <p><b>Android Developer</b></p>
               <p>Guidebook Inc.</p>
@@ -176,7 +163,7 @@ class JobSearch extends Component {
 
           <div class="col-md-3">
             <div className="card mb-3 shadow-sm pad-3-pc">
-              <center><img class="card-img-top" src="https://media.licdn.com/dms/image/C560BAQEVpdy_-U0fSQ/company-logo_100_100/0?e=1550102400&v=beta&t=SvuPc-kCSrsuSLjz6Lb8NvXqT9YghI8I4RV5uG7jT0U" alt="Card image cap"/></center>
+              <center><img class="card-img-top" src={job7} alt="Card image cap"/></center>
               <div class="card-body center-content">
               <p><b>Software Developer</b></p>
               <p>Amiseq Inc.</p>
@@ -190,7 +177,7 @@ class JobSearch extends Component {
 
           <div class="col-md-3">
             <div className="card mb-3 shadow-sm pad-3-pc">
-              <center><img class="card-img-top" src="https://media.licdn.com/dms/image/C560BAQEVpdy_-U0fSQ/company-logo_100_100/0?e=1550102400&v=beta&t=SvuPc-kCSrsuSLjz6Lb8NvXqT9YghI8I4RV5uG7jT0U" alt="Card image cap"/></center>
+              <center><img class="card-img-top" src={job8} alt="Card image cap"/></center>
               <div class="card-body center-content">
               <p><b>Engineering Intern</b></p>
               <p>Esurance</p>

@@ -16,7 +16,7 @@ html{overflow: hidden;}
 }
 .myConnections{
     margin-top: 50px;
-    width: 79%;
+    width: 96%;
     margin-left: 30%;
     border: 1px solid lightgrey;
     overflow-y: scroll;
@@ -42,7 +42,7 @@ html{overflow: hidden;}
 }
 .lowerheight{
     padding: 2%;
-    height: 47vh;
+    height: 46vh;
 }
 .belowheight{
     height: 25vh; 

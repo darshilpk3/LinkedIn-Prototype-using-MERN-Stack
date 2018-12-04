@@ -75,3 +75,34 @@
     font-size : 17px;
     margin-top : 7px;
 }
+
+.prev-button{
+    margin-top : 10px;
+    margin-left : 10px;
+}
+
+/* .next-button{
+    margin-top : 10px;
+} */
+
+.pagenumber-display{
+    color : #0073b1;
+    margin-left : 10px;
+}
+
+.jobpostlinksnavbar{
+    text-align: center;
+    margin-left: 17.5%;
+    margin-top: 1.5%; 
+}
+
+.linkinjobpostheader{
+    color:white;
+    font-size: 15px;
+}
+
+.JobPostHeader{
+    background-color: #006097;
+    margin-top : 0px;
+}
+

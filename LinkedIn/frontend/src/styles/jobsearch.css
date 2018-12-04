@@ -4,7 +4,6 @@
     background: #5c6f7c;
     /* padding: 0 0 12px; */
     height:65px;
-    margin-top: 3.5%;
     display: block;
   }
   
@@ -38,13 +37,15 @@
       border : 1px solid #dee2e6;
       margin-top: 2%;    
       box-shadow: 0px 0px 5px grey;
-      height: 650px;
+      height: 680px;
   }
 
-.card mb-3 shadow-sm pad-3-pc{
-    border: 1px solid;
+.col-md-3{
+ box-shadow:  0px 0px 6px 0px rgba(0,0,0,0.2);
+ width:23.5%;
+ margin-left: 1%;
 }
-  
+
 .JobsInterestedJobSearch{
 margin-left: 2%;
 margin-top: 2%;
@@ -69,11 +70,6 @@ margin-bottom: 2.5%;
       padding: 0 16px;
       margin-top: 0.2% 
     
-  }
-  
-  .view-jobs-blocks-container {
-    box-shadow: 10px 10px 5px white;
-    background: white;
   }
   
   .jobs-landing-img {
@@ -136,6 +132,7 @@ margin-bottom: 2.5%;
     border: 1px solid white;
     width: 110px;
     height: 40px;
+    margin-top: -0.5%;
   }
   
   .pad-top-1-pc{
@@ -143,5 +140,5 @@ margin-bottom: 2.5%;
   }
   
   .card-img-top{
-    width:30%
+    width:40%
   }

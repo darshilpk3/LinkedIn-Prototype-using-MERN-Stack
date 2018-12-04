@@ -1,6 +1,4 @@
-// var UserInfo = require('../../../backend/models/userInfo').users
 var UserInfo = require('../../models/userInfo').users
-
 var Application = require('../../models/application')
 var Job = require('../../models/job')
 var Message = require('../../models/message')
@@ -9,6 +7,8 @@ function handle_request(msg, callback) {
 
     console.log("\n\nInside kafka backend for posting job")
     console.log("\n\n User data is: ", msg)
+
+    var required_skills_array = msg.required_skills.split(',');
 
     const newJob = new Job({
         postedBy: msg.postedBy,
@@ -19,10 +19,19 @@ function handle_request(msg, callback) {
         postedDate: msg.postedDate,
         location: msg.location,
         jobFunction: msg.jobFunction,
-        required_skills: msg.required_skills
+        required_skills: msg.required_skills,
+        companyLogo : msg.companyLogo,
+        companyName : msg.companyName,
+        applyMethod : msg.applyMethod,
+
+
+        noOfViews:0,
+        noOfViews_submitted:0,
+        noOfViews_applied:0
+
     })
 
-    // console.log("__________new Job is_______________",newJob)
+  
 
     newJob.save()
         .then((jobResult, err) => {

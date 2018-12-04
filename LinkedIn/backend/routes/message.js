@@ -6,7 +6,7 @@ var mongoose = require('mongoose');
 var kafka = require('../kafka/client')
 
 var bcrypt = require('bcryptjs')
-var UserInfo = require('../models/userInfo').users
+var UserInfo = require('../models/userInfo')//.users
 var Job = require('../models/job')
 var Message = require('../models/message')
 
@@ -126,6 +126,13 @@ router.get("/:userId", async function (req, res, next) {
             res.writeHead(200, {
                 'content-type': 'application/json'
             })
+            const data = {
+                "status": 1,
+                "msg": "Job successfully posted",
+                "info": {
+                    "result": result
+                }
+            }
             res.end(JSON.stringify(result))
         })
         .catch(err => {

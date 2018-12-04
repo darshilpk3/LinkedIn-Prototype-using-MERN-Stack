@@ -9,6 +9,18 @@ var Job = require('../models/job')
 var Application = require('../models/application')
 var kafka = require('../kafka/client')
 
+    
+router.post('/download/:file(*)',(req, res) => {
+        console.log("Inside download file");
+        var file = req.params.file;
+        var fileLocation = path.join(__dirname + '/uploads',file);
+        var img = fs.readFileSync(fileLocation);
+        var base64img = new Buffer(img).toString('base64');
+        res.writeHead(200, {'Content-Type': 'image/jpg' });
+        res.end(base64img);
+});
+
+
 
 var redisClient = require('redis').createClient;
 var redis = redisClient(6379, 'localhost');
@@ -32,6 +44,10 @@ router.post("/", async function (req, res, next) {
         companyLogo: req.body.companyLogo,
         companyName: req.body.companyName,
         applyMethod: req.body.applyMethod,
+        noOfViews:0,
+        noOfViews_applied:0,
+        noOfViews_submitted:0
+
     }
 
     kafka.make_request('jobPost', data, function (err, result) {
@@ -400,4 +416,9 @@ router.get("/:jobId/applications",async function(req,res,next){
             // res.send(400,err)
         })
 })
+
+
+
+
+
 module.exports = router;
