@@ -8,6 +8,7 @@ import Login from './Navbar'
 
 import picDS from '../assets/images/PicDS.png'
 import axios from 'axios';
+import {ROOT_URL} from '../constants/constants'
 
 class savedJobs extends Component {
     constructor(props) {
@@ -30,7 +31,8 @@ class savedJobs extends Component {
 
         if (localStorage.getItem("userId")) {
             const userId = localStorage.getItem("userId")
-            axios.get(`http://localhost:3001/user/${userId}/savedJobs`)
+            console.log("UserID from storage: ",userId)
+            axios.get(`${ROOT_URL}/user/${userId}/savedJobs`)
                 .then(response => {
                     if (response.status === 200) {
                         console.log(response.data.info)

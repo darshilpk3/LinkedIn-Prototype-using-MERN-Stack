@@ -5,6 +5,7 @@ import cookie from 'react-cookies';
 import { Link } from 'react-router-dom';
 import { Redirect } from 'react-router';
 import Login from './Navbar'
+import {ROOT_URL} from '../constants/constants'
 
 class appliedJobs extends Component {
     constructor(props) {
@@ -36,7 +37,7 @@ class appliedJobs extends Component {
 
         if (localStorage.getItem("userId")) {
             const id = localStorage.getItem("userId")
-            axios.get(`http://localhost:3001/user/${id}/appliedJobs`)
+            axios.get(`${ROOT_URL}/user/${id}/appliedJobs`)
                 .then(response => {
                     if (response.status === 200) {
                         this.setState({
@@ -63,7 +64,7 @@ class appliedJobs extends Component {
                 return (
                     <div class="row userInvitations">
                         <div className="col-sm-2 col-md-2 col-lg-2">
-                            <img src={job.companyLogo} className="img savedjobImage" />
+                            <img src={""+ROOT_URL+"/"+job.companyLogo} className="img savedjobImage" />
                         </div>
                         <div className="col-sm-5 col-md-5 col-lg-5">
                             <h4><a href="#" onClick={this.showJobDetails} id={job._id}>{job.jobTitle}</a></h4>

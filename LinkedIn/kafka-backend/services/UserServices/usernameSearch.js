@@ -15,7 +15,17 @@ function handle_request(msg, callback) {
         .then(result => {
             result.forEach((user) => {
                 console.log("User is: ", user._id, " and connections are : ", user.connections)
-                if (user.connections.indexOf(msg.userId) != -1) {
+                console.log(user._id == msg.userId)
+                if(user._id == msg.userId){
+                    const connectionInfo = {
+                        _id: user._id,
+                        name: user.fname + " " + user.lname,
+                        headline: user.headline,
+                        email: user.email,
+                        isConnected: "none"
+                    }
+                    connections.push(connectionInfo)
+                }else if (user.connections.indexOf(msg.userId) != -1) {
                     const connectionInfo = {
                         _id: user._id,
                         name: user.fname + " " + user.lname,
@@ -24,7 +34,8 @@ function handle_request(msg, callback) {
                         isConnected: "true"
                     }
                     connections.push(connectionInfo)
-                } else if (user.pending_receive.indexOf(msg.userId) != -1) {
+                } 
+                else if (user.pending_receive.indexOf(msg.userId) != -1) {
                     const connectionInfo = {
                         _id: user._id,
                         name: user.fname + " " + user.lname,
@@ -53,15 +64,6 @@ function handle_request(msg, callback) {
                     connections.push(connectionInfo)
                 }
             })
-            //   const data = {
-            //     "status": "1",
-            //     "msg": "Successfully Searched",
-            //     "info": connections
-            //   }
-            //   res.writeHead(200, {
-            //     'Content-Type': 'application/json'
-            //   })
-            //   res.end(JSON.stringify(data))
             console.log("__________________result_______________", connections);
             callback(null, connections)
         })
