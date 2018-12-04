@@ -12,6 +12,7 @@ var { mongoose } = require('../connections/mongo');
 
 var kafka = require('../kafka/client');
 
+
 //var { User } = require('../models/userInfo');
 var bcrypt = require('bcryptjs')
 var UserInfo = require('../models/userInfo')//.users
@@ -363,8 +364,8 @@ router.post("/:userID/apply", async function (req, res, next) {
     } else {
       const data = {
         "status": 1,
-        "msg": "Successfully applied to a job",
-        "info": result
+        "msg": result,
+        "info": {}
       }
 
       res.writeHead(200, {

@@ -178,10 +178,10 @@ class peopleSearch extends Component {
                 return (
                     <div class="row userInvitations">
                         <div className="col-sm-6 col-md-6 col-lg-2">
-                            <img src={user.profileImage} className="img-circle profileImage" />
+                            <img src={ROOT_URL+"/"+user.profileImage} className="img-circle profileImage" />
                         </div>
                         <div className="col-sm-5 col-md-5 col-lg-5">
-                            <h4>{user.name}</h4>
+                            <Link to={{}}>{user.name}</Link>
                             <h5>{user.email}</h5>
                             {/* <h5>Connections {connection.connections.length}</h5> */}
                         </div>

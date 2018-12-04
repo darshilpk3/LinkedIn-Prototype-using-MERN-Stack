@@ -47,13 +47,6 @@ app.use(bodyParser.urlencoded({
     extended: true
 }));
 // app.use(bodyParser.json());
-
-
-
-
-
-
-
 //Allow Access Control
 app.use(function (req, res, next) {
     res.setHeader('Access-Control-Allow-Origin', 'http://localhost:3000');
@@ -80,16 +73,6 @@ mongoose.connect(mongo.url, {
     activeDuration      :  5 * 60 * 1000
   }));
   app.use(bodyParser.json());
-  
-  //Allow Access Control
-  app.use(function(req, res, next) {
-    res.setHeader('Access-Control-Allow-Origin', 'http://localhost:3000');
-    res.setHeader('Access-Control-Allow-Credentials', 'true');
-    res.setHeader('Access-Control-Allow-Methods', 'GET,HEAD,OPTIONS,POST,PUT,DELETE');
-    res.setHeader('Access-Control-Allow-Headers', 'Access-Control-Allow-Headers, Origin,Accept, X-Requested-With, Content-Type, Access-Control-Request-Method, Access-Control-Request-Headers');
-    res.setHeader('Cache-Control', 'no-cache');
-    next();
-  });
 
   app.use(logger('dev'));
   app.use(express.json());

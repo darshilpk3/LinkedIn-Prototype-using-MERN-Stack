@@ -18,16 +18,6 @@ var EditJobDetails = require('./services/JobServices/editJobDetails')
 
 var UsernameSearch = require('./services/UserServices/usernameSearch')
 
-
-
-
-
-
-
-
-// var login = require('./services/login.js');
-// var GetJobList = require('./services/getJobList');
-
 mongoose.connect(mongoConnection.url, {
     poolSize: mongoConnection.pool
 })
