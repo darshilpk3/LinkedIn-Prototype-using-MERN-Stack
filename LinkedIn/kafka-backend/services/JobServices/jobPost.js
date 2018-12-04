@@ -8,6 +8,8 @@ function handle_request(msg, callback) {
     console.log("\n\nInside kafka backend for posting job")
     console.log("\n\n User data is: ", msg)
 
+    var required_skills_array = msg.required_skills.split(',');
+
     const newJob = new Job({
         postedBy: msg.postedBy,
         jobTitle: msg.jobTitle,
@@ -21,12 +23,20 @@ function handle_request(msg, callback) {
         companyLogo : msg.companyLogo,
         companyName : msg.companyName,
         applyMethod : msg.applyMethod,
-        noOfViews : msg.noOfViews
+
+
+        noOfViews:0,
+        noOfViews_submitted:0,
+        noOfViews_applied:0
+
     })
+
+  
 
     newJob.save()
         .then((jobResult, err) => {
             if (err) {
+                console.log("____________err_____________",err)
                 callback(err, err)
             } else {
                 console.log("Job posted: ", jobResult)

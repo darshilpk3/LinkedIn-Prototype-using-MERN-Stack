@@ -2,6 +2,7 @@ var connection = new require('./kafka/Connection');
 var mongoose = require('mongoose')
 
 var mongoConnection = require('../backend/connections/mongo')
+
 var UserJobApply = require('./services/UserServices/userJobApply')
 var UserJobSave = require('./services/UserServices/userJobSave')
 var UserJobList = require('./services/UserServices/userJobList')
@@ -10,16 +11,25 @@ var EditUserDetails = require('./services/UserServices/editUserDetails')
 var UserSavedJobs = require('./services/UserServices/userSavedJobs')
 var UserAppliedJobs = require('./services/UserServices/userAppliedJobs')
 
-<<<<<<< HEAD
-// var login = require('./services/login.js');
-var GetJobList = require('./services/getJobList');
-=======
 var JobPost = require('./services/JobServices/jobPost')
 var GetJobDetails = require('./services/JobServices/getJobDetails')
 var JobSearch = require('./services/JobServices/jobSearch')
 var EditJobDetails = require('./services/JobServices/editJobDetails')
 
+<<<<<<< HEAD
+=======
+var UsernameSearch = require('./services/UserServices/usernameSearch')
+
+
+
+
+
+
+
+
 >>>>>>> development
+// var login = require('./services/login.js');
+// var GetJobList = require('./services/getJobList');
 
 mongoose.connect(mongoConnection.url, {
     poolSize: mongoConnection.pool
@@ -59,11 +69,6 @@ mongoose.connect(mongoConnection.url, {
 }
 
 
-<<<<<<< HEAD
-// handleTopicRequest("login",login)
-handleTopicRequest("getJobList",GetJobList)
-
-=======
 handleTopicRequest('userJobApply', UserJobApply)
 handleTopicRequest('userJobSave', UserJobSave)
 handleTopicRequest('userJobList', UserJobList)
@@ -75,4 +80,4 @@ handleTopicRequest('jobSearch',JobSearch)
 handleTopicRequest('editJobDetails',EditJobDetails)
 handleTopicRequest('userSavedJobs',UserSavedJobs)
 handleTopicRequest('userAppliedJobs',UserAppliedJobs)
->>>>>>> development
+handleTopicRequest('usernameSearch',UsernameSearch)

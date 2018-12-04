@@ -1,5 +1,5 @@
 var { mongoose } = require('../db/mongoose');
-//var { userinfos } = require('../models/userinfos');
+// var { userinfos } = require('../models/userinfos');
 var Job = require('../models/job')
 var bcrypt = require('bcryptjs');
 

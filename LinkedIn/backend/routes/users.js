@@ -2,7 +2,7 @@ var express = require('express');
 var router = express.Router();
 var pool = require('../connections/mysql')
 var mysql = require('mysql')
-var mongoose = require('mongoose');
+var mongoose1 = require('mongoose');
 
 var { mongoose } = require('../connections/mongo');
 
@@ -12,6 +12,35 @@ var kafka = require('../kafka/client');
 var bcrypt = require('bcryptjs')
 var UserInfo = require('../models/userInfo')//.users
 var Job = require('../models/job')
+
+const redis = require('redis');
+const client = redis.createClient();
+
+var redisClient = require('redis').createClient;
+var redis1 = redisClient(6379, 'localhost');
+
+
+
+// create redis middleware
+let redisMiddleware = (req, res, next) => {
+  let key = "__expIress__" + req.originalUrl || req.url;
+  console.log("redis call")
+  client.get(key, function (err, reply) {
+    if (reply) {
+      console.log("____reply____", reply)
+      res.send(reply);
+    } else {
+      res.sendResponse = res.send;
+      res.send = (body) => {
+        client.set(key, JSON.stringify(body));
+        res.sendResponse(body);
+      }
+      next();
+    }
+  });
+};
+
+
 /* User Sign up */
 router.post('/', async function (req, res, next) {
 
@@ -72,9 +101,9 @@ router.post('/', async function (req, res, next) {
               })
               const data = {
                 "status": 0,
-                "msg": err.sqlMessage,
+                "msg": err.errmsg,
                 "info": {
-                  "error": err.sqlMessage
+                  "error": err.errmsg
                 }
               }
               console.log("data being sent to frontend:\n", JSON.stringify(data))
@@ -111,13 +140,16 @@ router.post('/', async function (req, res, next) {
 
 });
 
-/* User Login */
-router.post('/login', async function (req, res, next) {
+/*
+ User Login  with redis cache
+*/
+router.post('/login', redisMiddleware, async function (req, res, next) {
 
   console.log('\n\nIn user login');
   console.log("Request Got: ", req.body)
   const email = req.body.email
   const pwd = req.body.pwd;
+  console.log("_______pwd_______", pwd)
 
   pool.getConnection((
     err, connection) => {
@@ -126,6 +158,7 @@ router.post('/login', async function (req, res, next) {
       const sql = "select * from userinfo WHERE email = " + mysql.escape(email);
       connection.query(sql,
         (err, result) => {
+          console.log("______result______", result);
           const password = bcrypt.compareSync(pwd, result[0].pwd);
           if (result && password) {
             console.log("Successfully Logged In")
@@ -175,8 +208,10 @@ router.post('/login', async function (req, res, next) {
     }
   })
 });
-////////////////////////ADDED BY DEVU////////////////////////////////
 
+/**
+ * delete a user
+ */
 router.delete("/:userID", async function (req, res, next) {
   console.log('\n\nIn user Delete');
   console.log("Request Got: ", req.body);
@@ -270,6 +305,9 @@ router.delete("/:userID", async function (req, res, next) {
 
 });
 
+/*
+* apply for a job
+*/
 router.post("/:userID/apply", async function (req, res, next) {
   console.log("Inside post apply of job.")
 
@@ -299,17 +337,32 @@ router.post("/:userID/apply", async function (req, res, next) {
         "msg": "Successfully applied to a job",
         "info": result
       }
+
       res.writeHead(200, {
         'Content-Type': 'application/json'
+      })
+
+      redis1.flushdb(function (err, succeeded) {
+        if (succeeded) {
+          console.log(succeeded); // will be true if successfull
+          console.log("cache cleared successfull")
+        } else {
+          console.log("error in clearing the cache")
+        }
       })
       res.end(JSON.stringify(data))
     }
   })
+
 })
 
+
+
+/*
+* saving a job
+*/
 router.post("/:userID/save", async function (req, res, next) {
   console.log("Inside post of job save.")
-
   const data = {
     jobId: req.body.jobId,
     userId: req.params.userID
@@ -348,97 +401,114 @@ router.post("/:userID/save", async function (req, res, next) {
       res.writeHead(200, {
         'Content-Type': 'application/json'
       })
+      redis1.flushdb(function (err, succeeded) {
+        if (succeeded) {
+          console.log(succeeded); // will be true if successfull
+          console.log("cache cleared successfull")
+        } else {
+          console.log("error in clearing the cache")
+        }
+
+      });
       res.end(JSON.stringify(data))
     }
   })
 })
 
-  router.get("/:userID/joblist", async function (req, res) {
-    console.log("Inside get joblist.")
-    req.body.userID = req.params.userID;
+/*
+ * get all jobs listed by that user
+ */
+getAllJobsPostedByUser_Caching = function (UserInfo, redis1, userID, callback) {
+  redis1.get(userID, function (err, reply) {
+    if (err) callback(null);
+    else if (reply) {
+      console.log("___________________________from cache_______________________________")
+      console.log(reply)
+      callback(JSON.parse(reply));
+    } //user exists in cache
 
-    kafka.make_request('getJobList', req.body, function (err, results) {
-      console.log('backend-In results of get joblist');
-      console.log("_________result in getownerMessage post ___" + results);
+    else {
+      //user doesn't exist in cache - we need to query the main database
+      //make kafka call here
+      var data = {
+        userId: userID
+      }
 
-      if (err) {
-          console.log("Inside err of post get joblist");
-          res.writeHead(400, {
-              'Content-Type': 'text/plain'
-          })
-          res.end("Invalid Credentials.");
-      } else {
-          console.log("Inside success of post get joblist");
-          console.log("typeof: " + typeof (results));
-          if (typeof (results) == "string") {
-              res.writeHead(400, {
-                  'Content-Type': 'text/plain'
-              })
-              res.end("Invalid Credentials.");
-          } else {
-              console.log("Success!!");
+      kafka.make_request("userJobList", data, function (err, result) {
+        console.log("inside of response from kafka")
+        if (err) {
 
-              res.writeHead(200, {
-                  'Content-Type': 'text/plain'
-              })
-              res.end(JSON.stringify(results));
-          }
+          console.log("_______-err _________", data)
+          callback(err);
+
+        } else {
+
+          console.log("The received result is : ", result);
+          redis1.set(userID, JSON.stringify(result), function () {
+            console.log("_____________setting in cache_________________ ")
+            callback(result);
+          });
+
+
         }
+      })
+
+
+    }
+  });
+};
+
+router.get("/:userID/joblist", async function (req, res, next) {
+  console.log("Inside get joblist.")
+  const userID = req.params.userID
+
+  if (!userID) {
+    // res.status(400).send("Please send a proper userID");
+    res.writeHead(200, {
+      'Content-Type': 'application/json'
+    })
+    const data = {
+      "status": 0,
+      "msg": "No Such User",
+      "info": {
+        "error": err
+      }
+    }
+    res.end(JSON.stringify(data))
+  }
+  else {
+    getAllJobsPostedByUser_Caching(UserInfo, redis1, req.params.userID, function (user_data) {
+      if (!userID) {
+        res.status(500).send("Server error");
+      }
+      else {
+        // res.status(200).send(user_data);
+        console.log("_________user.length____", user_data.length);
+
+        res.writeHead(200, {
+          'Content-Type': 'application/json'
+        })
+
+        const data = {
+          "status": 1,
+          "msg": "Successfully obtained Job List",
+          "info": user_data
+        }
+        res.end(JSON.stringify(data))
+
+
+
+      }
     });
-  })
-  
+  }
+
+});
 
 
-//  router.get("/:userID/joblist", async function (req, res, next) {
-//   console.log("Inside get joblist.")
-//   const userID = req.params.userID
 
-//   try {
-//     UserInfo.findById(userID)
-//       .populate('jobs_posted')
-//       .exec()
-//       .then(result => {
-//         console.log("The received result is : ", result);
-//         res.writeHead(200, {
-//           'Content-Type': 'application/json'
-//         })
-//         const data = {
-//           "status": 1,
-//           "msg": "Successfully obtained Job List",
-//           "info": result
-//         }
-//         res.end(JSON.stringify(data))
-//       })
-//       .catch(err => {
-//         res.writeHead(200, {
-//           'Content-Type': 'application/json'
-//         })
-//         const data = {
-//           "status": 0,
-//           "msg": "No Such User",
-//           "info": {
-//             "error": err
-//           }
-//         }
-//         res.end(JSON.stringify(data))
-//       })
-//   } catch (error) {
-//     res.writeHead(400, {
-//       'Content-Type': 'application/json'
-//     })
-//     const data = {
-//       "status": 0,
-//       "msg": error,
-//       "info": {
-//         "error": error
-//       }
-//     }
-//     res.end(JSON.stringify(data))
-//   }
-// })
- 
-//////////////////////////////End - Devu code/////////////////////////////////
-
+/**
+ * get user details
+ */
 router.get("/:userId", async function (req, res, next) {
 
   const data = {
@@ -457,7 +527,19 @@ router.get("/:userId", async function (req, res, next) {
         'Content-Type': 'application/json'
       })
       res.end(JSON.stringify(data))
-    } else {
+    }
+    else if (typeof (result) == "string") {
+      const data = {
+        "status": 0,
+        "msg": "Successfully fetched jobs",
+        "info": result
+      }
+      res.writeHead(200, {
+        'Content-Type': 'application/json'
+      })
+      res.end(JSON.stringify(data))
+    }
+    else {
       const data = {
         "status": 1,
         "msg": "Successfully fetched details",
@@ -470,6 +552,64 @@ router.get("/:userId", async function (req, res, next) {
     }
   })
 })
+
+
+/**
+* search by username
+*/
+router.post("/:userId/search", async function (req, res, next) {
+
+  console.log("inside post request of search by username");
+  console.log("req.body", req.body)
+  const connections = []
+  const data = {
+    userId: req.params.userID,
+    username: req.body.username
+  }
+  const username = "^" + req.body.username;
+
+
+
+  kafka.make_request('usernameSearch', data, function (err, result) {
+    if (err) {
+      const data = {
+        "status": 0,
+        "msg": "Failed searching the details",
+        "info": err
+      }
+      res.writeHead(200, {
+        'Content-Type': 'application/json'
+      })
+      res.end(JSON.stringify(data))
+    } else if (result.message) {
+      const data = {
+        "status": 0,
+        "msg": "Failed searching the details",
+        "info": result.message
+      }
+      res.writeHead(200, {
+        'Content-Type': 'application/json'
+      })
+      res.end(JSON.stringify(data))
+    } else {
+      const data = {
+        "status": 1,
+        "msg": "Successfully searched the usernames",
+        "info": result
+      }
+      res.writeHead(200, {
+        'Content-Type': 'application/json'
+      })
+      console.log("____________data_______________", data)
+      res.end(JSON.stringify(data))
+    }
+  })
+
+})
+
+/**
+ * update user profile
+ */
 
 router.put("/:userId", async function (req, res, next) {
 
@@ -514,7 +654,7 @@ router.put("/:userId", async function (req, res, next) {
         'Content-Type': 'application/json'
       })
       res.end(JSON.stringify(data))
-    }else if(result.message){
+    } else if (result.message) {
       const data = {
         "status": 0,
         "msg": "Failed updating the details",
@@ -524,7 +664,7 @@ router.put("/:userId", async function (req, res, next) {
         'Content-Type': 'application/json'
       })
       res.end(JSON.stringify(data))
-    }else {
+    } else {
       const data = {
         "status": 1,
         "msg": "Successfully updated the details",
@@ -539,20 +679,19 @@ router.put("/:userId", async function (req, res, next) {
 })
 
 
+/**
+ * getting jobs saved by the user
+ */
+router.get("/:userId/savedJobs", async function (req, res, next) {
 
-///////////////////////////////////////////////////////////
-// Had to be added
-
-router.get("/:userId/savedJobs",async function(req,res,next){
-
-  console.log("Getting saved jobs for the user: ",req.params.userId)
+  console.log("Getting saved jobs for the user: ", req.params.userId)
 
   const data = {
-    userId:req.params.userId
+    userId: req.params.userId
   }
 
-  kafka.make_request('userSavedJobs',data,function(err,result){
-    if(err){
+  kafka.make_request('userSavedJobs', data, function (err, result) {
+    if (err) {
       const data = {
         "status": 0,
         "msg": "Failed fetching the details of jobs saved",
@@ -562,7 +701,7 @@ router.get("/:userId/savedJobs",async function(req,res,next){
         'Content-Type': 'application/json'
       })
       res.end(JSON.stringify(data))
-    }else if(result.message){
+    } else if (result.message) {
       const data = {
         "status": 0,
         "msg": "Failed fetching the details of jobs saved",
@@ -572,7 +711,7 @@ router.get("/:userId/savedJobs",async function(req,res,next){
         'Content-Type': 'application/json'
       })
       res.end(JSON.stringify(data))
-    }else{
+    } else {
       const data = {
         "status": 1,
         "msg": "Successfully fetched the details of all the saved jobs",
@@ -586,16 +725,19 @@ router.get("/:userId/savedJobs",async function(req,res,next){
   })
 })
 
-router.get("/:userId/appliedJobs",async function(req,res,next){
+/**
+ * getting list of jobs applied by the user
+ */
+router.get("/:userId/appliedJobs", async function (req, res, next) {
 
-  console.log("Request to get details of jobs applied by the user: ",req.params.userId)
+  console.log("Request to get details of jobs applied by the user: ", req.params.userId)
 
   const data = {
-    userId:req.params.userId
+    userId: req.params.userId
   }
 
-  kafka.make_request('userAppliedJobs',data,function(err,result){
-    if(err){
+  kafka.make_request('userAppliedJobs', data, function (err, result) {
+    if (err) {
       const data = {
         "status": 0,
         "msg": "Failed fetching the details of jobs applied",
@@ -605,7 +747,7 @@ router.get("/:userId/appliedJobs",async function(req,res,next){
         'Content-Type': 'application/json'
       })
       res.end(JSON.stringify(data))
-    }else if(result.message){
+    } else if (result.message) {
       const data = {
         "status": 0,
         "msg": "Failed fetching the details of jobs applied",
@@ -615,7 +757,7 @@ router.get("/:userId/appliedJobs",async function(req,res,next){
         'Content-Type': 'application/json'
       })
       res.end(JSON.stringify(data))
-    }else{
+    } else {
       const data = {
         "status": 1,
         "msg": "Successfully fetched the details of all the applied jobs",
@@ -629,30 +771,555 @@ router.get("/:userId/appliedJobs",async function(req,res,next){
   })
 })
 
+/**
+ * getting list least 5 applied jobs of a recruiter
+ */
+router.get("/recruiter/:userId/dashboard/least_5_jobs", async function (req, res, next) {
+
+  console.log("Request to get the list of least 5 applied jobs of a recruiter ", req.params.userId)
+
+  const data = {
+    userId: req.params.userId
+  }
+  const id = req.params.userId
+  console.log("_________id__________", id)
+
+  const id1 = mongoose1.Types.ObjectId(req.params.userId)
+  console.log(typeof id1)
+  Job.aggregate([
+    { $match: { postedBy: id1 } },
+    { $project: { jobTitle: 1, count: { $size: '$jobApplied' } } },
+    { $sort: { count: 1 } },
+    { $limit: 5 }
+
+  ])
+
+    // Job.find({ postedBy: req.params.userId }, { jobTitle: 1, jobApplied: 1 }).limit(5).sort({ jobsApplied: -1 })
+
+    .then(result => {
+      console.log("_____________result__________", result)
+      res.writeHead(200, {
+        'Content-Type': 'application/json'
+      })
+      const data = {
+        "status": 1,
+        "msg": "successfully found least 5 applied jobs",
+        "info": {
+          "result": result
+        }
+      }
+      res.end(JSON.stringify(data))
+    })
+    .catch(err => {
+      const data = {
+        "status": 0,
+        "msg": "Failed fetching the details of leat applied jobs",
+        "info": err
+      }
+      res.writeHead(200, {
+        'Content-Type': 'application/json'
+      })
+      res.end(JSON.stringify(data))
+      console.log("______err__________", err)
+    })
+
+})
 
 
+/**
+ * getting to show first 10 job listings with its applications/month bar chart
+ */
+router.get("/recruiter/:userId/dashboard/top_10_jobs", async function (req, res, next) {
+
+  console.log("Request to get details of first 10 jobs applied by the user: ", req.params.userId)
+  const id = req.params.userId
+  console.log("_________id__________", id)
 
 
+  const id1 = mongoose1.Types.ObjectId(req.params.userId)
+  // console.log(typeof id1)
+  Job.aggregate([
+    { $match: { postedBy: id1 } },
+    {
+      $project: {
+        jobTitle: 1, count: { $size: '$jobApplied' }, postedDate: 1,
+        month: { "$substr": ["$postedDate", 5, 2] }
+      }
+    },
+    { $sort: { count: -1 } },
+    { $limit: 10 }
+
+  ])
+
+    .then(result => {
+      console.log("_____________result__________", result)
 
 
+      res.writeHead(200, {
+        'Content-Type': 'application/json'
+      })
+      const data = {
+        "status": 1,
+        "msg": "successfully found top 10 jobs ",
+        "info": {
+          "result": result
+        }
+      }
+      res.end(JSON.stringify(data))
+    })
+    .catch(err => {
+      const data = {
+        "status": 0,
+        "msg": "Failed fetching the top 10 jobs applied",
+        "info": err
+      }
+      res.writeHead(200, {
+        'Content-Type': 'application/json'
+      })
+      res.end(JSON.stringify(data))
+      console.log("______err__________", err)
+    })
 
-// router.post('/download/:file(*)', (req, res) => {
-//   console.log("Inside download file");
-//   var file = req.params.file;
-//   var fileLocation = path.join(__dirname + '/uploads', file);
-//   var img = fs.readFileSync(fileLocation);
-//   var base64img = new Buffer(img).toString('base64');
-//   res.writeHead(200, {
-//     'Content-Type': 'image/jpg'
-//   });
-//   res.end(base64img);
-// });
+
+})
+
+/**
+ * City wise application/month (Bar, Pie or any kind of graph) for a Job Posting.
+ * return city and city count, distinct cities and their count
+ */
+router.put("/recruiter/:userId/dashboard/city", async function (req, res, next) {
+
+  console.log("Request to get details of city wise jobs applied by the user: ", req.params.userId)
+  // console.log("Request body",req.body);
+  console.log("Request body", req.body.jobTitle);
 
 
+  const id1 = mongoose1.Types.ObjectId(req.params.userId)
+  const j_title = req.body.jobTitle
+  console.log("_________jtitle_________",j_title)
+  console.log(typeof id1)
+  Job.aggregate([
+    // { $match: { postedBy: id1, _id: j_id } },
+    { $match: { postedBy: id1,jobTitle:j_title } },
+
+    {
+      $project: {
+        jobTitle: 1, count: { $size: '$jobApplied' }, postedDate: 1,
+        location: 1,
+        // month: { $month: new Date("$postedDate") }
+        month: { "$substr": ["$postedDate", 5, 2] }
+      }
+    },
+
+  ])
+
+    .then(result => {
+      // callback(null,result)
+      console.log("_____________result__________", result)
 
 
+      res.writeHead(200, {
+        'Content-Type': 'application/json'
+      })
+      const data = {
+        "status": 1,
+        "msg": "successfully found details of city wise jobs applied by the user",
+        "info": {
+          "result": result
+        }
+      }
+      // console.log("____________data_________________", data)
+      res.end(JSON.stringify(data))
+    })
+    .catch(err => {
+      // callback(err,err)
+      const data = {
+        "status": 0,
+        "msg": "Failed fetching the details of jobs applied city wise",
+        "info": err
+      }
+      res.writeHead(200, {
+        'Content-Type': 'application/json'
+      })
+      res.end(JSON.stringify(data))
+      console.log("______err__________", err)
+    })
 
 
+})
+
+/**
+ * Graph for number of jobs saved
+ */
+router.get("/recruiter/:userId/dashboard/saved_jobs", async function (req, res, next) {
+
+  console.log("Request to get details of number of jos saved by the user: ", req.params.userId)
+  console.log("Request body", req.body.jobId);
+
+  const id1 = mongoose1.Types.ObjectId(req.params.userId)
+  // console.log(typeof id1)
+  Job.aggregate([
+    { $match: { postedBy: id1 } },
+    {
+      $project: {
+        jobTitle: 1, count: { $size: '$jobSaved' }, postedDate: 1,
+        month: { "$substr": ["$postedDate", 5, 2] }
+      }
+    },
+
+  ])
+
+    .then(result => {
+
+      console.log("_____________result__________", result)
+      res.writeHead(200, {
+        'Content-Type': 'application/json'
+      })
+      const data = {
+        "status": 1,
+        "msg": "successfully found details of number of jos saved by the user",
+        "info": {
+          "result": result
+        }
+      }
+      // console.log("____________data_________________", data)
+      res.end(JSON.stringify(data))
+    })
+    .catch(err => {
+      // callback(err,err)
+      const data = {
+        "status": 0,
+        "msg": "Failed fetching the details  details of number of jos saved by the user",
+        "info": err
+      }
+      res.writeHead(200, {
+        'Content-Type': 'application/json'
+      })
+      res.end(JSON.stringify(data))
+      console.log("______err__________", err)
+    })
+
+
+})
+
+
+/**
+ * clicks per job posting
+ */
+router.get("/recruiter/:userId/dashboard/:jobId", async function (req, res, next) {
+
+  console.log("Request to get views per job posting posted by the recruiter: ", req.params.userId)
+  const id1 = mongoose1.Types.ObjectId(req.params.userId)
+  const j_id = mongoose1.Types.ObjectId(req.params.jobId)
+  console.log(typeof id1)
+  Job.aggregate([
+    { $match: { postedBy: id1, _id: j_id } },
+    {
+      $project: {
+        jobTitle: 1, noOfViews: 1,
+      }
+    },
+
+  ])
+
+    .then(result => {
+      console.log("_____________result__________", result)
+
+
+      res.writeHead(200, {
+        'Content-Type': 'application/json'
+      })
+      const data = {
+        "status": 1,
+        "msg": "successfully found views per job posting posted by the recruiter",
+        "info": {
+          "result": result
+        }
+      }
+      // console.log("____________data_________________", data)
+      res.end(JSON.stringify(data))
+    })
+    .catch(err => {
+
+      const data = {
+        "status": 0,
+        "msg": "Failed fetching the details of jobs applied",
+        "info": err
+      }
+      res.writeHead(200, {
+        'Content-Type': 'application/json'
+      })
+      res.end(JSON.stringify(data))
+      console.log("______err__________", err)
+    })
+
+
+})
+
+/**
+ * get static user details
+ */
+router.post("/:userId/person", async function (req, res, next) {
+
+  console.log("Request to view the profile of other user: ", req.params.userId)
+  const user_id = req.params.userId
+  const searched_id = req.body.searched_id
+  console.log("__________searched_id____________--", searched_id)
+  console.log("__________user_id____________--", user_id)
+  const connections = []
+
+  UserInfo.findOneAndUpdate(
+    { "_id": searched_id },
+    { $inc: { "noOfViews": 1 } }
+  )
+    .exec()
+    .then(result => {
+
+      console.log("User is: ", result._id, " and connections are : ", result.connections)
+      console.log("~~~~~~~~~~~~~~~result~~~~~~~~~~~~~~~~~", result);
+      if (result.connections.indexOf(searched_id) != -1) {
+        const connectionInfo = {
+          _id: result._id,
+          name: result.fname + " " + result.lname,
+          headline: result.headline,
+          email: result.email,
+          noOfViews: result.noOfViews,
+          headline: result.headline,
+          experience: result.experience,
+          education: result.education,
+          skills: result.skills,
+          noOfConnections: result.connections.length,
+          profileImage: result.profileImage,
+          profile_summary: result.profile_summary,
+          isConnected: "true"
+        }
+        connections.push(connectionInfo)
+      }else if (result.pending_receive.indexOf(result.userId) != -1) {
+          const connectionInfo = {
+            _id: result._id,
+            name: result.fname + " " + result.lname,
+            headline: result.headline,
+            email: result.email,
+            noOfViews: result.noOfViews,
+            headline: result.headline,
+            experience: result.experience,
+            education: result.education,
+            skills: result.skills,
+            noOfConnections: result.connections.length,
+            profileImage: result.profileImage,
+            profile_summary: result.profile_summary,
+            isConnected: "Accept"
+        }
+        connections.push(connectionInfo)} 
+      else if (result.pending_sent.indexOf(searched_id) != -1) {
+        const connectionInfo = {
+          _id: result._id,
+          name: result.fname + " " + result.lname,
+          headline: result.headline,
+          email: result.email,
+          noOfViews: result.noOfViews,
+          headline: result.headline,
+          experience: result.experience,
+          education: result.education,
+          skills: result.skills,
+          noOfConnections: result.connections.length,
+          profileImage: result.profileImage,
+          profile_summary: result.profile_summary,
+          isConnected: "pending"
+        }
+        connections.push(connectionInfo)
+      } else {
+        const connectionInfo = {
+          _id: result._id,
+          name: result.fname + " " + result.lname,
+          headline: result.headline,
+          email: result.email,
+          noOfViews: result.noOfViews,
+          headline: result.headline,
+          experience: result.experience,
+          education: result.education,
+          skills: result.skills,
+          noOfConnections: result.connections.length,
+          profileImage: result.profileImage,
+          profile_summary: result.profile_summary,
+
+          isConnected: "false"
+        }
+        connections.push(connectionInfo)
+      }
+
+      const data = {
+        "status": "1",
+        "msg": "Successfully Searched the profile other user",
+        "info": connections
+      }
+      res.writeHead(200, {
+        'Content-Type': 'application/json'
+      })
+      res.end(JSON.stringify(data))
+      console.log("__________________result_______________", connections);
+
+    })
+    .catch(err => {
+      console.log("_____________err______________", err)
+      res.send(400, err)
+      res.writeHead(400, {
+        'Content-Type': 'application/json'
+      })
+      const data = {
+        "status": 0,
+        "msg": "Backend Error",
+        "info": {
+          "error": err
+        }
+      }
+      res.end(JSON.stringify(data))
+    })
+
+})
+
+
+/**
+ * get the daily views of the user i.e. profile views of the user
+ */
+router.get("/:userId/daily_views", async function (req, res, next) {
+
+  console.log("Request to get no of profile views of the user: ", req.params.userId)
+
+
+  const id1 = mongoose1.Types.ObjectId(req.params.userId)
+
+  console.log(typeof id1)
+  UserInfo.findById(req.params.userId, { fname: 1, lname: 1, noOfViews: 1 })
+    .exec()
+    .then(result => {
+      // callback(null,result)
+      res.writeHead(200, {
+        'Content-Type': 'application/json'
+      })
+      const data = {
+        "status": 1,
+        "msg": "successfully found no of profile views of the user",
+        "info": {
+          "result": result
+        }
+      }
+      // console.log("____________data_________________", data)
+      res.end(JSON.stringify(data))
+
+    })
+    .catch(err => {
+
+      const data = {
+        "status": 0,
+        "msg": "Failed fetching the no of views of the user",
+        "info": err
+      }
+      res.writeHead(200, {
+        'Content-Type': 'application/json'
+      })
+      res.end(JSON.stringify(data))
+      console.log("______err__________", err)
+    })
+
+})
+
+/**
+ * user clicks on the apply button to fill the appli so update the noOfViews_applied count
+ */
+router.put("/:jobId/start_application", async function (req, res, next) {
+
+  const job_id = req.params.jobId
+  console.log("__________user_id____________--", job_id)
+
+  Job.findOneAndUpdate(
+    { "_id": job_id },
+    { $inc: { "noOfViews_applied": 1 } }
+  )
+    .exec()
+    .then(result => {
+      console.log("~~~~~~~~~~~~~~~result~~~~~~~~~~~~~~~~~", result);
+      const data = {
+        "status": "1",
+        "msg": "Successfully updated the application started counter",
+        "info": result
+      }
+      res.writeHead(200, {
+        'Content-Type': 'application/json'
+      })
+      res.end(JSON.stringify(data))
+
+    })
+    .catch(err => {
+      console.log("_____________err______________", err)
+      res.send(400, err)
+      res.writeHead(400, {
+        'Content-Type': 'application/json'
+      })
+      const data = {
+        "status": 0,
+        "msg": "Backend Error",
+        "info": {
+          "error": err
+        }
+      }
+      res.end(JSON.stringify(data))
+      // callback(err, err)
+    })
+
+})
+
+/**
+ * tracing the user no of users who have viewed, applied and submitted the application for the job
+ */
+router.get("/:jobId/tracing_the_activity", async function (req, res, next) {
+
+  console.log("Request to get details of no of users who have viewed, applied and submitted the application for the job", req.params.jobId)
+
+  const id1 = mongoose1.Types.ObjectId(req.params.userId)
+
+  console.log(typeof id1)
+  Job.findById(req.params.jobId, { jobTitle: 1, noOfViews: 1, noOfViews_applied: 1, noOfViews_submitted: 1 })
+
+    .exec()
+    .then(result => {
+      res.writeHead(200, {
+        'Content-Type': 'application/json'
+      })
+      console.log("______result___________", result)
+
+      const result_data = {
+        "_id": result._id,
+        "Job_Title": result.jobTitle,
+        "Application_Read": result.noOfViews,
+        "Half_Filled_Application": result.noOfViews_applied - result.noOfViews_submitted,
+        "Complete_Application": result.noOfViews_submitted
+      }
+      const data = {
+        "status": 1,
+        "msg": "successfully found the tracing data",
+        "info": {
+          "result": result_data
+        }
+      }
+      // console.log("____________data_________________", data)
+      res.end(JSON.stringify(data))
+
+    })
+    .catch(err => {
+      const data = {
+        "status": 0,
+        "msg": "Failed fetching the details of jobs applied",
+        "info": err
+      }
+      res.writeHead(200, {
+        'Content-Type': 'application/json'
+      })
+      res.end(JSON.stringify(data))
+      console.log("______err__________", err)
+    })
+
+})
 
 
 

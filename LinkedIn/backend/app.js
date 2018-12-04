@@ -21,12 +21,6 @@ var app = express();
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'jade');
 
-app.use(logger('dev'));
-app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
-app.use(cookieParser());
-app.use(express.static(path.join(__dirname, 'public')));
-
 
 mongoose.connect(mongo.url, {
   poolSize: mongo.pool
@@ -54,6 +48,12 @@ mongoose.connect(mongo.url, {
     res.setHeader('Cache-Control', 'no-cache');
     next();
   });
+
+  app.use(logger('dev'));
+  app.use(express.json());
+  app.use(express.urlencoded({ extended: false }));
+  app.use(cookieParser());
+  app.use(express.static(path.join(__dirname, 'public')));
 
 
 app.use('/', indexRouter);
