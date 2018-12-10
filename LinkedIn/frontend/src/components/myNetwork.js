@@ -98,7 +98,7 @@ class myNetwork extends Component {
                 return (
                     <div class="row userInvitations">
                         <div className="col-sm-6 col-md-6 col-lg-2">
-                            <img src={connection.profileImage} className="img-circle profileImage" />
+                            <img src={ROOT_URL + "/" + connection.profileImage} className="img-circle profileImage" />
                         </div>
                         <div className="col-sm-5 col-md-5 col-lg-5">
                             <h4>{connection.fname + " " +connection.lname}</h4>

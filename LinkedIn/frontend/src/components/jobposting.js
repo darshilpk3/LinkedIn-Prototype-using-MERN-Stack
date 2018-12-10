@@ -75,13 +75,13 @@ class JobPosting extends Component {
 
     applyMethodHandler = (e) => {
         this.setState({
-            applyMethod: this.state.applyMethod
+            applyMethod: e.target.value
         })
     }
 
     EmploymentTypeHandler = (e) => {
         this.setState({
-            jobEmploymentType: this.state.jobEmploymentType
+            jobEmploymentType: e.target.value
         })
     }
 
@@ -270,8 +270,8 @@ class JobPosting extends Component {
                                             </div>
                                             <select className="form-control form-control-lg jobpostemployment" id="exampleFormControlSelect1" defaultValue={this.state.jobEmploymentType} onChange={this.EmploymentTypeHandler} required>
                                                 <option value="">Choose One...</option>
-                                                <option value="Part-Time" selected={this.state.jobEmploymentType = "Part-Time"}>Part-Time</option>
-                                                <option value="Full-Time" selected={this.state.jobEmploymentType = "Full-Time"}>Full-Time</option>
+                                                <option value="Part-Time" selected={this.state.jobEmploymentType == "Part-Time"}>Part-Time</option>
+                                                <option value="Full-Time" selected={this.state.jobEmploymentType == "Full-Time"}>Full-Time</option>
                                             </select>
                                             <br></br>
                                             <div className="form-group">
@@ -288,8 +288,8 @@ class JobPosting extends Component {
                                             <p className="control-label jobpostrow1label">Apply Method *</p>
                                             <select className="form-control form-control-lg applymethodjobpost" id="exampleFormControlSelect1" selected={this.state.applyMethod} defaultValue={this.state.applyMethod} onChange={this.applyMethodHandler} required>
                                                 <option value="">Choose One...</option>
-                                                <option value="Easy Apply" selected={this.state.applyMethod = "Easy Apply"}>Easy Apply </option>
-                                                <option value="Custom Apply" selected={this.state.applyMethod = "Custom Apply"}>Custom Apply</option>
+                                                <option value="Easy Apply" selected={this.state.applyMethod == "Easy Apply"}>Easy Apply </option>
+                                                <option value="Custom Apply" selected={this.state.applyMethod == "Custom Apply"}>Custom Apply</option>
                                             </select>
                                             <br></br><br></br>
                                             <div className="form-group">

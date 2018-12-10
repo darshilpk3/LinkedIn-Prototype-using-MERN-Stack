@@ -509,7 +509,7 @@ class searchResults extends Component {
             clickedJobInfo = (
                 <div>
                     <div className="col-sm-3 col-md-3 col-lg-3">
-                        <img src={this.state.clickedCompanyLogo} className=" profileImage" />
+                        <img src={ROOT_URL + "/" + this.state.clickedCompanyLogo} className=" profileImage" />
                     </div>
 
                     <div className="col-sm-9 col-md-9 col-lg-9 " >
@@ -531,7 +531,7 @@ class searchResults extends Component {
 
                         <div className="row">
                             <div className="col-sm-3 col-md-3 col-lg-3">
-                                <img src={this.state.clickedPostedBy.profileImage} className=" profileImage" />
+                                <img src={ROOT_URL + "/" + this.state.clickedPostedBy.profileImage} className=" profileImage" />
                             </div>
                             <div className="col-sm-9 col-md-9 col-lg-9">
                                 <h6>Posted By:</h6>
@@ -561,7 +561,7 @@ class searchResults extends Component {
 
                 <nav className="navbar navbar-expand-sm" style={{ 'border-bottom-color': 'black', 'padding': ' 0%', 'backgroundColor': 'white', "border-radius": "0px", marginBottom: "0px" }}>
                     <h4 style={{ marginBottom: "-2%", marginLeft: '5%' }}>Search with Filters:</h4>
-                    <input type="text" name="filtercompany" placeholder="Enter Company Name" onChange={this.handleChange} style={{ "border-radius": "4px", width: "205px", height: "2px", marginLeft: "20%", marginTop: "-200px" }}></input>
+                    <input type="text" name="filtercompanyname" placeholder="Enter Company Name" onChange={this.handleChange} style={{ "border-radius": "4px", width: "205px", height: "2px", marginLeft: "20%", marginTop: "-200px" }}></input>
                     <input type="text" name="filterjobtype" placeholder="Enter Job Type" onChange={this.handleChange} style={{ "border-radius": "4px", width: "200px", height: "2px", marginLeft: "3%" }}></input>
                     <input type="text" name="filterindustry" placeholder="Enter Industry" onChange={this.handleChange} style={{ "border-radius": "4px", width: "200px", height: "2px", marginLeft: "3%" }}></input>
                     <button className="btn btn-default" onClick={this.FilterResults} style={{ marginLeft: "2%", height: "35px", width: "120px", "border-radius": "4px", "border": "0px", fontSize: "17px" }}>Filter </button>

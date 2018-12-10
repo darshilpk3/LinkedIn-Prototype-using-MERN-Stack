@@ -22,6 +22,7 @@ function handle_request(msg, callback) {
                         name: user.fname + " " + user.lname,
                         headline: user.headline,
                         email: user.email,
+                        profileImage : user.profileImage,
                         isConnected: "none"
                     }
                     connections.push(connectionInfo)
@@ -31,6 +32,7 @@ function handle_request(msg, callback) {
                         name: user.fname + " " + user.lname,
                         headline: user.headline,
                         email: user.email,
+                        profileImage : user.profileImage,
                         isConnected: "true"
                     }
                     connections.push(connectionInfo)
@@ -41,6 +43,7 @@ function handle_request(msg, callback) {
                         name: user.fname + " " + user.lname,
                         headline: user.headline,
                         email: user.email,
+                        profileImage : user.profileImage,
                         isConnected: "pending"
                     }
                     connections.push(connectionInfo)
@@ -49,6 +52,7 @@ function handle_request(msg, callback) {
                         _id: user._id,
                         name: user.fname + " " + user.lname,
                         headline: user.headline,
+                        profileImage : user.profileImage,
                         email: user.email,
                         isConnected: "Accept"
                     }
@@ -59,6 +63,7 @@ function handle_request(msg, callback) {
                         name: user.fname + " " + user.lname,
                         headline: user.headline,
                         email: user.email,
+                        profileImage : user.profileImage,
                         isConnected: "false"
                     }
                     connections.push(connectionInfo)
@@ -83,8 +88,6 @@ function handle_request(msg, callback) {
             console.log("_____________err__________________", err)
             callback(err, err)
         })
-
-
 
 }
 

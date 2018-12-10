@@ -32,8 +32,6 @@ app.set('view engine', 'jade');
 //use cors to allow cross origin resource sharing
 app.use(cors({ origin: 'http://localhost:3000', credentials: true }));
 
-app.use(fileUpload())
-
 //use express session to maintain session data
 app.use(session({
     secret: 'cmpe273_homeaway',
@@ -78,9 +76,8 @@ mongoose.connect(mongo.url, {
   app.use(express.json());
   app.use(express.urlencoded({ extended: false }));
   app.use(cookieParser());
-  app.use(fileUpload())
   app.use(express.static(path.join(__dirname, 'public')));
-
+  app.use(fileUpload())
 
 app.use('/', indexRouter);
 app.use('/user', usersRouter);
@@ -92,16 +89,6 @@ app.use(function (req, res, next) {
   next(createError(404));
 });
 
-// error handler
-// app.use(function (err, req, res, next) {
-//   // set locals, only providing error in development
-//   res.locals.message = err.message;
-//   res.locals.error = req.app.get('env') === 'development' ? err : {};
-
-//   // render the error page
-//   res.status(err.status || 500);
-//   res.render('error');
-// });
 
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {

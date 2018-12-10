@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { Redirect } from 'react-router';
 import axios from 'axios';
 // import '../styles/graphs.css';
-import Login from './Navbar'
+import Navbar from './Navbar'
 import {Bar, Line, Pie} from 'react-chartjs-2';
 import {ROOT_URL} from '../constants/constants';
 //  var recruiterId = localStorage.getItem("userId")
@@ -416,7 +416,7 @@ class Graphs extends Component{
       require('../styles/graphs.css')
         return(
             <div>
-            <Login/>
+            <Navbar/>
             <div>
             {/*<Chart chartData={this.state.chartData} location="Massachusetts" legendPosition="bottom"/>*/}
             <div className="container chart1">

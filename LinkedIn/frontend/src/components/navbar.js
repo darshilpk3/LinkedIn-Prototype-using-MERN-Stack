@@ -167,12 +167,12 @@ class Navbar extends Component {
         let posting = null, graphs = null;
         if (this.state.myData && this.state.myData.type == "R") {
             posting = <li style={{ margin: "-10px 0px -10px 0px" }}>
-                <Link to="/job/post" >
+                <a href="/job/post" >
                     <i className="ion-android-apps" style={{ 'margin-right': '7px', color: "#c7d1d8", fontSize: "24px" }}></i>
                     <div>
                         <span className="icons_nav" style={{ color: "#c7d1d8" }}>Post a job</span>
                     </div>
-                </Link>
+                </a>
             </li>
         } else {
             posting = null

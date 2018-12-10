@@ -9,7 +9,8 @@ import Login from './Navbar'
 import { ROOT_URL } from '../constants/constants';
 import picDS from '../assets/images/PicDS.png'
 import axios from 'axios';
-import { ROOT_URL } from '../constants/constants'
+
+
 
 // import { ROOT_URL } from '../constants/constants';
 
@@ -67,7 +68,7 @@ class savedJobs extends Component {
             clickedJobId: e
         });
 
-        //const userID = "5c06a1ef06b29e419cf927d9"; //localStorage.getItem(userId);
+        const userID = localStorage.getItem("userId"); //localStorage.getItem(userId);
 
         //  /:jobId/start_application
 
@@ -128,7 +129,7 @@ class savedJobs extends Component {
 
     handleApplicationSubmit = (e) => {
 
-        //const userID = "5c06a1ef06b29e419cf927d9"; //localStorage.getItem(userId);
+        const userID = localStorage.getItem("userId"); //localStorage.getItem(userId);
         const isDisable = false;
         if (this.state.applyJobDisability == "Yes") {
             isDisable = true;
@@ -278,7 +279,7 @@ class savedJobs extends Component {
                 return (
                     <div class="row userInvitations">
                         <div className="col-sm-2 col-md-2 col-lg-2">
-                            <img src={job.companyLogo} className="img savedjobImage" />
+                            <img src={ROOT_URL + "/" + job.companyLogo} className="img savedjobImage" />
                         </div>
                         <div className="col-sm-5 col-md-5 col-lg-5">
                             <h4><a href="#" onClick={this.showJobDetails} id={job._id}>{job.jobTitle}</a></h4>

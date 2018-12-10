@@ -17,9 +17,11 @@ var NoOfViews7 = []
 class ApplicantGraph extends Component{
     constructor(props) {
         super(props);
+let userId = localStorage.getItem('userId');
+
         this.state={
             // recruiterId : localStorage.getItem("userId")
-            applicantId : "5c03254cd2cf45b124fc84cb",
+            applicantId : userId,
             //jobId : this.props.location.state.job_id,
             jobId : "5c0315515e24fc5d383ac47e",
             NoOfViews: "",

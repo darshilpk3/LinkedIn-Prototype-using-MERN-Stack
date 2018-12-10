@@ -4,7 +4,7 @@ import axios from "axios";
 import {connect} from 'react-redux';
 import {Redirect} from 'react-router';
 // import "../styles/jobsearch.css";
-import Login from './Navbar'
+import Navbar from './Navbar'
 import job1 from '../assets/images/job1.png'
 import job2 from '../assets/images/job2.png'
 import job3 from '../assets/images/job3.png'
@@ -41,7 +41,7 @@ class JobSearch extends Component {
       require('../styles/jobsearch.css')
         return(
             <div>
-                <Login/>
+                <Navbar/>
                       <div className="jobs-landing-header-container pad-top-1-pc">
                        <form>
                             <input type = "text" onChange = {this.handleJobTitle} className = "jobs" placeholder = " Search Jobs" required></input>
