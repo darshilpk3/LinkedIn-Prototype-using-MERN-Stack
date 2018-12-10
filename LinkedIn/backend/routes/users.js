@@ -363,7 +363,7 @@ router.post("/:userID/apply", async function (req, res, next) {
     } else {
       const data = {
         "status": 1,
-        "msg": result,
+        "msg": "Successfully applied to a job",
         "info": {}
       }
 
